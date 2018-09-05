@@ -18,13 +18,6 @@
           </el-form-item>
         </el-col>
       </el-row>
-        <el-form-item label="活动名称" prop="name">
-          <el-input v-model="form.name"></el-input>
-        </el-form-item>
-
-      <!-- <el-form-item label="Activity name">
-        <el-input v-model="form.name"/>
-      </el-form-item> -->
       
       <el-form-item label="生效期">
         <el-col :span="6">

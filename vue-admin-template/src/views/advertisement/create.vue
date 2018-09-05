@@ -1,90 +1,174 @@
 <template>
   <div class="app-container">
-    <el-form ref="form" :model="form" label-width="120px">
-      <el-row :span="8">
-        <el-form-item label="Activity zone">
-          <el-select v-model="form.machineID" placeholder="请选择售货机">
-            <el-option v-for="(item, index) in machines" :label="item.name" :value="item.id" :key="index"/>
-          </el-select>
-        </el-form-item>
+    <el-form ref="adCreateForm" :rules="rules" :model="form" label-width="120px">
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="售货机" prop="deviceTaobaoNo">
+            <el-select v-model="form.deviceTaobaoNo" placeholder="请选择售货机">
+              <el-option v-for="(item, index) in machines" :label="item.name" :value="item.id" :key="index"/>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="广告类型" prop="type">
+            <el-select v-model="form.type" placeholder="请选择广告类型">
+              <el-option label="图片" value="0"/>
+              <el-option label="文字" value="1"/>
+            </el-select>
+          </el-form-item>
+        </el-col>
       </el-row>
-      <el-form-item label="Activity name">
-        <el-input v-model="form.name"/>
-      </el-form-item>
-      <el-form-item label="Activity zone">
-        <el-select v-model="form.region" placeholder="please select your zone">
-          <el-option label="Zone one" value="shanghai"/>
-          <el-option label="Zone two" value="beijing"/>
-        </el-select>
-      </el-form-item>
-      <el-form-item label="Activity time">
-        <el-col :span="11">
-          <el-date-picker v-model="form.date1" type="date" placeholder="Pick a date" style="width: 100%;"/>
+      <el-row>
+      <!-- <el-form-item label="生效期" > -->
+        <el-col :span="8">
+          <el-form-item label="开始日期" prop="startTime">
+            <el-date-picker v-model="form.startTime" type="date" placeholder="开始日期" style="width: 100%;"/>
+          </el-form-item>
         </el-col>
-        <el-col :span="2" class="line">-</el-col>
+        <!-- <el-col :span="2" class="line">-</el-col> -->
+        <el-col :span="8">
+          <el-form-item label="结束日期" prop="endTime">
+            <el-date-picker v-model="form.endTime" type="date" placeholder="结束日期" style="width: 100%;"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <!-- </el-form-item> -->
+      <el-form-item label="图片">
+        <el-col :span="4">
+          <el-upload
+            class="upload-demo"
+            action="/apiback/common/upload"
+            :on-success="handleUploadSuccess"
+            :on-preview="handlePreview"
+            :on-remove="handleRemove"
+            :before-remove="beforeRemove"
+            multiple
+            :limit="1"
+            :on-exceed="handleExceed"
+            :file-list="fileList">
+            <el-button size="small" type="primary">点击上传</el-button>
+            <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+          </el-upload>
+        </el-col>
         <el-col :span="11">
-          <el-time-picker v-model="form.date2" type="fixed-time" placeholder="Pick a time" style="width: 100%;"/>
+          <el-input :disabled="true" v-model="form.image"></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="Instant delivery">
-        <el-switch v-model="form.delivery"/>
+      <el-form-item label="标题">
+        <el-input v-model="form.title"></el-input>
       </el-form-item>
-      <el-form-item label="Activity type">
-        <el-checkbox-group v-model="form.type">
-          <el-checkbox label="Online activities" name="type"/>
-          <el-checkbox label="Promotion activities" name="type"/>
-          <el-checkbox label="Offline activities" name="type"/>
-          <el-checkbox label="Simple brand exposure" name="type"/>
-        </el-checkbox-group>
-      </el-form-item>
-      <el-form-item label="Resources">
-        <el-radio-group v-model="form.resource">
-          <el-radio label="Sponsor"/>
-          <el-radio label="Venue"/>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item label="Activity form">
-        <el-input v-model="form.desc" type="textarea"/>
+      <el-form-item label="链接">
+        <el-input  v-model="form.url"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">Create</el-button>
-        <el-button @click="onCancel">Cancel</el-button>
+        <el-button type="primary" @click="onSubmit">创建</el-button>
       </el-form-item>
     </el-form>
+
   </div>
 </template>
 
 <script>
+
+import axios from 'axios'
+
+let adTypes = {
+  0 : '图片',
+  1 : '链接',
+}
 export default {
   data() {
     return {
       form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
+        deviceTaobaoNo: '',
+        title: '',
+        startTime: '',
+        endTime: '',
+        image: '',
+        type: '1',
+        url: '',
         desc: ''
       },
+      fileList: [],
       machines : [{
         name : '售货机一号',id:1
       },{
         name : '售货机老大',id:2
       }],
+      rules:{
+        deviceTaobaoNo: [
+            { required: true, message: '请选择机器ID', trigger: 'change' },
+        ],
+        startTime: [
+            { required: true, message: '请选择开始日期', trigger: 'change' },
+        ],
+        endTime: [
+            { required: true, message: '请选择结束日期', trigger: 'change' },
+        ],
+        type: [
+            { required: true, message: '请选择广告类型', trigger: 'change' },
+        ],
+        image: [
+            { required: true, message: '请上传', trigger: 'change' },
+        ],
+          // name: [
+          //   { required: true, message: '请输入活动名称', trigger: 'change' },
+          //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+          // ],
+      },
     }
   },
   methods: {
     onSubmit() {
-      this.$message('submit!')
+        this.$refs['adCreateForm'].validate((valid) => {
+          if (valid) {
+            this.$message('正在保存')
+            this.createAd();
+            // this.getAd();
+          } else {
+            console.log('error submit!!');
+            return false;
+          }
+        });
+      // this.$message('submit!')
+    },
+    createAd(){
+      let that = this;
+      let postData = {
+        ...this.form,
+        status : 0
+      }
+      axios.post(`/apiback/advert/add`, postData)
+        .then(function(res){
+          console.log(res.data.data)
+        })
+        .catch(function(error){
+          console.log(error)
+          console.log(error)
+        })
     },
     onCancel() {
       this.$message({
         message: 'cancel!',
         type: 'warning'
       })
-    }
+    },
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
+      },
+      handlePreview(file) {
+        console.log(file);
+        window.open(`/apiback/${file.response.data}`);
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeRemove(file, fileList) {
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
+      handleUploadSuccess(response, file, fileList){
+        this.form.image = response.data;
+      }
   }
 }
 </script>
@@ -92,6 +176,9 @@ export default {
 <style scoped>
 .line{
   text-align: center;
+}
+.el-select {
+  width: 100%;
 }
 </style>
 
