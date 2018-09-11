@@ -3,8 +3,8 @@
     <el-form ref="adCreateForm" :rules="rules" :model="form" label-width="120px">
       <el-row>
         <el-col :span="8">
-          <el-form-item label="售货机" prop="advertDevice">
-            <el-select v-model="form.advertDevice" multiple placeholder="请选择售货机">
+          <el-form-item label="售货机" prop="deviceTaobaoNo">
+            <el-select v-model="form.deviceTaobaoNo" placeholder="请选择售货机">
               <el-option v-for="(item, index) in machines" :label="item.deviceShowName" :value="item.deviceTaobaoNo" :key="index"/>
             </el-select>
           </el-form-item>
@@ -13,7 +13,7 @@
           <el-form-item label="广告类型" prop="type">
             <el-select v-model="form.type" placeholder="请选择广告类型">
               <el-option label="图片" value="0"/>
-              <el-option label="链接" value="1"/>
+              <el-option label="文字" value="1"/>
             </el-select>
           </el-form-item>
         </el-col>
@@ -81,7 +81,7 @@ export default {
   data() {
     return {
       form: {
-        advertDevice: '',
+        deviceTaobaoNo: '',
         title: '',
         startTime: '',
         endTime: '',
@@ -97,9 +97,9 @@ export default {
         name : '售货机老大',id:2
       }],
       rules:{
-        advertDevice: [
-            { required: true, message: '请选择机器ID', trigger: 'change' },
-        ],
+        // deviceTaobaoNo: [
+        //     { required: true, message: '请选择机器ID', trigger: 'change' },
+        // ],
         startTime: [
             { required: true, message: '请选择开始日期', trigger: 'change' },
         ],
@@ -130,11 +130,10 @@ export default {
   },
   methods: {
     onSubmit() {
-      console.log(this.form.advertDevice);
         this.$refs['adCreateForm'].validate((valid) => {
           if (valid) {
             this.$message('正在保存')
-            // this.createAd();
+            this.createAd();
             // this.getAd();
           } else {
             console.log('error submit!!');

@@ -29,48 +29,53 @@ export const constantRouterMap = [
     path: '/',
     component: Layout,
     redirect: '/dashboard',
-    name: 'Dashboard',
-    hidden: true,
+    name: '主页',
+    // hidden: true,
     children: [{
       path: 'dashboard',
-      component: () => import('@/views/dashboard/index')
+      name: '主页',
+      component: () => import('@/views/dashboard/index'),
+      meta: { 
+          title: '主页'
+        // , icon: 'table' 
+      }
     }]
   },
 
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
+  // {
+  //   path: '/example',
+  //   component: Layout,
+  //   redirect: '/example/table',
+  //   name: 'Example',
+  //   meta: { title: 'Example', icon: 'example' },
+  //   children: [
+  //     {
+  //       path: 'table',
+  //       name: 'Table',
+  //       component: () => import('@/views/table/index'),
+  //       meta: { title: 'Table', icon: 'table' }
+  //     },
+  //     {
+  //       path: 'tree',
+  //       name: 'Tree',
+  //       component: () => import('@/views/tree/index'),
+  //       meta: { title: 'Tree', icon: 'tree' }
+  //     }
+  //   ]
+  // },
 
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
+  // {
+  //   path: '/form',
+  //   component: Layout,
+  //   children: [
+  //     {
+  //       path: 'index',
+  //       name: 'Form',
+  //       component: () => import('@/views/form/index'),
+  //       meta: { title: 'Form', icon: 'form' }
+  //     }
+  //   ]
+  // },
   {
     path: '/advertisement',
     component: Layout,
@@ -90,6 +95,35 @@ export const constantRouterMap = [
         name: '广告创建',
         component: () => import('@/views/advertisement/create'),
         meta: { title: '广告创建' }
+      }
+    ]
+  },
+  {
+    path: '/product',
+    component: Layout,
+    name: '商品管理',
+    meta: {
+      title: '商品管理'
+    },
+    children: [
+      {
+        path: 'index',
+        name: '商品列表',
+        component: () => import('@/views/product/index'),
+        meta: { title: '商品列表' }
+      },
+      // {
+      //   path: 'create',
+      //   name: '商品编辑',
+      //   component: () => import('@/views/product/create'),
+      //   meta: { title: '商品编辑' }
+      // },
+      {
+        path: 'modify',
+        name: '商品编辑',
+        component: () => import('@/views/product/modify'),
+        meta: { title: '商品编辑' },
+        hidden : true,
       }
     ]
   },
