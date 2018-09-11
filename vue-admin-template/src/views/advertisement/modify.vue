@@ -110,9 +110,11 @@ export default {
         ],
         startTime: [
             { required: true, message: '请选择开始日期', trigger: 'change' },
+            { validator: this.compareTime, trigger: 'change' }
         ],
         endTime: [
             { required: true, message: '请选择结束日期', trigger: 'change' },
+            { validator: this.compareTime, trigger: 'change' }
         ],
         type: [
             { required: true, message: '请选择广告类型', trigger: 'change' },
@@ -144,6 +146,8 @@ export default {
       .then(function(data){
         console.log(data);
         that.form = data.data;
+        that.form.startTime = new Date(that.form.startTime);
+        that.form.endTime = new Date(that.form.endTime);
         that.form.advertDeviceList = that.form.advertDevice.map(x=>{
           return parseInt(x.deviceTaobaoNo);
         });
@@ -229,6 +233,13 @@ export default {
       },
       handleUploadSuccess(response, file, fileList){
         this.form.image = response.data;
+      },
+      compareTime(rule, value, callback){
+        if(this.form.startTime != null && this.form.startTime != '' && this.form.endTime != null && this.form.endTime != ''
+            && this.form.startTime.getTime() > this.form.endTime.getTime()){
+              callback(new Error('开始日期不能晚于结束日期'));
+            }
+        callback();
       }
   }
 }

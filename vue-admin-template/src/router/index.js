@@ -120,10 +120,16 @@ export const constantRouterMap = [
         meta: { title: '商品列表' }
       },
       {
-        path: 'create',
-        name: '商品排期',
+        path: 'schedule',
+        name: '查询排期',
         component: () => import('@/views/product/schedule'),
         meta: { title: '商品排期' }
+      },
+      {
+        path: 'create',
+        name: '新建排期',
+        component: () => import('@/views/product/schedule_create'),
+        meta: { title: '新建排期' }
       },
       {
         path: 'modify',

@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="adCreateForm" :rules="rules" :model="form" label-width="120px">
+    <el-form ref="productScheduleListForm" :rules="rules" :model="form" label-width="120px">
       <el-row>
         <el-col :span="8">
           <el-form-item label="售货机" prop="deviceTaobaoNo">
@@ -10,61 +10,107 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="广告类型" prop="type">
-            <el-select v-model="form.type" placeholder="请选择广告类型">
-              <el-option label="图片" value="0"/>
-              <el-option label="文字" value="1"/>
-            </el-select>
+          <el-form-item label="商品ID" prop="productTaobaoNo">
+            <!-- <el-input v-model="form.productTaobaoNo" placeholder="输入商品名称查询"></el-input> -->
+              <el-select
+                v-model="form.productTaobaoNo"
+                filterable
+                
+                placeholder="输入商品名称"
+                :loading="loading"
+                >
+                <el-option
+                  v-for="item in options4"
+                  :key="item.productTaobaoNo"
+                  :label="item.name"
+                  :value="item.productTaobaoNo"
+                  >
+                    <span style="float: left">{{ item.productTaobaoNo }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
+                </el-option>
+              </el-select>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
       <!-- <el-form-item label="生效期" > -->
         <el-col :span="8">
-          <el-form-item label="开始日期" prop="startTime">
-            <el-date-picker v-model="form.startTime" type="date" placeholder="开始日期" style="width: 100%;"/>
+          <el-form-item label="开始日期" prop="schedulingSaleStartDate">
+            <el-date-picker v-model="form.schedulingSaleStartDate" type="date" placeholder="开始日期" style="width: 100%;"/>
           </el-form-item>
         </el-col>
         <!-- <el-col :span="2" class="line">-</el-col> -->
         <el-col :span="8">
-          <el-form-item label="结束日期" prop="endTime">
-            <el-date-picker v-model="form.endTime" type="date" placeholder="结束日期" style="width: 100%;"/>
+          <el-form-item label="结束日期" prop="schedulingSaleEndDate">
+            <el-date-picker v-model="form.schedulingSaleEndDate" type="date" placeholder="结束日期" style="width: 100%;"/>
           </el-form-item>
         </el-col>
       </el-row>
       <!-- </el-form-item> -->
-      <el-form-item label="图片">
-        <el-col :span="4">
-          <el-upload
-            class="upload-demo"
-            action="/apiback/common/upload"
-            :on-success="handleUploadSuccess"
-            :on-preview="handlePreview"
-            :on-remove="handleRemove"
-            :before-remove="beforeRemove"
-            multiple
-            :limit="1"
-            :on-exceed="handleExceed"
-            :file-list="fileList">
-            <el-button size="small" type="primary">点击上传</el-button>
-            <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
-          </el-upload>
-        </el-col>
-        <el-col :span="11">
-          <el-input :disabled="true" v-model="form.image"></el-input>
-        </el-col>
-      </el-form-item>
-      <el-form-item label="标题">
-        <el-input v-model="form.title"></el-input>
-      </el-form-item>
-      <el-form-item label="链接">
-        <el-input  v-model="form.url"></el-input>
-      </el-form-item>
+      
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">创建</el-button>
+        <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
     </el-form>
-
+    <el-row>以下是商品: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}} : {{selectedProductName}} </span>的排期情况</el-row>
+    <!-- <el-row>位于门店: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}}:{{selectedProductName}} </span>的排期情况</el-row> -->
+<el-table
+        :data="productScheduleTableData"
+        stripe
+        style="width: 100%">
+        <el-table-column
+          type="selection"
+          width="55"/>
+        <!-- <el-table-column
+          prop="productTaobaoNo"
+          label="ID"
+          width="150">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="商品名称"
+          >
+        </el-table-column> -->
+        <el-table-column
+          prop="shopId"
+          label="店铺ID"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="shopName"
+          label="店铺名称"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="stock"
+          label="当前库存"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="deviceTaobaoNo"
+          label="设备号"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="deviceName"
+          label="设备名称"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="saleDateStr"
+          label="销售日期"
+          >
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作"
+          width="100">
+          <template slot-scope="scope">
+            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+            <!-- <el-button type="text" size="small">编辑</el-button> -->
+          </template>
+        </el-table-column>
+      </el-table>
   </div>
 </template>
 
@@ -81,42 +127,44 @@ export default {
   data() {
     return {
       form: {
-        deviceTaobaoNo: '',
-        title: '',
-        startTime: '',
-        endTime: '',
-        image: '',
-        type: '1',
-        url: '',
-        desc: ''
+        "deviceTaobaoNo": "",
+        "pageIndex": 0,
+        "pageSize": 100,
+        "productTaobaoNo": "",
+        schedulingSaleEndDate: new Date(new Date().getTime()+7*24*3600*1000),
+        schedulingSaleStartDate: new Date(new Date().getTime()-7*24*3600*1000),
+        "schedulingStatus": 0
       },
       fileList: [],
-      machines : [{
-        name : '售货机一号',id:1
-      },{
-        name : '售货机老大',id:2
-      }],
+      machines : [],
+      productScheduleTableData : [],
       rules:{
-        // deviceTaobaoNo: [
-        //     { required: true, message: '请选择机器ID', trigger: 'change' },
-        // ],
-        startTime: [
+        productTaobaoNo: [
+            { required: true, message: '请选择商品', trigger: 'change' },
+        ],
+        schedulingSaleStartDate: [
             { required: true, message: '请选择开始日期', trigger: 'change' },
+            { validator: this.compareTime, trigger: 'change' }
         ],
-        endTime: [
+        schedulingSaleEndDate: [
             { required: true, message: '请选择结束日期', trigger: 'change' },
+            { validator: this.compareTime, trigger: 'change' }
         ],
-        type: [
-            { required: true, message: '请选择广告类型', trigger: 'change' },
+        deviceTaobaoNo: [
+            { required: true, message: '请选择售货机', trigger: 'change' },
         ],
-        image: [
-            { required: true, message: '请上传', trigger: 'change' },
-        ],
+        // productTaobaoNo: [
+        //     { required: true, message: '请上传', trigger: 'change' },
+        // ],
           // name: [
           //   { required: true, message: '请输入活动名称', trigger: 'change' },
           //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
           // ],
       },
+      options4: [],
+      loading : false,
+      selectedProductName:'',
+      selectedProductID : '',
     }
   },
   mounted(){
@@ -126,14 +174,38 @@ export default {
       .then(function(data){
         console.log(data);
         that.machines = data.data;
+      });
+    let postData = 
+        {
+          "name": '',
+          "pageIndex": 0,
+          "pageSize": 10,
+          "productTaobaoNo": ""
+        };
+    axios.post(`${urls.product_list}`, postData)
+      .then(function(res){
+        // console.log(res.data.data);
+        that.options4 = res.data.data;
+        that.loading = false;
+      }).catch(function(error){
+        console.log(error);
+        that.loading = false;
       })
   },
   methods: {
     onSubmit() {
-        this.$refs['adCreateForm'].validate((valid) => {
+        let that = this;
+        this.$refs['productScheduleListForm'].validate((valid) => {
           if (valid) {
-            this.$message('正在保存')
-            this.createAd();
+            
+            this.options4.filter(x=>{
+              return x.productTaobaoNo == that.form.productTaobaoNo;
+            }).forEach(x=>{
+              that.selectedProductName = x.name;
+              that.selectedProductID = x.productTaobaoNo;
+            })
+            this.$message('正在查询')
+            this.searchProductSchedule();
             // this.getAd();
           } else {
             console.log('error submit!!');
@@ -142,20 +214,18 @@ export default {
         });
       // this.$message('submit!')
     },
-    createAd(){
+    searchProductSchedule(){
       let that = this;
       let postData = {
         ...this.form,
-        status : 0,
-        advertDevice : [
-          {
-            deviceTaobaoNo: this.deviceTaobaoNo,
-          }
-        ]
       }
-      axios.post(`${urls.ad_add}`, postData)
+      axios.post(`${urls.schedule_list}`, postData)
         .then(function(res){
-          console.log(res.data.data)
+          that.productScheduleTableData = res.data.data;
+          that.productScheduleTableData.forEach(x=>{
+            x.saleDateStr = parseTime(new Date(x.saleDate),'{y}年{m}月{d}日');
+          })
+          // console.log(res.data.data)
         })
         .catch(function(error){
           console.log(error)
@@ -168,22 +238,43 @@ export default {
         type: 'warning'
       })
     },
-    handleRemove(file, fileList) {
-        console.log(file, fileList);
-      },
-      handlePreview(file) {
-        console.log(file);
-        window.open(`/apiback/${file.response.data}`);
-      },
-      handleExceed(files, fileList) {
-        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-      },
-      beforeRemove(file, fileList) {
-        return this.$confirm(`确定移除 ${ file.name }？`);
-      },
-      handleUploadSuccess(response, file, fileList){
-        this.form.image = response.data;
-      }
+    compareTime(rule, value, callback){
+      console.log(arguments);
+      // debugger
+      if(this.form.schedulingSaleStartDate != null && this.form.schedulingSaleStartDate != '' && this.form.schedulingSaleEndDate != null && this.form.schedulingSaleEndDate != ''
+          && this.form.schedulingSaleStartDate.getTime() > this.form.schedulingSaleEndDate.getTime()){
+            callback(new Error('开始日期不能晚于结束日期'));
+          }
+      callback();
+    },
+    // remoteMethod(query) {
+    //   if (query !== '') {
+    //     this.loading = true;
+        
+    //     let postData = 
+    //         {
+    //           "name": query,
+    //           "pageIndex": 0,
+    //           "pageSize": 10,
+    //           "productTaobaoNo": ""
+    //         };
+    //     let that = this;
+    //     axios.post(`${urls.product_list}`, postData)
+    //       .then(function(res){
+    //         // console.log(res.data.data);
+    //         that.options4 = res.data.data;
+    //         that.loading = false;
+    //       }).catch(function(error){
+    //         console.log(error);
+    //         that.loading = false;
+    //       })
+    //   } else {
+    //     this.options4 = [];
+    //   }
+    // },
+    handleClick(row){
+
+    }
   }
 }
 </script>

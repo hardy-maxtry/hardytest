@@ -140,7 +140,11 @@ export default {
           ],
         startDate : [
             { required: true, message: '请选择日期', trigger: 'change' },
-            
+            { validator: this.compareTime, trigger: 'change' }
+          ],
+        endDate :[
+            { required: true, message: '请选择日期', trigger: 'change' },
+            { validator: this.compareTime, trigger: 'change' }
           ],
           // name: [
           //   { required: true, message: '请输入活动名称', trigger: 'change' },
@@ -208,6 +212,15 @@ export default {
       this.$router.push({ path: `/advertisement/modify?id=${row.id}` })
       return;
       console.log(arguments)
+    },
+    compareTime(rule, value, callback){
+      console.log(arguments);
+      // debugger
+      if(this.form.startDate != null && this.form.startDate != '' && this.form.endDate != null && this.form.endDate != ''
+          && this.form.startDate.getTime() > this.form.endDate.getTime()){
+            callback(new Error('开始日期不能晚于结束日期'));
+          }
+      callback();
     }
 
   }
