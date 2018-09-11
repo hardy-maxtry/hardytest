@@ -67,7 +67,7 @@
         <el-input  v-model="form.url"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">创建</el-button>
+        <el-button type="primary" @click="onSubmit">修改</el-button>
       </el-form-item>
     </el-form>
 
@@ -77,6 +77,8 @@
 <script>
 import axios from '@/utils/ajax';
 import urls from '@/config/urls';
+import getQueryString from '@/utils/getQueryString';
+
 
 import {parseTime} from '@/utils/index';
 let adTypes = {
@@ -127,11 +129,37 @@ export default {
   },
   mounted(){
     // console.log(urls.ad_list);
+    let ad_sys_id = getQueryString('id');
+    if(ad_sys_id == null){
+      this.$router.push({path:'/advertisement/index'});
+      return;
+    }
     let that = this;
     axios.get(`${urls.device_list}?showName=`)
       .then(function(data){
         // console.log(data);
         that.machines = data.data;
+      });
+    axios.get(`${urls.ad_detail}${ad_sys_id}`)
+      .then(function(data){
+        console.log(data);
+        that.form = data.data;
+        that.form.advertDeviceList = that.form.advertDevice.map(x=>{
+          return parseInt(x.deviceTaobaoNo);
+        });
+        if(data.data.image == '' || data.data.image == null){
+          that.fileList = [];
+        }else{
+          that.fileList = data.data.image.split(',').map(function(x, index){
+            console.log(arguments)
+            return {
+              url : urls.url_prefix + '/' + x,
+              real_url : x,
+              name : `图片${index+1}`,
+            }
+          })
+        }
+        
       })
   },
   methods: {
@@ -144,14 +172,14 @@ export default {
         this.$refs['adCreateForm'].validate((valid) => {
           if (valid) {
             this.$message('正在保存')
-            this.createAd().then(function(){
+            this.modifyAd().then(function(){
               that.$message({
-                message : '创建广告成功',
+                message : '修改广告成功',
                 type : 'success',
               })
             }).catch(function(){
               that.$message({
-                message : '创建广告失败',
+                message : '修改广告失败',
                 type : 'warning',
               })
             });
@@ -162,13 +190,15 @@ export default {
         });
       // this.$message('submit!')
     },
-    createAd(){
+    modifyAd(){
       let that = this;
       let postData = {
         ...this.form,
-        status : 0,
+        status : 2,
       }
-      return axios.post(`${urls.ad_add}`, postData)
+      console.log(postData)
+      // return;
+      return axios.post(`${urls.ad_edit}`, postData)
         .then(function(res){
           console.log(res.data.data);
         })
@@ -189,6 +219,7 @@ export default {
       handlePreview(file) {
         console.log(file);
         window.open(`${file.url}`);
+
       },
       handleExceed(files, fileList) {
         this.$message.warning(`当前限制选择 1 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);

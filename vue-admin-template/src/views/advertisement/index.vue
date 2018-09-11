@@ -64,6 +64,11 @@
         <el-table-column
           prop="image"
           label="图片地址">
+          <template slot-scope="scope">
+            <!-- <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button> -->
+            <a :href="scope.row.imageUrl" target="_blank"><img :src="scope.row.imageUrl" style="height:70px;width:70px;" /></a>
+            <!-- <el-button type="text" size="small">编辑</el-button> -->
+          </template>
         </el-table-column>
         <el-table-column
           prop="url"
@@ -76,6 +81,15 @@
         <el-table-column
           prop="endTime"
           label="结束日期">
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作"
+          width="100">
+          <template slot-scope="scope">
+            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+            <!-- <el-button type="text" size="small">编辑</el-button> -->
+          </template>
         </el-table-column>
       </el-table>
   </div>
@@ -181,6 +195,7 @@ export default {
             x.endTime = parseTime(new Date(x.endTime),'{y}年{m}月{d}日');
             x.statusStr = adStatus[x.status];
             x.machine = x.advertDevice[0].deviceShowName;
+            x.imageUrl = urls.url_prefix + '/' + x.image;
             return x;
           });
           // console.log(res.data.data)
@@ -188,7 +203,13 @@ export default {
         .catch(function(error){
           console.log(error)
         })
+    },
+    handleClick(row){
+      this.$router.push({ path: `/advertisement/modify?id=${row.id}` })
+      return;
+      console.log(arguments)
     }
+
   }
 }
 </script>

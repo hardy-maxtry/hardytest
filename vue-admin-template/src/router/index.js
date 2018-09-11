@@ -95,6 +95,13 @@ export const constantRouterMap = [
         name: '广告创建',
         component: () => import('@/views/advertisement/create'),
         meta: { title: '广告创建' }
+      },
+      {
+        path: 'modify',
+        name: '广告编辑',
+        component: () => import('@/views/advertisement/modify'),
+        meta: { title: '广告编辑' },
+        hidden : true
       }
     ]
   },
@@ -112,12 +119,12 @@ export const constantRouterMap = [
         component: () => import('@/views/product/index'),
         meta: { title: '商品列表' }
       },
-      // {
-      //   path: 'create',
-      //   name: '商品编辑',
-      //   component: () => import('@/views/product/create'),
-      //   meta: { title: '商品编辑' }
-      // },
+      {
+        path: 'create',
+        name: '商品排期',
+        component: () => import('@/views/product/schedule'),
+        meta: { title: '商品排期' }
+      },
       {
         path: 'modify',
         name: '商品编辑',
