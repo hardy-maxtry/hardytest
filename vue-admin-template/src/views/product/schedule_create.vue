@@ -139,9 +139,9 @@ export default {
       axios.post(`${urls.schedule_add}`, postData)
         .then(function(res){
           
-          this.$message({
-              message: 'cancel!',
-              type: 'warning'
+          that.$message({
+              message: '保存成功，请到商品排期页面查看!',
+              type: 'success'
             })
         })
         .catch(function(error){
@@ -155,22 +155,7 @@ export default {
         type: 'warning'
       })
     },
-    handleRemove(file, fileList) {
-      console.log(file, fileList);
-    },
-    handlePreview(file) {
-      console.log(file);
-      window.open(`/apiback/${file.response.data}`);
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
-    },
-    beforeRemove(file, fileList) {
-      return this.$confirm(`确定移除 ${ file.name }？`);
-    },
-    handleUploadSuccess(response, file, fileList){
-      this.form.image = response.data;
-    },
+    
     remoteMethod(query) {
       if (query !== '') {
         this.loading = true;

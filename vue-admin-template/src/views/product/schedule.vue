@@ -47,17 +47,32 @@
         </el-col>
       </el-row>
       <!-- </el-form-item> -->
-      
+      <el-form-item label="审核状态" prop="schedulingStatus">
+        <el-col :span="4">
+          <el-select v-model="form.schedulingStatus" placeholder="请选择审核状态">
+            <el-option label="待审核" value="0"></el-option>
+            <el-option label="审核通过" value="1"></el-option>
+            <el-option label="审核不通过" value="2"></el-option>
+          </el-select>
+        </el-col>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
     </el-form>
-    <el-row>以下是商品: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}} : {{selectedProductName}} </span>的排期情况</el-row>
-    <!-- <el-row>位于门店: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}}:{{selectedProductName}} </span>的排期情况</el-row> -->
-<el-table
+    <div v-if="showApproveToolbar">
+      <el-row>以下是商品: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}} : {{selectedProductName}} </span>的排期情况</el-row>
+      <el-row>
+        <el-button type="success" @click="approveSuccess">批量审核通过</el-button>
+        <el-button type="danger" @click="approveFailed">批量审核不通过</el-button>
+      </el-row>
+    </div>
+      <!-- <el-row>位于门店: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}}:{{selectedProductName}} </span>的排期情况</el-row> -->
+      <el-table
         :data="productScheduleTableData"
         stripe
-        style="width: 100%">
+        style="width: 100%"
+        @selection-change="handleSelectionChange">
         <el-table-column
           type="selection"
           width="55"/>
@@ -102,15 +117,25 @@
           >
         </el-table-column>
         <el-table-column
+          prop="statusStr"
+          label="审核状态"
+          >
+          <template slot-scope="scope">
+            <span v-if="scope.row.status==1" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
+            <span v-else-if="scope.row.status==2" style="color:#f78989;">{{ scope.row.statusStr }}</span>
+            <span v-else>{{ scope.row.statusStr }}</span>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column
           fixed="right"
           label="操作"
           width="100">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
-            <!-- <el-button type="text" size="small">编辑</el-button> -->
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
+    
   </div>
 </template>
 
@@ -119,9 +144,10 @@ import axios from '@/utils/ajax';
 import urls from '@/config/urls';
 
 import {parseTime} from '@/utils/index';
-let adTypes = {
-  0 : '图片',
-  1 : '链接',
+let statusTypes = {
+  0 : '待审核',
+  1 : '审核通过',
+  2 : '审核不通过'
 }
 export default {
   data() {
@@ -133,7 +159,7 @@ export default {
         "productTaobaoNo": "",
         schedulingSaleEndDate: new Date(new Date().getTime()+7*24*3600*1000),
         schedulingSaleStartDate: new Date(new Date().getTime()-7*24*3600*1000),
-        "schedulingStatus": 0
+        "schedulingStatus": '0'
       },
       fileList: [],
       machines : [],
@@ -165,6 +191,12 @@ export default {
       loading : false,
       selectedProductName:'',
       selectedProductID : '',
+      scheduleMultipleSelection: []
+    }
+  },
+  computed:{
+    showApproveToolbar(){
+      return this.productScheduleTableData != null && Array.isArray(this.productScheduleTableData) && this.productScheduleTableData.length > 0;
     }
   },
   mounted(){
@@ -223,13 +255,22 @@ export default {
         .then(function(res){
           that.productScheduleTableData = res.data.data;
           that.productScheduleTableData.forEach(x=>{
-            x.saleDateStr = parseTime(new Date(x.saleDate),'{y}年{m}月{d}日');
+            that.$set(x, 'saleDateStr',parseTime(new Date(x.saleDate),'{y}年{m}月{d}日'))
+            that.$set(x, 'statusStr',statusTypes[x.status])
           })
+          that.scheduleMultipleSelection = [];
+          that.$message({
+            type : "success",
+            message : "查询完成"
+          });
           // console.log(res.data.data)
         })
         .catch(function(error){
           console.log(error)
-          console.log(error)
+          that.$message({
+            type : "waning",
+            message : "查询异常，请联系管理员"
+          });
         })
     },
     onCancel() {
@@ -272,9 +313,57 @@ export default {
     //     this.options4 = [];
     //   }
     // },
-    handleClick(row){
+    // handleClick(row){
 
-    }
+    // }
+    handleSelectionChange(val) {
+      this.scheduleMultipleSelection = val;
+    },
+    approveSuccess(){
+      let ids = this.scheduleMultipleSelection.map(x=>{
+        return x.id;
+      });
+      let putData = {
+        ids : ids,
+        status: 1
+      };
+      let that = this;
+      axios.put(urls.schedule_update_status, putData).then(function(res){
+        console.log(res.data.data);
+        that.productScheduleTableData.forEach(x=>{
+          if(ids.indexOf(x.id)>=0){
+            that.$set(x, 'status',1)
+            that.$set(x, 'statusStr',statusTypes[x.status])
+          }
+          that.$message({
+            type : "success",
+            message : "操作成功"
+          });
+        });
+      })
+    },
+    approveFailed(){
+      let ids = this.scheduleMultipleSelection.map(x=>{
+        return x.id;
+      });
+      let putData = {
+        ids : ids,
+        status: 2
+      };
+      let that = this;
+      axios.put(urls.schedule_update_status, putData).then(function(res){
+        that.productScheduleTableData.forEach(x=>{
+          if(ids.indexOf(x.id)>=0){
+            that.$set(x, 'status',2)
+            that.$set(x, 'statusStr',statusTypes[x.status])
+          }
+          that.$message({
+            type : "success",
+            message : "操作成功"
+          });
+        });
+      })
+    },
   }
 }
 </script>

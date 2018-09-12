@@ -13,5 +13,6 @@ export default {
     product_detail : '/product/detail/',
     product_edit : '/product/edit',
     schedule_list : '/scheduling/list',
-    schedule_add : '/scheduling/add'   
+    schedule_add : '/scheduling/add'   ,
+    schedule_update_status :'/scheduling/update-status'
 }
