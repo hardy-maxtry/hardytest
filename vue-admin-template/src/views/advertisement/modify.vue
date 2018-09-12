@@ -197,10 +197,12 @@ export default {
     modifyAd(){
       let that = this;
       let postData = {
-        ...this.form,
+        ...JSON.parse(JSON.stringify(this.form)),
         status : 2,
-      }
-      console.log(postData)
+      };
+      postData.startTime = parseTime(postData.startTime,'{y}-{m}-{d}');
+      postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
+      // console.log(postData)
       // return;
       return axios.post(`${urls.ad_edit}`, postData)
         .then(function(res){

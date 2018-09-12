@@ -92,7 +92,7 @@ export default {
       form: {
         "name": "",
         "pageIndex": 0,
-        "pageSize": 10,
+        "pageSize": 100,
         "productTaobaoNo": ""
       },
       

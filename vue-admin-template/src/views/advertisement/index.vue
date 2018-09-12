@@ -55,6 +55,11 @@
           prop="statusStr"
           label="广告状态"
           width="200">
+          <template slot-scope="scope">
+            <span v-if="scope.row.status==1" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
+            <span v-else-if="scope.row.status==2" style="color:#f78989;">{{ scope.row.statusStr }}</span>
+            <span v-else>{{ scope.row.statusStr }}</span>
+          </template>
         </el-table-column>
         <el-table-column
           prop="typestr"
@@ -75,19 +80,21 @@
           label="跳转地址">
         </el-table-column>
         <el-table-column
-          prop="startTime"
+          prop="startTimeStr"
           label="开始日期">
         </el-table-column>
         <el-table-column
-          prop="endTime"
+          prop="endTimeStr"
           label="结束日期">
         </el-table-column>
         <el-table-column
           fixed="right"
           label="操作"
-          width="100">
+          width="250">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="handleClick(scope.row)" type="info" size="mini">编辑</el-button>
+            <el-button @click="activeAd(scope.row)" type="success" size="mini">上线</el-button>
+            <el-button @click="deactiveAd(scope.row)" type="danger" size="mini">下线</el-button>
             <!-- <el-button type="text" size="small">编辑</el-button> -->
           </template>
         </el-table-column>
@@ -195,8 +202,8 @@ export default {
         .then(function(res){
           that.adTableData = res.data.data.map(x=>{
             x.typestr = adTypes[x.type];
-            x.startTime = parseTime(new Date(x.startTime),'{y}年{m}月{d}日');
-            x.endTime = parseTime(new Date(x.endTime),'{y}年{m}月{d}日');
+            x.startTimeStr = parseTime(new Date(x.startTime),'{y}年{m}月{d}日');
+            x.endTimeStr = parseTime(new Date(x.endTime),'{y}年{m}月{d}日');
             x.statusStr = adStatus[x.status];
             x.machine = x.advertDevice[0].deviceShowName;
             x.imageUrl = urls.url_prefix + '/' + x.image;
@@ -221,6 +228,40 @@ export default {
             callback(new Error('开始日期不能晚于结束日期'));
           }
       callback();
+    },
+    activeAd(row){
+      let postData = {
+        ...JSON.parse(JSON.stringify(row)),
+        
+      };
+      postData.status = 1;
+      postData.startTime = parseTime(postData.startTime,'{y}-{m}-{d}');
+      postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
+      // console.log(postData)
+      // return;
+      let that = this;
+      axios.post(`${urls.ad_edit}`, postData)
+        .then(function(res){
+          that.$set(row, 'status', 1);
+          that.$set(row,'statusStr' ,adStatus[row.status]);
+        })
+    },
+    deactiveAd(row){
+      let postData = {
+        ...JSON.parse(JSON.stringify(row)),
+        
+      };
+      postData.status = 2;
+      postData.startTime = parseTime(postData.startTime,'{y}-{m}-{d}');
+      postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
+      // console.log(postData)
+      // return;
+      let that = this;
+      axios.post(`${urls.ad_edit}`, postData)
+        .then(function(res){
+          that.$set(row, 'status', 2);
+          that.$set(row,'statusStr' ,adStatus[row.status]);
+        })
     }
 
   }

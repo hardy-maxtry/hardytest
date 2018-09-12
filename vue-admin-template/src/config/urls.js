@@ -14,5 +14,7 @@ export default {
     product_edit : '/product/edit',
     schedule_list : '/scheduling/list',
     schedule_add : '/scheduling/add'   ,
-    schedule_update_status :'/scheduling/update-status'
+    schedule_update_status :'/scheduling/update-status',
+
+    promotion_add: '/promotion/add',
 }

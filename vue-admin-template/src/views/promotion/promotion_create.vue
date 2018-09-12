@@ -3,6 +3,34 @@
     <el-form ref="adCreateForm" :rules="rules" :model="form" label-width="120px">
       <el-row>
         <el-col :span="8">
+          <el-form-item label="促销名称" prop="name">
+            <el-input v-model="form.name"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="促销类型" prop="type">
+            <el-select v-model="form.type" placeholder="请选择促销类型">
+              <el-option label="定额" value="1"/>
+              <el-option label="折扣" value="2"/>
+              <el-option label="满减" value="3"/>
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="限制生效次数" prop="allowTimes">
+            <el-input v-model="form.allowTimes"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="折扣金额" prop="discount">
+            <el-input v-model="form.discount"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
           <el-form-item label="售货机" prop="deviceTaobaoNo">
             <el-select v-model="form.deviceTaobaoNo" placeholder="请选择售货机">
               <el-option v-for="(item, index) in machines" :label="item.deviceShowName" :value="item.deviceTaobaoNo" :key="index"/>
@@ -32,14 +60,14 @@
       <el-row>
       <!-- <el-form-item label="生效期" > -->
         <el-col :span="8">
-          <el-form-item label="开始日期" prop="saleDateStart">
-            <el-date-picker v-model="form.saleDateStart" type="date" placeholder="开始日期" style="width: 100%;"/>
+          <el-form-item label="开始日期" prop="beginTime">
+            <el-date-picker v-model="form.beginTime" type="date" placeholder="开始日期" style="width: 100%;"/>
           </el-form-item>
         </el-col>
         <!-- <el-col :span="2" class="line">-</el-col> -->
         <el-col :span="8">
           <el-form-item label="结束日期" prop="saleDateEnd">
-            <el-date-picker v-model="form.saleDateEnd" type="date" placeholder="结束日期" style="width: 100%;"/>
+            <el-date-picker v-model="form.endTime" type="date" placeholder="结束日期" style="width: 100%;"/>
           </el-form-item>
         </el-col>
       </el-row>
@@ -66,10 +94,25 @@ export default {
   data() {
     return {
       form: {
-        deviceTaobaoNo: '',
-        productTaobaoNo: '',
-        saleDateStart: '',
-        saleDateEnd: '',
+        "allowTimes": 0,  //允许次数,int
+        "beginTime": new Date(new Date().getTime()-7*24*3600*1000), //开始时间,Date
+        "code": "string", // 促销code,string
+        "discount": 0, // 折扣额度,float
+        "endTime": new Date(new Date().getTime()+7*24*3600*1000),//结束时间,Date
+        "item": [
+          {
+            "deviceTaobaoNo": "string", // 淘宝售货机ID
+            "limitQuantity": 0, // 限购数量
+            "productTaobaoNo": "string", // 淘宝商品ID
+            "shopId": 0 // 店铺ID
+          }
+        ],
+        "limitQuantity": 0, // 限制数量? 这个不理解
+        "name": "string", // 促销名称
+        "price": 0, // 定额? 这个不理解 
+        "subtraction": 0, //满减金额? 这个不理解 
+        "total": 0, // 满减总额? 这个不理解 
+        "type": "1" // 1=定额，2=折扣，3=满减
       },
       fileList: [],
       machines : [{
@@ -81,11 +124,11 @@ export default {
         // deviceTaobaoNo: [
         //     { required: true, message: '请选择机器ID', trigger: 'change' },
         // ],
-        saleDateStart: [
+        beginTime: [
             { required: true, message: '请选择开始日期', trigger: 'change' },
             { validator: this.compareTime, trigger: 'change' }
         ],
-        saleDateEnd: [
+        endTime: [
             { required: true, message: '请选择结束日期', trigger: 'change' },
             { validator: this.compareTime, trigger: 'change' }
         ],
@@ -134,7 +177,7 @@ export default {
         this.$refs['adCreateForm'].validate((valid) => {
           if (valid) {
             this.$message('正在保存')
-            this.createProductSchedule();
+            this.createPromotion();
             // this.getAd();
           } else {
             console.log('error submit!!');
@@ -143,14 +186,14 @@ export default {
         });
       // this.$message('submit!')
     },
-    createProductSchedule(){
+    createPromotion(){
       let that = this;
       let postData = JSON.parse(JSON.stringify(this.form))
-      postData.saleDateStart = parseTime(postData.saleDateStart,'{y}-{m}-{d}');
-      postData.saleDateEnd =  parseTime(postData.saleDateEnd,'{y}-{m}-{d}');
-      // console.log(postData)
-      // return;
-      axios.post(`${urls.schedule_add}`, postData)
+      postData.beginTime = parseTime(postData.beginTime,'{y}-{m}-{d}');
+      postData.endTime =  parseTime(postData.endTime,'{y}-{m}-{d}');
+      console.log(postData)
+      return;
+      axios.post(`${urls.promotion_add}`, postData)
         .then(function(res){
           
           that.$message({
@@ -170,36 +213,36 @@ export default {
       })
     },
     
-    remoteMethod(query) {
-      if (query !== '') {
-        this.loading = true;
+    // remoteMethod(query) {
+    //   if (query !== '') {
+    //     this.loading = true;
         
-        let postData = 
-            {
-              "name": query,
-              "pageIndex": 0,
-              "pageSize": 100,
-              "productTaobaoNo": ""
-            };
-        let that = this;
-        axios.post(`${urls.product_list}`, postData)
-          .then(function(res){
-            console.log(res.data.data);
-            that.options4 = res.data.data;
-            that.loading = false;
-          }).catch(function(error){
-            console.log(error);
-            that.loading = false;
-          })
-      } else {
-        this.options4 = [];
-      }
-    },
+    //     let postData = 
+    //         {
+    //           "name": query,
+    //           "pageIndex": 0,
+    //           "pageSize": 10,
+    //           "productTaobaoNo": ""
+    //         };
+    //     let that = this;
+    //     axios.post(`${urls.product_list}`, postData)
+    //       .then(function(res){
+    //         console.log(res.data.data);
+    //         that.options4 = res.data.data;
+    //         that.loading = false;
+    //       }).catch(function(error){
+    //         console.log(error);
+    //         that.loading = false;
+    //       })
+    //   } else {
+    //     this.options4 = [];
+    //   }
+    // },
     compareTime(rule, value, callback){
       console.log(arguments);
       // debugger
-      if(this.form.saleDateStart != null && this.form.saleDateStart != '' && this.form.saleDateEnd != null && this.form.saleDateEnd != ''
-          && this.form.saleDateStart.getTime() > this.form.saleDateEnd.getTime()){
+      if(this.form.beginTime != null && this.form.beginTime != '' && this.form.endTime != null && this.form.endTime != ''
+          && this.form.beginTime.getTime() > this.form.endTime.getTime()){
             callback(new Error('开始日期不能晚于结束日期'));
           }
       callback();

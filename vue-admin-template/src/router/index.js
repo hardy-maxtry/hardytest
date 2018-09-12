@@ -141,6 +141,41 @@ export const constantRouterMap = [
     ]
   },
   {
+    path: '/promotion',
+    component: Layout,
+    name: '促销管理',
+    meta: {
+      title: '促销管理'
+    },
+    children: [
+      // {
+      //   path: 'index',
+      //   name: '促销列表',
+      //   component: () => import('@/views/product/index'),
+      //   meta: { title: '促销列表' }
+      // },
+      // {
+      //   path: 'schedule',
+      //   name: '查询促销',
+      //   component: () => import('@/views/product/schedule'),
+      //   meta: { title: '商品促销' }
+      // },
+      {
+        path: 'create',
+        name: '新建促销',
+        component: () => import('@/views/promotion/promotion_create'),
+        meta: { title: '新建促销' }
+      },
+      // {
+      //   path: 'modify',
+      //   name: '促销编辑',
+      //   component: () => import('@/views/product/modify'),
+      //   meta: { title: '促销编辑' },
+      //   hidden : true,
+      // }
+    ]
+  },
+  {
     path: '/nested',
     component: Layout,
     redirect: '/nested/menu1',

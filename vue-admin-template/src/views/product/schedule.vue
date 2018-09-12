@@ -63,8 +63,8 @@
     <div v-if="showApproveToolbar">
       <el-row>以下是商品: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}} : {{selectedProductName}} </span>的排期情况</el-row>
       <el-row>
-        <el-button type="success" @click="approveSuccess">批量审核通过</el-button>
-        <el-button type="danger" @click="approveFailed">批量审核不通过</el-button>
+        <el-button type="success" size="small" @click="approveSuccess">批量审核通过</el-button>
+        <el-button type="danger" size="small" @click="approveFailed">批量审核不通过</el-button>
       </el-row>
     </div>
       <!-- <el-row>位于门店: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}}:{{selectedProductName}} </span>的排期情况</el-row> -->
@@ -211,7 +211,7 @@ export default {
         {
           "name": '',
           "pageIndex": 0,
-          "pageSize": 10,
+          "pageSize": 100,
           "productTaobaoNo": ""
         };
     axios.post(`${urls.product_list}`, postData)

@@ -148,7 +148,7 @@ export default {
             this.$message('正在保存')
             this.createAd().then(function(){
               that.$message({
-                message : '创建广告成功',
+                message : '创建广告成功,请到广告列表查看',
                 type : 'success',
               })
             }).catch(function(){
@@ -167,12 +167,14 @@ export default {
     createAd(){
       let that = this;
       let postData = {
-        ...this.form,
-        status : 0,
-      }
+        ...JSON.parse(JSON.stringify(this.form)),
+        status : 2,
+      };
+      postData.startTime = parseTime(postData.startTime,'{y}-{m}-{d}');
+      postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
       return axios.post(`${urls.ad_add}`, postData)
         .then(function(res){
-          console.log(res.data.data);
+            // console.log(res.data.data);
         })
         // .catch(function(error){
         //   console.log(error)
