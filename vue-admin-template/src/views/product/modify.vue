@@ -146,7 +146,7 @@ export default {
   mounted(){
     // console.log(urls.ad_list);
     let item_sys_id = getQueryString('id');
-    console.log('itemsysid',item_sys_id)
+    // console.log('itemsysid',item_sys_id)
     if(item_sys_id == null){
       this.$router.push({path:'/product/index'});
       return;

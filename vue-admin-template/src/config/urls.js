@@ -17,4 +17,8 @@ export default {
     schedule_update_status :'/scheduling/update-status',
 
     promotion_add: '/promotion/add',
+    promotion_list: '/promotion/list',
+    promotion_detail: '/promotion/detail/',
+    promotion_modify: '/promotion/edit',
+
 }

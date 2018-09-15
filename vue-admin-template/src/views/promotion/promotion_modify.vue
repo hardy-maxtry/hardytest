@@ -92,7 +92,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="限购件数" prop="allowTimes">
+          <el-form-item label="限购件数" prop="pageLimitQuantity">
             <!-- <el-input v-model="pageLimitQuantity"></el-input> -->
             <el-input-number v-model="pageLimitQuantity"  ></el-input-number>
             <el-tooltip class="item" effect="dark" content="一位顾客参与一次活动中，最多可以够买几件商品，超出部分将以原价结算" placement="top-start">
@@ -119,7 +119,7 @@
       <!-- </el-form-item> -->
       
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">创建</el-button>
+        <el-button type="primary" @click="onSubmit">保存</el-button>
       </el-form-item>
     </el-form>
 
@@ -129,6 +129,7 @@
 <script>
 import axios from '@/utils/ajax';
 import urls from '@/config/urls';
+import getQueryString from '@/utils/getQueryString';
 
 import {parseTime} from '@/utils/index';
 let adTypes = {
@@ -139,6 +140,7 @@ export default {
   data() {
     return {
       form: {
+        "id": 0 , //促销ID
         "allowTimes": 1,  //允许次数,int
         "beginTime": new Date(new Date().getTime()), //开始时间,Date
         "code": "", // 促销code,string
@@ -146,10 +148,12 @@ export default {
         "endTime": new Date(new Date().getTime()+30*24*3600*1000),//结束时间,Date
         "item": [
           {
-            "deviceTaobaoNo": "string", // 淘宝售货机ID
+            "deviceTaobaoNo": null, // 淘宝售货机ID
             "limitQuantity": 0, // 限购数量
             "productTaobaoNo": "string", // 淘宝商品ID
-            "shopId": 0 // 店铺ID
+            "shopId": null, // 店铺ID,
+            "id":null,
+            "proId": null,
           }
         ],
         "limitQuantity": 0, // 限制数量? item列表中的商品，参加一次优惠，限制的购买数量，超出部分不参加优惠
@@ -219,6 +223,7 @@ export default {
       loading: false,
       pageProductTaobaoNo : '',
       pageLimitQuantity : 1,
+      promotion_sys_id : null,
     }
   },
   mounted(){
@@ -245,13 +250,32 @@ export default {
         console.log(error);
         that.loading = false;
       })
+
+    
+    let promotion_sys_id = getQueryString('id');
+    // console.log('itemsysid',promotion_sys_id)
+    if(promotion_sys_id == null){
+      this.$router.push({path:'/promotion/promotion_list'});
+      return;
+    }
+    this.promotion_sys_id = promotion_sys_id;
+    axios.get(`${urls.promotion_detail}${promotion_sys_id}`)
+      .then(function(data){
+        console.log(data);
+        that.form = data.data;
+        that.$set(that.form, 'type', that.form.type.toString());        
+        that.$set(that.form, 'beginTime', new Date(that.form.beginTime));        
+        that.$set(that.form, 'endTime', new Date(that.form.endTime));        
+        that.$set(that, 'pageProductTaobaoNo', that.form.item[0].productTaobaoNo);
+        that.$set(that, 'pageLimitQuantity', that.form.item[0].limitQuantity);
+      })
   },
   methods: {
     onSubmit() {
         this.$refs['adCreateForm'].validate((valid) => {
           if (valid) {
             this.$message('正在保存')
-            this.createPromotion();
+            this.modifyPromotion();
             // this.getAd();
           } else {
             console.log('error submit!!');
@@ -260,25 +284,21 @@ export default {
         });
       // this.$message('submit!')
     },
-    createPromotion(){
+    modifyPromotion(){
       let that = this;
       let postData = JSON.parse(JSON.stringify(this.form))
       postData.beginTime = parseTime(postData.beginTime,'{y}-{m}-{d}');
       postData.endTime =  parseTime(postData.endTime,'{y}-{m}-{d}');
-      postData.item = [{
-        deviceTaobaoNo : null,
-        limitQuantity : this.pageLimitQuantity,
-        productTaobaoNo : this.pageProductTaobaoNo,
-        shopId : null,
-      }]
+      postData.item[0].limitQuantity =  this.pageLimitQuantity;
+      postData.item[0].productTaobaoNo =  this.pageProductTaobaoNo;
       console.log(postData)
       // return;
-      axios.post(`${urls.promotion_add}`, postData)
+      axios.post(`${urls.promotion_modify}`, postData)
         .then(function(res){
           console.log(res);
           if(res.data){
             that.$message({
-              message: '保存促销成功，请到促销列表页面查看!',
+              message: '保存促销成功!',
               type: 'success'
             })
           }else{

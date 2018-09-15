@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form ref="adCreateForm" :rules="rules" :model="form" label-width="120px">
+    <el-form ref="adSearchForm" :rules="rules" :model="form" label-width="120px">
       <el-row>
         <el-col :span="8">
           <el-form-item label="促销名称" prop="name">
@@ -8,19 +8,6 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="8">
-          <el-form-item label="参加次数" prop="allowTimes">
-            <!-- <el-input v-model="form.allowTimes" style="width:90%;"></el-input> -->
-            <el-input-number v-model="form.allowTimes" ></el-input-number>
-            
-            <el-tooltip class="item" effect="dark" content="每位客户可以参加几次活动" placement="top-start">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <hr class="style-one"/>
-      <el-row>
         <el-col :span="8">
           <el-form-item label="促销类型" prop="type">
             <el-select v-model="form.type" placeholder="请选择促销类型" style="width:90%;">
@@ -37,71 +24,9 @@
             </el-tooltip>
           </el-form-item>
         </el-col>
-
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-
-          <el-form-item v-if="form.type==3 || form.type == 2" label="达标金额(元)" prop="total">
-            <!-- <el-input v-model="form.total" type="number"></el-input> -->
-            <el-input-number v-model="form.total" :precision="2" :step="1" ></el-input-number>
-          </el-form-item>
-          <el-form-item v-if="form.type==1" label="固定折扣价(元)" prop="price">
-            <!-- <el-input v-model="form.price"></el-input> -->
-            <el-input-number v-model="form.price" :precision="2" :step="1" ></el-input-number>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item v-if="form.type==2" label="折扣百分比(1-99)" prop="discount">
-            <!-- <el-input v-model="form.discount"></el-input> -->
-            <el-input-number v-model="form.discount" :precision="2" :step="1"  :max="100"></el-input-number>
-          </el-form-item>
-          <el-form-item v-if="form.type==3" label="立减金额(元)" prop="subtraction">
-            <!-- <el-input v-model="form.subtraction"></el-input> -->
-            <el-input-number v-model="form.subtraction" :precision="2" :step="1" ></el-input-number>
-
-          </el-form-item>
-        </el-col>
       </el-row>
       <hr class="style-one"/>
-      <el-row>
-        <!-- <el-col :span="8">
-          <el-form-item label="售货机" prop="deviceTaobaoNo">
-            <el-select v-model="form.deviceTaobaoNo" placeholder="请选择售货机">
-              <el-option v-for="(item, index) in machines" :label="item.deviceShowName" :value="item.deviceTaobaoNo" :key="index"/>
-            </el-select>
-          </el-form-item>
-        </el-col> -->
-        <el-col :span="8">
-          <el-form-item label="商品ID" prop="pageProductTaobaoNo">
-            <!-- <el-input v-model="form.productTaobaoNo" placeholder="输入商品名称查询"></el-input> -->
-              <el-select
-                v-model="pageProductTaobaoNo"
-                filterable
-                placeholder="输入商品名称"
-                :loading="loading">
-                <el-option
-                  v-for="item in options4"
-                  :key="item.productTaobaoNo"
-                  :label="item.name"
-                  :value="item.productTaobaoNo">
-                    <span style="float: left">{{ item.productTaobaoNo }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
-                </el-option>
-              </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="限购件数" prop="allowTimes">
-            <!-- <el-input v-model="pageLimitQuantity"></el-input> -->
-            <el-input-number v-model="pageLimitQuantity"  ></el-input-number>
-            <el-tooltip class="item" effect="dark" content="一位顾客参与一次活动中，最多可以够买几件商品，超出部分将以原价结算" placement="top-start">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <hr class="style-one"/>
+      
       <el-row>
       <!-- <el-form-item label="生效期" > -->
         <el-col :span="8">
@@ -119,10 +44,62 @@
       <!-- </el-form-item> -->
       
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">创建</el-button>
+        <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
     </el-form>
-
+<el-table
+        :data="promotionListTableData"
+        stripe
+        style="width: 100%"
+        >
+        <!-- <el-table-column
+          type="selection"
+          width="55"/> -->
+        <el-table-column
+          prop="id"
+          label="促销ID"
+          width="100">
+        </el-table-column>
+        <el-table-column
+          prop="name"
+          label="商品名称"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="typeStr"
+          label="促销类型"
+          >
+        </el-table-column>
+        
+        <el-table-column
+          prop="beginTimeStr"
+          label="促销开始日期"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="endTimeStr"
+          label="促销结束日期"
+          >
+        </el-table-column>
+        <el-table-column
+          prop="statusStr"
+          label="审核状态"
+          >
+          <template slot-scope="scope">
+            <span v-if="scope.row.status==1" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
+            <span v-else-if="scope.row.status==2" style="color:#f78989;">{{ scope.row.statusStr }}</span>
+            <span v-else>{{ scope.row.statusStr }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          fixed="right"
+          label="操作"
+          width="300">
+          <template slot-scope="scope">
+            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
   </div>
 </template>
 
@@ -135,32 +112,24 @@ let adTypes = {
   0 : '图片',
   1 : '链接',
 }
+let promotionTypes = {
+  1: "定额" ,
+  2: "满额折扣",
+  3: "满额立减"
+}
 export default {
   data() {
     return {
       form: {
-        "allowTimes": 1,  //允许次数,int
-        "beginTime": new Date(new Date().getTime()), //开始时间,Date
-        "code": "", // 促销code,string
-        
-        "endTime": new Date(new Date().getTime()+30*24*3600*1000),//结束时间,Date
-        "item": [
-          {
-            "deviceTaobaoNo": "string", // 淘宝售货机ID
-            "limitQuantity": 0, // 限购数量
-            "productTaobaoNo": "string", // 淘宝商品ID
-            "shopId": 0 // 店铺ID
-          }
-        ],
-        "limitQuantity": 0, // 限制数量? item列表中的商品，参加一次优惠，限制的购买数量，超出部分不参加优惠
+        "beginTime": new Date(new Date().getTime()-7*24*3600*1000), //开始时间,Date
+        "endTime": new Date(new Date().getTime()+7*24*3600*1000),//结束时间,Date
         "name": "", // 促销名称
-        "price": 0, // 定额? type=1时，满足活动商品数量后，参加活动的商品以price的值作为固定金额结算
-        "subtraction": 0, //满减金额? type=3时, 活动商品一次性购买足量金额后，将减去 subtraction 的金额
-        "total": 0, // 满减总额? 活动商品一次性购买足量金额后，触发discount或者  subtraction
-        "discount": 0, // 折扣百分比,float, 8折就填0.8. type=2时, 活动商品一次性购买足量金额后，将乘以discount的数字，作为最终结算金额
-        "type": "1" // 1=定额，2=折扣，3=满减
+        "type": "1", // 1=定额，2=折扣，3=满减
+        "pageIndex": 1,
+        "pageSize": 100,
       },
       fileList: [],
+      promotionListTableData: [],
       machines : [{
         name : '售货机一号',id:1
       },{
@@ -178,38 +147,11 @@ export default {
             { required: true, message: '请选择结束日期', trigger: 'change' },
             { validator: this.compareTime, trigger: 'change' }
         ],
-        name: [
-            { required: true, message: '请填写活动名称', trigger: 'change' },
-            //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
-        ],
-        pageProductTaobaoNo: [
-            // { required: true, message: '请选择商品', trigger: 'change' },
-            { validator: this.checkPageProductTaobaoNo, trigger: 'change' }
-        ],
-        price: [
-            {type: 'number', message: '折扣价必须是数字', trigger: 'change' },
-            { validator: this.checkPrice, trigger: 'change' },
-
-            //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
-        ],
-        total:[
-            {required: true, type: 'number', message: '请输入数字格式的达标金额', trigger: 'change' },
-            { validator: this.checkTotal, trigger: 'change' },
-
-            //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
-        ],
-        subtraction: [
-            {type: 'number', message: '立减金额必须是数字', trigger: 'change' },
-            { validator: this.checkPrice, trigger: 'change' },
-
-            //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
-        ],
-        discount: [
-            {type: 'number', message: '打折额度必须是数字', trigger: 'change' },
-            { validator: this.checkDiscount, trigger: 'change' },
-
-            //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
-        ],
+        // name: [
+        //     { required: true, message: '请填写活动名称', trigger: 'change' },
+        //     //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+        // ],
+        
           // name: [
           //   { required: true, message: '请输入活动名称', trigger: 'change' },
           //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
@@ -248,7 +190,7 @@ export default {
   },
   methods: {
     onSubmit() {
-        this.$refs['adCreateForm'].validate((valid) => {
+        this.$refs['adSearchForm'].validate((valid) => {
           if (valid) {
             this.$message('正在保存')
             this.createPromotion();
@@ -265,26 +207,26 @@ export default {
       let postData = JSON.parse(JSON.stringify(this.form))
       postData.beginTime = parseTime(postData.beginTime,'{y}-{m}-{d}');
       postData.endTime =  parseTime(postData.endTime,'{y}-{m}-{d}');
-      postData.item = [{
-        deviceTaobaoNo : null,
-        limitQuantity : this.pageLimitQuantity,
-        productTaobaoNo : this.pageProductTaobaoNo,
-        shopId : null,
-      }]
+
       console.log(postData)
       // return;
-      axios.post(`${urls.promotion_add}`, postData)
+      axios.post(`${urls.promotion_list}`, postData)
         .then(function(res){
-          console.log(res);
           if(res.data){
+            that.promotionListTableData = res.data.data;
+            that.promotionListTableData.forEach(x=>{
+              x.typeStr = promotionTypes[x.type];
+              x.beginTimeStr = parseTime(x.beginTime,'{y}-{m}-{d}');
+              x.endTimeStr =  parseTime(x.endTime,'{y}-{m}-{d}');
+            })
             that.$message({
-              message: '保存促销成功，请到促销列表页面查看!',
+              message: '查询成功!',
               type: 'success'
             })
           }else{
             that.$message({
-              message: '保存促销失败，请联系管理员!',
-              type: 'warning'
+              message: '查询失败，请联系管理员!',
+              type: 'success'
             })
           }
           
@@ -367,6 +309,11 @@ export default {
           }
       callback();
     },
+    handleClick(row){
+      console.log(row)
+      this.$router.push({ path: `/promotion/modify?id=${row.id}` })
+      return;
+    }
   }
 }
 </script>
