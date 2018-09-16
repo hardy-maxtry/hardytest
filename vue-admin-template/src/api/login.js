@@ -45,3 +45,13 @@ export function logout() {
     method: 'post'
   })
 }
+
+export function logout2(token) {
+   
+  let params = {
+                  params : {
+                    token :token
+                  }
+              };
+  return axios.get(urls.logon_signout,params);
+}
