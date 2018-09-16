@@ -50,9 +50,10 @@
       <el-form-item label="审核状态" prop="schedulingStatus">
         <el-col :span="4">
           <el-select v-model="form.schedulingStatus" placeholder="请选择审核状态">
-            <el-option label="待审核" value="0"></el-option>
-            <el-option label="审核通过" value="1"></el-option>
-            <el-option label="审核不通过" value="2"></el-option>
+            <el-option label="不限" value="0"></el-option>
+            <el-option label="待审核" value="1"></el-option>
+            <el-option label="审核通过" value="2"></el-option>
+            <el-option label="审核不通过" value="3"></el-option>
           </el-select>
         </el-col>
       </el-form-item>
@@ -121,8 +122,8 @@
           label="审核状态"
           >
           <template slot-scope="scope">
-            <span v-if="scope.row.status==1" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
-            <span v-else-if="scope.row.status==2" style="color:#f78989;">{{ scope.row.statusStr }}</span>
+            <span v-if="scope.row.status==2" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
+            <span v-else-if="scope.row.status==3" style="color:#f78989;">{{ scope.row.statusStr }}</span>
             <span v-else>{{ scope.row.statusStr }}</span>
           </template>
         </el-table-column>
@@ -145,9 +146,9 @@ import urls from '@/config/urls';
 
 import {parseTime} from '@/utils/index';
 let statusTypes = {
-  0 : '待审核',
-  1 : '审核通过',
-  2 : '审核不通过'
+  1 : '待审核',
+  2 : '审核通过',
+  3 : '审核不通过'
 }
 export default {
   data() {
@@ -325,14 +326,14 @@ export default {
       });
       let putData = {
         ids : ids,
-        status: 1
+        status: 2
       };
       let that = this;
       axios.put(urls.schedule_update_status, putData).then(function(res){
         console.log(res.data.data);
         that.productScheduleTableData.forEach(x=>{
           if(ids.indexOf(x.id)>=0){
-            that.$set(x, 'status',1)
+            that.$set(x, 'status',2)
             that.$set(x, 'statusStr',statusTypes[x.status])
           }
           that.$message({
@@ -348,13 +349,13 @@ export default {
       });
       let putData = {
         ids : ids,
-        status: 2
+        status: 3
       };
       let that = this;
       axios.put(urls.schedule_update_status, putData).then(function(res){
         that.productScheduleTableData.forEach(x=>{
           if(ids.indexOf(x.id)>=0){
-            that.$set(x, 'status',2)
+            that.$set(x, 'status',3)
             that.$set(x, 'statusStr',statusTypes[x.status])
           }
           that.$message({

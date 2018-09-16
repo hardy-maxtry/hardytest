@@ -271,6 +271,7 @@ export default {
         productTaobaoNo : this.pageProductTaobaoNo,
         shopId : null,
       }]
+      postData.code = new Date().getTime().toString()
       console.log(postData)
       // return;
       axios.post(`${urls.promotion_add}`, postData)

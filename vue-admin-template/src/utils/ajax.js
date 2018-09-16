@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import store from '../store'
-import { getToken } from '@/utils/auth'
+import { getToken, getToken2 } from '@/utils/auth'
 
 // 创建axios实例
 const service = axios.create({
@@ -12,8 +12,10 @@ const service = axios.create({
 // request拦截器
 service.interceptors.request.use(
   config => {
+    // debugger
     if (store.getters.token) {
-      config.headers['X-Token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+      // config.headers['X-Token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+      config.headers['token'] = getToken2().token; // 让每个请求携带自定义token 请根据实际情况自行修改
     }
     return config
   },
@@ -33,11 +35,14 @@ service.interceptors.response.use(
     const res = response.data
     // return res;
     if (res.code != 200) {
-      Message({
-        message: res.msg,
-        type: 'error',
-        duration: 5 * 1000
-      })
+      
+      if(res.code == 400){
+        Message({
+          message: res.msg,
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
       Message({
         message: '网络请求出错，请联系管理员',
         type: 'error',
@@ -59,7 +64,7 @@ service.interceptors.response.use(
           })
         })
       }
-      return Promise.reject('error')
+      return Promise.reject(res);
     } else {
       return response.data
     }

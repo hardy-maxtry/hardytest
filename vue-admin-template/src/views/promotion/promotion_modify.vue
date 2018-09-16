@@ -291,6 +291,7 @@ export default {
       postData.endTime =  parseTime(postData.endTime,'{y}-{m}-{d}');
       postData.item[0].limitQuantity =  this.pageLimitQuantity;
       postData.item[0].productTaobaoNo =  this.pageProductTaobaoNo;
+      postData.status = 1;
       console.log(postData)
       // return;
       axios.post(`${urls.promotion_modify}`, postData)
@@ -298,7 +299,7 @@ export default {
           console.log(res);
           if(res.data){
             that.$message({
-              message: '保存促销成功!',
+              message: '保存促销成功，请重新审核!',
               type: 'success'
             })
           }else{

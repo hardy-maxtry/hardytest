@@ -20,5 +20,15 @@ export default {
     promotion_list: '/promotion/list',
     promotion_detail: '/promotion/detail/',
     promotion_modify: '/promotion/edit',
+    promotion_updatestatus: '/promotion/update-status',
 
+    logon_signin : '/logon/sign-in',
+    logon_signout : '/logon/sign-out',
+
+    user_add :'/user/add',
+    user_detail :'/user/detail/',
+    user_edit :'/user/edit',
+    user_list :'/user/list',
+    user_updatepassword :'/user/update-password',
+    user_updatestatus :'/user/update-status/',
 }

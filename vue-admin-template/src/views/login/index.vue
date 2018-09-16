@@ -38,6 +38,9 @@
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
+import axios from '@/utils/ajax';
+import urls from '@/config/urls';
+
 
 export default {
   name: 'Login',
@@ -50,20 +53,22 @@ export default {
       }
     }
     const validatePass = (rule, value, callback) => {
-      if (value.length < 5) {
-        callback(new Error('密码不能小于5位'))
+      if (value.length < 6) {
+        callback(new Error('密码不能小于6位'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'admin'
+        username: '',
+        password: ''
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePass }]
+        // username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        username: [{ required: true, trigger: 'blur',  message: '请填写用户名'}],
+        // password: [{ required: true, trigger: 'blur', validator: validatePass }]
+        password: [{ required: true, trigger: 'blur', message: '请填写密码'}]
       },
       loading: false,
       pwdType: 'password'
@@ -92,7 +97,49 @@ export default {
           return false
         }
       })
-    }
+    },
+    // handleLogin() {
+    //   let that = this;
+    //   this.$refs.loginForm.validate(valid => {
+    //     if (valid) {
+    //       this.loading = true;
+    //       let postData = {
+    //         userName : this.loginForm.username,
+    //         passward : this.loginForm.password
+    //       }
+    //       axios.post(urls.logon_signin, postData)
+    //         .then((data)=>{
+    //           console.log(data);
+    //           this.$store.commit('SET_TOKEN', data.data.token);
+    //           this.$message({
+    //             message : '登录成功',
+    //             type : 'success'
+    //           })
+    //           this.loading = false;
+    //           debugger
+    //           this.$router.push({ path: '/' })
+    //         }).catch((data) => {
+    //           console.log(data);
+
+    //           this.$message({
+    //             message : data.msg,
+    //             type : 'warning'
+    //           })
+    //           this.loading = false
+    //         })
+    //       // this.$store.dispatch('Login', this.loginForm).then(() => {
+    //       //   this.loading = false
+    //       //   this.$router.push({ path: '/' })
+    //       // }).catch(() => {
+    //       //   this.loading = false
+    //       // })
+    //     } else {
+    //       console.log('error submit!!')
+    //       return false
+    //     }
+    //   })
+    // }
+
   }
 }
 </script>

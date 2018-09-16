@@ -30,19 +30,28 @@
       <el-row>
       <!-- <el-form-item label="生效期" > -->
         <el-col :span="8">
-          <el-form-item label="开始日期" prop="beginTime">
-            <el-date-picker v-model="form.beginTime" type="date" placeholder="开始日期" style="width: 100%;"/>
+          <el-form-item label="开始日期" prop="startDate">
+            <el-date-picker v-model="form.startDate" type="date" placeholder="开始日期" style="width: 100%;"/>
           </el-form-item>
         </el-col>
         <!-- <el-col :span="2" class="line">-</el-col> -->
         <el-col :span="8">
-          <el-form-item label="结束日期" prop="saleDateEnd">
-            <el-date-picker v-model="form.endTime" type="date" placeholder="结束日期" style="width: 100%;"/>
+          <el-form-item label="结束日期" prop="endDate">
+            <el-date-picker v-model="form.endDate" type="date" placeholder="结束日期" style="width: 100%;"/>
           </el-form-item>
         </el-col>
       </el-row>
       <!-- </el-form-item> -->
-      
+      <el-form-item label="审核状态" prop="status">
+        <el-col :span="4">
+          <el-select v-model="form.status" placeholder="请选择审核状态">
+            <el-option label="不限" :value="0"></el-option>
+            <el-option label="待审核" :value="1"></el-option>
+            <el-option label="审核通过" :value="2"></el-option>
+            <el-option label="审核不通过" :value="3"></el-option>
+          </el-select>
+        </el-col>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
@@ -86,8 +95,8 @@
           label="审核状态"
           >
           <template slot-scope="scope">
-            <span v-if="scope.row.status==1" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
-            <span v-else-if="scope.row.status==2" style="color:#f78989;">{{ scope.row.statusStr }}</span>
+            <span v-if="scope.row.status==2" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
+            <span v-else-if="scope.row.status==3" style="color:#f78989;">{{ scope.row.statusStr }}</span>
             <span v-else>{{ scope.row.statusStr }}</span>
           </template>
         </el-table-column>
@@ -96,7 +105,9 @@
           label="操作"
           width="300">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="editPromotion(scope.row)" type="info" size="mini">编辑</el-button>
+            <el-button @click="activePromotion(scope.row)" type="success" size="mini">上线</el-button>
+            <el-button @click="deactivePromotion(scope.row)" type="danger" size="mini">下线</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -117,16 +128,22 @@ let promotionTypes = {
   2: "满额折扣",
   3: "满额立减"
 }
+let statusTypes = {
+  1 : '待审核',
+  2 : '审核通过',
+  3 : '审核不通过'
+}
 export default {
   data() {
     return {
       form: {
-        "beginTime": new Date(new Date().getTime()-7*24*3600*1000), //开始时间,Date
-        "endTime": new Date(new Date().getTime()+7*24*3600*1000),//结束时间,Date
+        "startDate": new Date(new Date().getTime()-7*24*3600*1000), //开始时间,Date
+        "endDate": new Date(new Date().getTime()+7*24*3600*1000),//结束时间,Date
         "name": "", // 促销名称
         "type": "1", // 1=定额，2=折扣，3=满减
         "pageIndex": 1,
         "pageSize": 100,
+        "status": 0,
       },
       fileList: [],
       promotionListTableData: [],
@@ -139,11 +156,11 @@ export default {
         // deviceTaobaoNo: [
         //     { required: true, message: '请选择机器ID', trigger: 'change' },
         // ],
-        beginTime: [
+        startDate: [
             { required: true, message: '请选择开始日期', trigger: 'change' },
             { validator: this.compareTime, trigger: 'change' }
         ],
-        endTime: [
+        endDate: [
             { required: true, message: '请选择结束日期', trigger: 'change' },
             { validator: this.compareTime, trigger: 'change' }
         ],
@@ -193,7 +210,7 @@ export default {
         this.$refs['adSearchForm'].validate((valid) => {
           if (valid) {
             this.$message('正在保存')
-            this.createPromotion();
+            this.queryPromotion();
             // this.getAd();
           } else {
             console.log('error submit!!');
@@ -202,7 +219,7 @@ export default {
         });
       // this.$message('submit!')
     },
-    createPromotion(){
+    queryPromotion(){
       let that = this;
       let postData = JSON.parse(JSON.stringify(this.form))
       postData.beginTime = parseTime(postData.beginTime,'{y}-{m}-{d}');
@@ -218,6 +235,7 @@ export default {
               x.typeStr = promotionTypes[x.type];
               x.beginTimeStr = parseTime(x.beginTime,'{y}-{m}-{d}');
               x.endTimeStr =  parseTime(x.endTime,'{y}-{m}-{d}');
+              x.statusStr = statusTypes[x.status]
             })
             that.$message({
               message: '查询成功!',
@@ -309,10 +327,40 @@ export default {
           }
       callback();
     },
-    handleClick(row){
+    editPromotion(row){
       console.log(row)
       this.$router.push({ path: `/promotion/modify?id=${row.id}` })
       return;
+    },
+    activePromotion(row){
+      let postData = {
+        ids : [row.id]
+        
+      };
+      postData.status = 2;
+      // console.log(postData)
+      // return;
+      let that = this;
+      axios.put(`${urls.promotion_updatestatus}`, postData)
+        .then(function(res){
+          that.$set(row, 'status', 2);
+          that.$set(row,'statusStr' ,statusTypes[row.status]);
+        })
+    },
+    deactivePromotion(row){
+      let postData = {
+        ids : [row.id]
+        
+      };
+      postData.status = 3;
+      // console.log(postData)
+      // return;
+      let that = this;
+      axios.put(`${urls.promotion_updatestatus}`, postData)
+        .then(function(res){
+          that.$set(row, 'status', 3);
+          that.$set(row,'statusStr' ,statusTypes[row.status]);
+        })
     }
   }
 }
