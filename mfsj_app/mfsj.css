@@ -1,0 +1,557 @@
+body,
+div,
+dl,
+dt,
+dd,
+ul,
+ol,
+li,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+pre,
+form,
+fieldset,
+input,
+textarea,
+p,
+blockquote,
+th,
+td {
+  padding: 0;
+  margin: 0;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+fieldset,
+img {
+  border: 0;
+}
+address,
+caption,
+cite,
+code,
+dfn,
+em,
+strong,
+th,
+var {
+  font-weight: normal;
+  font-style: normal;
+}
+ol,
+ul {
+  list-style: none;
+}
+caption,
+th {
+  text-align: left;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: normal;
+  font-size: 100%;
+}
+q:before,
+q:after {
+  content: ”;
+}
+abbr,
+acronym {
+  border: 0;
+}
+body {
+  background-color: #323032;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+#mfsj-container {
+  overflow: hidden;
+  padding-bottom: 6em;
+}
+#mfsj-container .gap {
+  height: 50px;
+}
+#mfsj-container .back-button {
+  display: block;
+  position: fixed;
+  top: 10%;
+  font-size: 2em;
+  background-color: gray;
+  padding: 0.2em 0.5em;
+  z-index: 999;
+}
+#mfsj-container .back-button > i {
+  padding: 0.2em;
+  display: inline-block;
+  border-radius: 99px;
+  background-color: white;
+  color: white;
+  background-color: gray;
+  border: solid 2px white;
+}
+#mfsj-container .back-button > span {
+  color: white;
+}
+#mfsj-container div.machine-header {
+  background-color: #343435;
+  color: white;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 0 1em;
+  z-index: 999;
+  line-height: 95px;
+  height: 95px;
+}
+#mfsj-container div.machine-header > em {
+  font-size: 30px;
+  font-style: italic;
+  vertical-align: center;
+}
+#mfsj-container div.machine-header > div {
+  float: right;
+  margin-right: 2em;
+}
+#mfsj-container div.machine-header > div > span {
+  display: inline-block;
+  background-color: #dc6e63;
+  color: white;
+  font-size: 10px;
+  line-height: 1em;
+  padding: 0.5em;
+  border-radius: 1em;
+}
+#mfsj-container div.machine-footer {
+  height: 100px;
+  position: fixed;
+  bottom: 20px;
+  width: 100%;
+  color: white;
+  background-color: #393739;
+  border-top: solid 1px black;
+}
+#mfsj-container div.machine-footer div.cart-content {
+  position: absolute;
+  left: 10px;
+  bottom: 120px;
+  width: 80px;
+  max-height: 320px;
+  background-color: white;
+  border-radius: 99px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  box-shadow: 5px 5px 20px #00000055;
+  z-index: 99;
+}
+#mfsj-container div.machine-footer div.cart-content div.cart-item {
+  position: relative;
+  margin: 10px;
+  overflow: hidden;
+  width: 60px;
+  height: 60px;
+  border-radius: 99px;
+}
+#mfsj-container div.machine-footer div.cart-content div.cart-item span.count {
+  position: relative;
+  margin-top: 1em;
+  display: block;
+  z-index: 99;
+  text-align: center;
+}
+#mfsj-container div.machine-footer div.cart-content div.cart-item span.count em {
+  display: inline-block;
+  background-color: white;
+  padding: 0.1em 0.2em;
+  border-radius: 1em;
+}
+#mfsj-container div.machine-footer div.cart-content div.cart-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 60px;
+  height: 60px;
+}
+#mfsj-container div.machine-footer div.cart-icon {
+  position: absolute;
+  left: 10px;
+  top: -20px;
+  width: 80px;
+  height: 80px;
+}
+#mfsj-container div.machine-footer div.cart-icon span.total-count {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  background-color: #dc6e63;
+  color: white;
+  display: inline-block;
+  height: 30px;
+  width: 30px;
+  border-radius: 20px;
+  line-height: 2em;
+  text-align: center;
+  font-size: 0.5em;
+  padding: 0 0.5em;
+}
+#mfsj-container div.machine-footer div.cart-icon i {
+  border: solid 1px black;
+  background-color: white;
+  border-radius: 99px;
+  line-height: 1.5em;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  font-size: 3em;
+}
+#mfsj-container div.machine-footer div.total-price {
+  float: left;
+  line-height: 100px;
+  padding-right: 0.5em;
+  margin-left: 120px;
+  margin-top: 20px;
+}
+#mfsj-container div.machine-footer div.total-price div.price {
+  line-height: 3em;
+  font-size: 1.2em;
+}
+#mfsj-container div.machine-footer div.total-price div.price em {
+  font-size: 1.6em;
+}
+#mfsj-container div.machine-footer a.go-to-pay {
+  display: block;
+  height: 80px;
+  float: right;
+  width: 30%;
+  background-color: #f3b964;
+  color: black;
+  text-align: center;
+  text-decoration: none;
+  line-height: 80px;
+  margin-top: 10px;
+  font-size: 25px;
+}
+#mfsj-container div.machine-list {
+  padding-top: 105px;
+}
+#mfsj-container div.items-layout-scoll div.items {
+  white-space: nowrap;
+  overflow-y: hidden;
+  overflow-x: scroll;
+}
+#mfsj-container div.items-layout-scoll div.items div.item {
+  display: inline-block;
+}
+#mfsj-container div.items-layout-scoll div.items div.item img {
+  display: inline-block;
+}
+#mfsj-container div.items-layout-3 div.items {
+  overflow: hidden;
+}
+#mfsj-container div.items-layout-3 div.items div.item {
+  float: left;
+  overflow: hidden;
+}
+#mfsj-container div.items-layout-3 div.items div.item-1 {
+  width: 50%;
+  height: 100%;
+}
+#mfsj-container div.items-layout-3 div.items div.item-2 {
+  width: 50%;
+  height: 50%;
+}
+#mfsj-container div.items-layout-3 div.items div.item-3 {
+  width: 50%;
+  height: 50%;
+}
+#mfsj-container div.items-layout-6 div.items {
+  overflow: hidden;
+}
+#mfsj-container div.items-layout-6 div.items div.item {
+  float: left;
+  overflow: hidden;
+  width: 33.33333333%;
+  height: 33.33333333%;
+}
+#mfsj-container div.header-image {
+  width: 100%;
+  height: 0;
+  padding-bottom: 20%;
+  overflow: hidden;
+}
+#mfsj-container div.header-image > img {
+  width: 100%;
+}
+#mfsj-container .buy-pane-common {
+  border-radius: 99px;
+}
+#mfsj-container .buy-pane-common > a {
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 99px;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  text-align: center;
+  background-color: white;
+}
+#mfsj-container .buy-pane-common > a.add {
+  background-color: #f6c870;
+}
+#mfsj-container .buy-pane-common > a.remove {
+  border: solid 1px gray;
+}
+#mfsj-container .buy-pane-common > span {
+  line-height: 2em;
+  display: inline-block;
+  width: 2em;
+  text-align: center;
+}
+#mfsj-container div.items-layout-detail > div.items {
+  overflow: hidden;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item {
+  border-radius: 10px;
+  background-color: #fff;
+  float: left;
+  padding: 1% 2%;
+  width: 46%;
+  margin-left: 2%;
+  margin-right: 2%;
+  margin-top: 65px;
+  margin-bottom: 5%;
+  box-sizing: border-box;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.item-img {
+  border-radius: 10px;
+  position: relative;
+  bottom: 65px;
+  width: 100%;
+  height: 0;
+  padding-bottom: 100%;
+  overflow: hidden;
+  margin-bottom: -85px;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.item-img > img {
+  width: 100%;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos {
+  position: relative;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.promotions {
+  height: 2em;
+  overflow: hidden;
+  padding: 0 1em;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.promotions > span {
+  display: inline-block;
+  padding: 0.1em 0.2em;
+  background-color: #d78280;
+  color: white;
+  border-radius: 5px;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.title {
+  height: 1.6em;
+  font-size: 1.1em;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.price {
+  height: 1.6em;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.price > em {
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #da6058;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.price > span {
+  font-size: 0.5em;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.stock {
+  margin-top: 5px;
+  height: 3em;
+  color: #4d4e4f;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.buy-pane {
+  border-radius: 99px;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.buy-pane > a {
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 99px;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  text-align: center;
+  background-color: white;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.buy-pane > a.add {
+  background-color: #f6c870;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.buy-pane > a.remove {
+  border: solid 1px gray;
+}
+#mfsj-container div.items-layout-detail > div.items > div.item > div.infos > div.buy-pane > span {
+  line-height: 2em;
+  display: inline-block;
+  width: 2em;
+  text-align: center;
+}
+#mfsj-container .qr-dialog span.qr-title {
+  font-size: 1.2em;
+}
+#mfsj-container .qr-dialog div.qr-content {
+  text-align: center;
+}
+#mfsj-container .qr-dialog div.qr-content img {
+  width: 90%;
+}
+#mfsj-container .item-details {
+  background-color: #ddd;
+  margin-bottom: 5em;
+}
+#mfsj-container .item-details > div.infos {
+  background-color: white;
+  padding: 1em;
+}
+#mfsj-container .item-details > div.infos > div.title {
+  font-size: 1.6em;
+}
+#mfsj-container .item-details > div.infos > div.description {
+  color: #3a3a3c;
+}
+#mfsj-container .item-details > div.infos > div.promotions {
+  overflow: hidden;
+}
+#mfsj-container .item-details > div.infos > div.promotions span {
+  margin: 0.2em 0.2em;
+  font-size: 0.6em;
+  display: block;
+  float: left;
+  padding: 0.1em 0.2em;
+  border: solid 1px ;
+}
+#mfsj-container .item-details > div.infos > div.rate > i {
+  font-size: 1.2em;
+  margin: 0.2em 0;
+}
+#mfsj-container .item-details > div.infos > div.rate > span.stock {
+  color: gray;
+}
+#mfsj-container .item-details > div.infos > div.price-panel {
+  position: relative;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > span.price {
+  font-size: 1.6em;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > span.price > em {
+  color: #dc695d;
+  font-size: 1.5em;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > span.price > .price-original {
+  color: gray;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane {
+  font-size: 1.5em;
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  border-radius: 99px;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a {
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 99px;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  text-align: center;
+  background-color: white;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a.add {
+  background-color: #f6c870;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a.remove {
+  border: solid 1px gray;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > span {
+  line-height: 2em;
+  display: inline-block;
+  width: 2em;
+  text-align: center;
+}
+#mfsj-container .item-details > div.promotions-details {
+  position: relative;
+  margin-top: 1em;
+  padding: 0.5em;
+  background-color: white;
+}
+#mfsj-container .item-details > div.promotions-details > div.promotion-detail {
+  margin: 0.3em 0.5em;
+  white-space: nowrap;
+}
+#mfsj-container .item-details > div.promotions-details > div.promotion-detail > span.type {
+  padding: 0.1em 0.2em;
+  border: solid 1px black;
+}
+#mfsj-container .item-details > div.promotions-details > div.promotion-detail > span.desc {
+  overflow: hidden;
+}
+#mfsj-container .item-details > div.promotions-details > a.see-more {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 100px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+#mfsj-container .item-details > div.promotions-details > a.see-more > i {
+  font-size: 3em;
+}
+#mfsj-container .item-details .promotion-detail-dialog .detail {
+  margin-top: 1em;
+  padding-bottom: 1em;
+  border-bottom: solid 1px black;
+}
+#mfsj-container .item-details .promotion-detail-dialog .detail > em {
+  display: block;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  text-align: center;
+  color: white;
+  float: left;
+  font-size: 2em;
+  background-color: gray;
+  border-radius: 99px;
+}
+#mfsj-container .item-details .promotion-detail-dialog .detail > div {
+  margin-left: 5em;
+}
+#mfsj-container .item-details .promotion-detail-dialog .detail > div.title > h6 {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+#mfsj-container .item-details .promotion-detail-dialog .detail > div.duration {
+  margin-top: 1em;
+}
+#mfsj-container .item-details .promotion-detail-dialog .detail > div.duration > span {
+  font-size: 0.8em;
+}
+/*# sourceMappingURL=mfsj.css.map */
