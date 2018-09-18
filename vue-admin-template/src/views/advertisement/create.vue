@@ -174,17 +174,22 @@ export default {
       postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
       return axios.post(`${urls.ad_add}`, postData)
         .then(function(res){
+          if(res.data !== false){
+            that.$message({
+              message : '新建广告成功',
+              type : 'success',
+            });
+          }else{
+            that.$message({
+              message : '新建广告失败',
+              type : 'warning',
+            });
+          }
             // console.log(res.data.data);
         })
         // .catch(function(error){
         //   console.log(error)
         // })
-    },
-    onCancel() {
-      this.$message({
-        message: 'cancel!',
-        type: 'warning'
-      })
     },
     handleRemove(file, fileList) {
         console.log(file, fileList);

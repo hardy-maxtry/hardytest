@@ -230,37 +230,54 @@ export default {
       callback();
     },
     activeAd(row){
-      let postData = {
-        ...JSON.parse(JSON.stringify(row)),
-        
+      let putData = {
+        ids : [row.id],
+        status : 1,
       };
-      postData.status = 1;
-      postData.startTime = parseTime(postData.startTime,'{y}-{m}-{d}');
-      postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
       // console.log(postData)
       // return;
       let that = this;
-      axios.post(`${urls.ad_edit}`, postData)
+      axios.put(`${urls.ad_updatestatus}`, putData)
         .then(function(res){
-          that.$set(row, 'status', 1);
-          that.$set(row,'statusStr' ,adStatus[row.status]);
+          if(res.data){
+            that.$set(row, 'status', 1);
+            that.$set(row,'statusStr' ,adStatus[row.status]);
+            that.$message({
+              message : '上线广告成功',
+              type : 'success',
+            });
+          }else{
+            that.$message({
+              message : '上线广告失败',
+              type : 'warning',
+            });
+          }
         })
     },
     deactiveAd(row){
-      let postData = {
-        ...JSON.parse(JSON.stringify(row)),
-        
+      let putData = {
+        ids : [row.id],
+        status : 2,
       };
-      postData.status = 2;
-      postData.startTime = parseTime(postData.startTime,'{y}-{m}-{d}');
-      postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
       // console.log(postData)
       // return;
       let that = this;
-      axios.post(`${urls.ad_edit}`, postData)
+      axios.put(`${urls.ad_updatestatus}`, putData)
         .then(function(res){
-          that.$set(row, 'status', 2);
-          that.$set(row,'statusStr' ,adStatus[row.status]);
+          if(res.data){
+            that.$set(row, 'status', 2);
+            that.$set(row,'statusStr' ,adStatus[row.status]);
+            that.$message({
+              message : '下线广告成功',
+              type : 'warning',
+            });
+          }else{
+            that.$message({
+              message : '下线广告失败',
+              type : 'warning',
+            });
+          }
+
         })
     }
 

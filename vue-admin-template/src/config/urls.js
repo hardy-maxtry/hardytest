@@ -6,7 +6,8 @@ export default {
     ad_add : '/advert/add',
     ad_detail : '/advert/detail/',
     ad_edit : '/advert/edit',
-    
+    ad_updatestatus : '/advert/update-status',
+
     device_list : '/device/list-down',
 
     product_list :'/product/list' ,

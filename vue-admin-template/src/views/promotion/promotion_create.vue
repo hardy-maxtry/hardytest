@@ -277,14 +277,14 @@ export default {
       axios.post(`${urls.promotion_add}`, postData)
         .then(function(res){
           console.log(res);
-          if(res.data){
+          if(res.data !== false){
             that.$message({
-              message: '保存促销成功，请到促销列表页面查看!',
+              message: '创建促销成功，请到促销列表页面查看!',
               type: 'success'
             })
           }else{
             that.$message({
-              message: '保存促销失败，请联系管理员!',
+              message: '创建促销失败，请联系管理员!',
               type: 'warning'
             })
           }

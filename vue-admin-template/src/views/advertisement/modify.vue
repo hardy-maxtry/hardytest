@@ -12,8 +12,8 @@
         <el-col :span="8">
           <el-form-item label="广告类型" prop="type">
             <el-select v-model="form.type" placeholder="请选择广告类型">
-              <el-option label="图片" value="0"/>
-              <el-option label="链接" value="1"/>
+              <el-option label="图片" :value="0"/>
+              <el-option label="链接" :value="1"/>
             </el-select>
           </el-form-item>
         </el-col>
@@ -176,11 +176,18 @@ export default {
         this.$refs['adCreateForm'].validate((valid) => {
           if (valid) {
             this.$message('正在保存')
-            this.modifyAd().then(function(){
-              that.$message({
-                message : '修改广告成功',
-                type : 'success',
-              })
+            this.modifyAd().then(function(res){
+              if(res.data !== false){
+                that.$message({
+                  message : '更新广告成功，请重新审核上线',
+                  type : 'success',
+                });
+              }else{
+                that.$message({
+                  message : '更新广告失败',
+                  type : 'warning',
+                });
+              }
             }).catch(function(){
               that.$message({
                 message : '修改广告失败',
@@ -205,12 +212,6 @@ export default {
       // console.log(postData)
       // return;
       return axios.post(`${urls.ad_edit}`, postData)
-        .then(function(res){
-          console.log(res.data.data);
-        })
-        // .catch(function(error){
-        //   console.log(error)
-        // })
     },
     onCancel() {
       this.$message({

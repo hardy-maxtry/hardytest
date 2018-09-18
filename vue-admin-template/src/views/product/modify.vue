@@ -197,10 +197,17 @@ export default {
       axios.post(`${urls.product_edit}`, postData)
         .then(function(res){
           console.log(res.data.data);
-          that.$message({
-            message : '保存成功',
-            type : 'success'
-          })
+          if(res.data !== false){
+            that.$message({
+              message : '更新商品成功',
+              type : 'success',
+            });
+          }else{
+            that.$message({
+              message : '更新商品失败',
+              type : 'warning',
+            });
+          }
         })
         .catch(function(error){
           console.log(error)

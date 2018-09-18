@@ -152,11 +152,17 @@ export default {
       // return;
       axios.post(`${urls.schedule_add}`, postData)
         .then(function(res){
-          
-          that.$message({
-              message: '保存成功，请到商品排期页面查看!',
-              type: 'success'
-            })
+          if(res.data !== false){
+            that.$message({
+              message : '创建排期成功，请到商品排期页面查看',
+              type : 'success',
+            });
+          }else{
+            that.$message({
+              message : '创建排期失败',
+              type : 'warning',
+            });
+          }
         })
         .catch(function(error){
           console.log(error)

@@ -297,7 +297,7 @@ export default {
       axios.post(`${urls.promotion_modify}`, postData)
         .then(function(res){
           console.log(res);
-          if(res.data){
+          if(res.data !== false){
             that.$message({
               message: '保存促销成功，请重新审核!',
               type: 'success'
