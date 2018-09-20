@@ -66,7 +66,7 @@
       <el-row>
         <el-button type="success" size="small" @click="approveSuccess">批量审核通过</el-button>
         <el-button type="danger" size="small" @click="approveFailed">批量审核不通过</el-button>
-        <span>以下是商品: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}} : {{selectedProductName}} </span>的排期情况</span>
+        <!-- <span>以下是商品: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}} : {{selectedProductName}} </span>的排期情况</span> -->
       </el-row>
     </div>
       <!-- <el-row>位于门店: <span style="font-weight: bold;text-decoration: underline;">{{selectedProductID}}:{{selectedProductName}} </span>的排期情况</el-row> -->
