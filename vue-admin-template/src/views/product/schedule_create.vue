@@ -4,7 +4,7 @@
       <el-row>
         <el-col :span="8">
           <el-form-item label="售货机" prop="deviceTaobaoNo">
-            <el-select v-model="form.deviceTaobaoNo" placeholder="请选择售货机">
+            <el-select v-model="form.deviceTaobaoNo" multiple placeholder="请选择售货机">
               <el-option v-for="(item, index) in machines" :label="item.deviceShowName" :value="item.deviceTaobaoNo" :key="index"/>
             </el-select>
           </el-form-item>
@@ -15,6 +15,7 @@
               <el-select
                 v-model="form.productTaobaoNo"
                 filterable
+                multiple
                 placeholder="输入商品名称"
                 :loading="loading">
                 <el-option
@@ -66,17 +67,13 @@ export default {
   data() {
     return {
       form: {
-        deviceTaobaoNo: '',
-        productTaobaoNo: '',
+        deviceTaobaoNo: [],
+        productTaobaoNo: [],
         saleDateStart: '',
         saleDateEnd: '',
       },
       fileList: [],
-      machines : [{
-        name : '售货机一号',id:1
-      },{
-        name : '售货机老大',id:2
-      }],
+      machines : [],
       rules:{
         // deviceTaobaoNo: [
         //     { required: true, message: '请选择机器ID', trigger: 'change' },
@@ -90,7 +87,7 @@ export default {
             { validator: this.compareTime, trigger: 'change' }
         ],
         deviceTaobaoNo: [
-            { required: true, message: '请选择广告类型', trigger: 'change' },
+            { required: true, message: '请选择售货机', trigger: 'change' },
         ],
         productTaobaoNo: [
             { required: true, message: '请选择商品', trigger: 'change' },

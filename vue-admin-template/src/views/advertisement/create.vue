@@ -87,6 +87,7 @@ export default {
   data() {
     return {
       form: {
+        advertDeviceList : [],
         advertDevice: '',
         title: '',
         startTime: '',
@@ -104,7 +105,7 @@ export default {
       }],
       rules:{
         advertDeviceList: [
-            { required: true, message: '请选择机器ID', trigger: 'change' },
+            { required: true, message: '请选择售货机', trigger: 'change' },
         ],
         startTime: [
             { required: true, message: '请选择开始日期', trigger: 'change' },

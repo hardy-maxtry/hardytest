@@ -4,7 +4,7 @@
       <el-row>
         <el-col :span="8">
           <el-form-item label="售货机" prop="deviceTaobaoNo">
-            <el-select v-model="form.deviceTaobaoNo" placeholder="请选择售货机">
+            <el-select v-model="form.deviceTaobaoNo" multiple placeholder="请选择售货机">
               <el-option v-for="(item, index) in machines" :label="item.deviceShowName" :value="item.deviceTaobaoNo" :key="index"/>
             </el-select>
           </el-form-item>
@@ -15,7 +15,7 @@
               <el-select
                 v-model="form.productTaobaoNo"
                 filterable
-                
+                multiple
                 placeholder="输入商品名称"
                 :loading="loading"
                 >
@@ -91,12 +91,24 @@
         <el-table-column
           prop="shopId"
           label="店铺ID"
-          >
+         width="100" 
+         sortable>
         </el-table-column>
         <el-table-column
           prop="shopName"
           label="店铺名称"
           >
+        </el-table-column>
+        <el-table-column
+          prop="productTaobaoNo"
+          label="商品ID"
+          sortable
+        >
+        </el-table-column>
+        <el-table-column
+          prop="productName"
+          label="商品名称"
+        >
         </el-table-column>
         <el-table-column
           prop="stock"
@@ -106,21 +118,24 @@
         <el-table-column
           prop="deviceTaobaoNo"
           label="设备号"
+          sortable
           >
         </el-table-column>
         <el-table-column
-          prop="deviceName"
-          label="设备名称"
+          prop="deviceShowName"
+          label="设备展示名称"
           >
         </el-table-column>
         <el-table-column
           prop="saleDateStr"
           label="销售日期"
+          sortable
           >
         </el-table-column>
         <el-table-column
           prop="statusStr"
           label="审核状态"
+          sortable
           >
           <template slot-scope="scope">
             <span v-if="scope.row.status==2" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
@@ -155,10 +170,10 @@ export default {
   data() {
     return {
       form: {
-        "deviceTaobaoNo": "",
+        "deviceTaobaoNo": [],
         "pageIndex": 0,
         "pageSize": 100,
-        "productTaobaoNo": "",
+        "productTaobaoNo": [],
         schedulingSaleEndDate: new Date(new Date().getTime()+7*24*3600*1000),
         schedulingSaleStartDate: new Date(new Date().getTime()-7*24*3600*1000),
         "schedulingStatus": '0'
