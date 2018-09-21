@@ -106,8 +106,8 @@
           width="300">
           <template slot-scope="scope">
             <el-button @click="editPromotion(scope.row)" type="info" size="mini">编辑</el-button>
-            <el-button @click="activePromotion(scope.row)" type="success" size="mini">上线</el-button>
-            <el-button @click="deactivePromotion(scope.row)" type="danger" size="mini">下线</el-button>
+            <el-button @click="activePromotion(scope.row)" type="success" size="mini">审批通过</el-button>
+            <el-button @click="deactivePromotion(scope.row)" type="danger" size="mini">审批不通过</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -209,7 +209,7 @@ export default {
     onSubmit() {
         this.$refs['adSearchForm'].validate((valid) => {
           if (valid) {
-            this.$message('正在保存')
+            this.$message('正在查询')
             this.queryPromotion();
             // this.getAd();
           } else {

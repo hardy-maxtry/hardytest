@@ -61,6 +61,7 @@
             :before-remove="beforeRemove"
             :before-upload="beforeProductImageUpload"
             list-type="picture"
+            :headers="headers"
             multiple
             :limit="3"
             :on-exceed="handleExceed"
@@ -141,6 +142,11 @@ export default {
           //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
           // ],
       },
+    }
+  },
+  computed:{
+    headers(){
+      return {token : this.$store.state.user.token};
     }
   },
   mounted(){

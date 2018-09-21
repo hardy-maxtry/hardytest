@@ -340,6 +340,13 @@ export default {
       let ids = this.scheduleMultipleSelection.map(x=>{
         return x.id;
       });
+      if(ids.length == 0){
+        this.$message({
+          message: "请选择需要审批的行",
+          type : "warning"
+        });
+        return;
+      }
       let putData = {
         ids : ids,
         status: 2
@@ -363,6 +370,13 @@ export default {
       let ids = this.scheduleMultipleSelection.map(x=>{
         return x.id;
       });
+      if(ids.length == 0){
+        this.$message({
+          message: "请选择需要审批的行",
+          type : "warning"
+        });
+        return;
+      }
       let putData = {
         ids : ids,
         status: 3

@@ -45,6 +45,7 @@
             :before-remove="beforeRemove"
             list-type="picture"
             multiple
+            :headers="headers"
             :limit="1"
             :on-exceed="handleExceed"
             :file-list="fileList">
@@ -182,6 +183,11 @@ export default {
         console.log(error);
         that.loading = false;
       })
+  },
+  computed:{
+    headers(){
+      return {token : this.$store.state.user.token};
+    }
   },
   methods: {
     onSubmit() {

@@ -44,6 +44,7 @@
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
             list-type="picture"
+            :headers="headers"
             multiple
             :limit="1"
             :on-exceed="handleExceed"
@@ -159,6 +160,11 @@ export default {
       },
       options4 : [],
       loading : false,
+    }
+  },
+  computed:{
+    headers(){
+      return {token : this.$store.state.user.token};
     }
   },
   mounted(){
