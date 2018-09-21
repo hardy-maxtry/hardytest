@@ -2,6 +2,13 @@
   <div class="app-container">
     <el-form ref="adCreateForm" :rules="rules" :model="form" label-width="120px">
       <el-row>
+        <el-col :span="16">
+          <el-form-item label="标题">
+            <el-input v-model="form.title"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
         <el-col :span="8">
           <el-form-item label="售货机" prop="advertDeviceList">
             <el-select v-model="form.advertDeviceList" multiple placeholder="请选择售货机">
@@ -9,14 +16,7 @@
             </el-select>
           </el-form-item>
         </el-col>
-        <el-col :span="8">
-          <el-form-item label="广告类型" prop="type">
-            <el-select v-model="form.type" placeholder="请选择广告类型">
-              <el-option label="图片" :value="0"/>
-              <el-option label="链接" :value="1"/>
-            </el-select>
-          </el-form-item>
-        </el-col>
+        
       </el-row>
       <el-row>
       <!-- <el-form-item label="生效期" > -->
@@ -53,21 +53,48 @@
           </el-upload>
           </el-form-item>
         </el-col>
-        <el-col :span="11">
+        <!-- <el-col :span="11">
           <el-form-item label="图片" prop="image">
             <el-input :disabled="true" v-model="form.image"></el-input>
           </el-form-item>
+        </el-col> -->
+      </el-row>
+      
+      <!-- <el-form-item label="链接">
+        <el-input  v-model="form.url"></el-input>
+      </el-form-item> -->
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="广告类型" prop="type">
+            <el-select v-model="form.type" placeholder="请选择广告类型">
+              <el-option label="图片" :value="0"/>
+              <el-option label="链接" :value="1"/>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="8" v-show="form.type == 1">
+          <el-form-item label="链接到商品" prop="url">
+            <!-- <el-input v-model="form.productTaobaoNo" placeholder="输入商品名称查询"></el-input> -->
+              <el-select
+                v-model="form.url"
+                filterable
+                clearable
+                placeholder="输入商品名称"
+                :loading="loading">
+                <el-option
+                  v-for="item in options4"
+                  :key="item.productTaobaoNo"
+                  :label="item.name"
+                  :value="item.productTaobaoNo">
+                    <span style="float: left">{{ item.productTaobaoNo }}</span>
+                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
+                </el-option>
+              </el-select>
+          </el-form-item>
         </el-col>
       </el-row>
-
-      <el-form-item label="标题">
-        <el-input v-model="form.title"></el-input>
-      </el-form-item>
-      <el-form-item label="链接">
-        <el-input  v-model="form.url"></el-input>
-      </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">修改</el-button>
+        <el-button type="primary" @click="onSubmit">保存</el-button>
       </el-form-item>
     </el-form>
 
@@ -122,11 +149,16 @@ export default {
         image: [
             { required: true, message: '请上传一张图片', trigger: 'change' },
         ],
+        url : [
+            { validator: this.checkUrlItem, trigger: 'change' }
+        ]
           // name: [
           //   { required: true, message: '请输入活动名称', trigger: 'change' },
           //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
           // ],
       },
+      options4 : [],
+      loading : false,
     }
   },
   mounted(){
@@ -142,6 +174,22 @@ export default {
         // console.log(data);
         that.machines = data.data;
       });
+    let postData = 
+        {
+          "name": '',
+          "pageIndex": 0,
+          "pageSize": 100,
+          "productTaobaoNo": ""
+        };
+    axios.post(`${urls.product_list}`, postData)
+      .then(function(res){
+        // console.log(res.data.data);
+        that.options4 = res.data.data;
+        that.loading = false;
+      }).catch(function(error){
+        console.log(error);
+        that.loading = false;
+      })
     axios.get(`${urls.ad_detail}${ad_sys_id}`)
       .then(function(data){
         console.log(data);
@@ -149,7 +197,8 @@ export default {
         that.form.startTime = new Date(that.form.startTime);
         that.form.endTime = new Date(that.form.endTime);
         that.form.advertDeviceList = that.form.advertDevice.map(x=>{
-          return parseInt(x.deviceTaobaoNo);
+          // return parseInt(x.deviceTaobaoNo);
+          return x.deviceTaobaoNo;
         });
         if(data.data.image == '' || data.data.image == null){
           that.fileList = [];
@@ -241,6 +290,12 @@ export default {
         if(this.form.startTime != null && this.form.startTime != '' && this.form.endTime != null && this.form.endTime != ''
             && this.form.startTime.getTime() > this.form.endTime.getTime()){
               callback(new Error('开始日期不能晚于结束日期'));
+            }
+        callback();
+      },
+      checkUrlItem(rule, value, callback){
+        if( (this.form.url == null || this.form.url == '') && this.form.type == 1){
+              callback(new Error('请选择商品'));
             }
         callback();
       }
