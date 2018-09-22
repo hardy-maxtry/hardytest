@@ -1,344 +1,449 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<!--<meta name="viewport" content="width=device-width, initial-scale=1" />-->
-	<meta charset="UTF-8">
-	<meta name="viewport"
-		  content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="apple-mobile-web-app-capable" content="yes"/>
-	<meta name="format-detection" content="telephone=no"/>
-	<link href="https://cdn.bootcss.com/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
-	<link href="mfsj.css" rel="stylesheet">
-	<title>膜法世家</title>
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1" />-->
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link href="https://cdn.bootcss.com/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
+    <link href="mfsj.css" rel="stylesheet">
+    <title>膜法世家</title>
 </head>
 <body>
-<div id="mfsj-container">
-	<div class="machine-header" v-show="!detailItem">
-		<em>{{machineTitle}}</em>
-		<div>
-			<span>{{machineNumber}}</span>
-		</div>
-	</div>
+<div id="mfsj-container" @click="everyClick()">
+    <div class="ads" v-if="view == 'ads'" @click="clickAd(showAd)">
+        <img v-if="showAd" :src="showAd.image">
+    </div>
 
-	<div v-if="detailItem" v-show="detailItem" class="item-details">
-		<el-carousel interval="10000">
-			<el-carousel-item v-for="img in detailItem.images" :key="item">
-				<img :src="img" alt="" width="100%" height="100%">
-			</el-carousel-item>
-		</el-carousel>
-		<div class="infos">
-			<div class="title">{{detailItem.title}}</div>
-			<div class="description">{{detailItem.description}}</div>
-			<!--<div class="promotions">-->
-				<!--<span v-for="p in detailItem.promotions">{{p.title}}</span>-->
-			<!--</div>-->
-			<div class="rate">
-				<i class="el-icon-star-on" v-for="i in detailItem.rate"></i>
-				<i class="el-icon-star-off" v-for="i in (5-detailItem.rate)"></i>
-				<span class="stock">库存{{detailItem.stock}}份</span>
-			</div>
-			<div class="price-panel">
+    <div class="machine-header" v-if="view == 'list'">
+        <em>{{machineTitle}}</em>
+        <div>
+            <span>{{machineNumber}}</span>
+        </div>
+        <img src="top-background.png">
+    </div>
+
+    <div v-if="view == 'detail'" class="item-details">
+        <el-carousel :interval="10000">
+            <el-carousel-item v-for="img in detailItem.images" :key="img">
+                <img :src="img" alt="" width="100%" height="100%">
+            </el-carousel-item>
+        </el-carousel>
+        <div class="infos">
+            <div class="title">{{detailItem.title}}</div>
+            <div class="description">{{detailItem.description}}</div>
+            <!--<div class="promotions">-->
+            <!--<span v-for="p in detailItem.promotions">{{p.title}}</span>-->
+            <!--</div>-->
+            <div class="rate">
+                <i class="el-icon-star-on" v-for="i in detailItem.rate"></i>
+                <i class="el-icon-star-off" v-for="i in (5-detailItem.rate)"></i>
+                <span class="stock">库存{{detailItem.stock}}份</span>
+            </div>
+            <div class="price-panel">
 				<span class="price">
-					<em>{{detailItem.price}}</em>元
+					<em>{{detailItem.salePrice}}</em>元
 
 					<del class="price-original">
 						{{detailItem.price}}元
 					</del>
 				</span>
 
-				<div class="buy-pane">
-					<a v-show="detailItem.buyCount > 0" class="remove" @click="removeItem(detailItem)"
-					   href="javascript:">
-						<i class="el-icon-minus"></i>
-					</a>
-					<span v-show="detailItem.buyCount > 0" class="buy-count">{{detailItem.buyCount}}</span>
-					<a class="add" @click="addItem(detailItem)" href="javascript:">
-						<i class="el-icon-plus"></i>
-					</a>
-				</div>
-			</div>
-		</div>
+                <div class="buy-pane">
+                    <a v-show="detailItem.buyCount > 0" class="remove" @click="removeItem(detailItem)"
+                       href="javascript:">
+                        <i class="el-icon-minus"></i>
+                    </a>
+                    <span v-show="detailItem.buyCount > 0" class="buy-count">{{detailItem.buyCount}}</span>
+                    <a class="add" @click="addItem(detailItem)" href="javascript:">
+                        <i class="el-icon-plus"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
 
-		<!--<div class="promotions-details">-->
-			<!--<div class="promotion-detail" v-for="p in detailItem.promotions">-->
-				<!--<span class="type">{{p.type}}</span>-->
-				<!--<span class="desc">{{longCut(p.description,20)}}</span>-->
-			<!--</div>-->
-			<!--<a class="see-more" @click="promotionDetailVisible = true">-->
-				<!--<i class="el-icon-arrow-right"></i>-->
-			<!--</a>-->
-		<!--</div>-->
-		<!--<el-dialog class="promotion-detail-dialog"-->
-				   <!--width="80%"-->
-				   <!--:visible.sync="promotionDetailVisible">-->
-			<!--<div class="promotion-detail-content">-->
-				<!--<div class="detail" v-for="p in detailItem.promotions">-->
-					<!--<em class="initial">{{p.type.substring(0,1)}}</em>-->
-					<!--<div class="title"><h6>{{p.title}}</h6></div>-->
-					<!--<div class="desc">{{p.description}}</div>-->
-					<!--<div class="duration"><span>活动时间: 2017-11-30 12:00 至 2018-01-09 15:30</span></div>-->
-				<!--</div>-->
-			<!--</div>-->
-			<!--<span slot="title" class="promotion-detail-title">活动促销</span>-->
-		<!--</el-dialog>-->
-	</div>
+        <!--<div class="promotions-details">-->
+        <!--<div class="promotion-detail" v-for="p in detailItem.promotions">-->
+        <!--<span class="type">{{p.type}}</span>-->
+        <!--<span class="desc">{{longCut(p.description,20)}}</span>-->
+        <!--</div>-->
+        <!--<a class="see-more" @click="promotionDetailVisible = true">-->
+        <!--<i class="el-icon-arrow-right"></i>-->
+        <!--</a>-->
+        <!--</div>-->
+        <!--<el-dialog class="promotion-detail-dialog"-->
+        <!--width="80%"-->
+        <!--:visible.sync="promotionDetailVisible">-->
+        <!--<div class="promotion-detail-content">-->
+        <!--<div class="detail" v-for="p in detailItem.promotions">-->
+        <!--<em class="initial">{{p.type.substring(0,1)}}</em>-->
+        <!--<div class="title"><h6>{{p.title}}</h6></div>-->
+        <!--<div class="desc">{{p.description}}</div>-->
+        <!--<div class="duration"><span>活动时间: 2017-11-30 12:00 至 2018-01-09 15:30</span></div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<span slot="title" class="promotion-detail-title">活动促销</span>-->
+        <!--</el-dialog>-->
+    </div>
 
-	<div v-show="!detailItem" class="machine-list">
-		<!--<el-carousel :interval="10000">-->
-			<!--<el-carousel-item v-for="item in 4" :key="item">-->
-				<!--<img src="download.jpg" alt="" width="100%" height="100%">-->
-			<!--</el-carousel-item>-->
-		<!--</el-carousel>-->
+    <div v-if="view == 'list'" class="machine-list">
+        <!--<el-carousel :interval="10000">-->
+        <!--<el-carousel-item v-for="item in 4" :key="item">-->
+        <!--<img src="download.jpg" alt="" width="100%" height="100%">-->
+        <!--</el-carousel-item>-->
+        <!--</el-carousel>-->
 
-		<!--<div class="gap"></div>-->
+        <!--<div class="gap"></div>-->
 
-		<!--<div class="items-layout-scoll">-->
-		<!--<div class="header-image">-->
-		<!--<img src="download.jpg" alt="" height="50px" width="540px">-->
-		<!--</div>-->
-		<!--<div class="items">-->
-		<!--<div class="item" v-for="item in 4">-->
-		<!--<img src="download.jpg" alt="" height="200px" width="160px">-->
-		<!--</div>-->
-		<!--</div>-->
-		<!--</div>-->
+        <!--<div class="items-layout-scoll">-->
+        <!--<div class="header-image">-->
+        <!--<img src="download.jpg" alt="" height="50px" width="540px">-->
+        <!--</div>-->
+        <!--<div class="items">-->
+        <!--<div class="item" v-for="item in 4">-->
+        <!--<img src="download.jpg" alt="" height="200px" width="160px">-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
 
-		<!--<div class="gap"></div>-->
+        <!--<div class="gap"></div>-->
 
-		<!--<div class="items-layout-3">-->
-		<!--<div class="header-image">-->
-		<!--<img src="download.jpg" alt="" height="50px" width="540px">-->
-		<!--</div>-->
-		<!--<div class="items">-->
-		<!--<div class="item item-1">-->
-		<!--<img src="download.jpg" alt="">-->
-		<!--</div>-->
-		<!--<div class="item item-2">-->
-		<!--<img src="download.jpg" alt="">-->
-		<!--</div>-->
-		<!--<div class="item item-3">-->
-		<!--<img src="download.jpg" alt="">-->
-		<!--</div>-->
-		<!--</div>-->
-		<!--</div>-->
+        <!--<div class="items-layout-3">-->
+        <!--<div class="header-image">-->
+        <!--<img src="download.jpg" alt="" height="50px" width="540px">-->
+        <!--</div>-->
+        <!--<div class="items">-->
+        <!--<div class="item item-1">-->
+        <!--<img src="download.jpg" alt="">-->
+        <!--</div>-->
+        <!--<div class="item item-2">-->
+        <!--<img src="download.jpg" alt="">-->
+        <!--</div>-->
+        <!--<div class="item item-3">-->
+        <!--<img src="download.jpg" alt="">-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
 
-		<!--<div class="gap"></div>-->
+        <!--<div class="gap"></div>-->
 
-		<!--<div class="items-layout-6">-->
-		<!--<div class="header-image">-->
-		<!--<img src="download.jpg" alt="" height="50px" width="540px">-->
-		<!--</div>-->
-		<!--<div class="items">-->
-		<!--<div class="item" v-for="item in 6">-->
-		<!--<img src="download.jpg" alt="">-->
-		<!--</div>-->
-		<!--</div>-->
-		<!--</div>-->
+        <!--<div class="items-layout-6">-->
+        <!--<div class="header-image">-->
+        <!--<img src="download.jpg" alt="" height="50px" width="540px">-->
+        <!--</div>-->
+        <!--<div class="items">-->
+        <!--<div class="item" v-for="item in 6">-->
+        <!--<img src="download.jpg" alt="">-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
 
-		<div class="gap"></div>
+        <div class="gap"></div>
 
-		<div class="items-layout-detail">
-			<!--<div class="header-image">-->
-				<!--<img src="download.jpg" alt="">-->
-			<!--</div>-->
+        <div class="items-layout-detail">
+            <!--<div class="header-image">-->
+            <!--<img src="download.jpg" alt="">-->
+            <!--</div>-->
 
-			<div class="items">
-				<div class="item" v-for="item in onsaleItems">
-					<div class="item-img" @click="selectItem(item)">
-						<img :src="item.images[0]" alt="">
-					</div>
+            <div class="items">
+                <div class="item" v-for="item in onsaleItems">
+                    <div class="item-img" @click="selectItem(item)">
+                        <img :src="item.images[0]" alt="">
+                    </div>
 
-					<div class="infos">
-						<div class="promotions">
+                    <div class="infos">
+                        <div class="promotions">
 							<span v-for="p in item.promotions">
 								{{p.title}}
 							</span>
-						</div>
-						<div class="title">{{item.title}}</div>
-						<div class="price"><em>{{item.salePrice}}<span>元</span></em>  <del>{{item.price}}<span>元</span></del></div>
-						<div class="stock">库存{{item.stock}}份</div>
-						<div class="buy-pane">
-							<a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)" href="javascript:">
-								<i class="el-icon-minus"></i>
-							</a>
-							<span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
-							<a class="add" @click="addItem(item)" href="javascript:">
-								<i class="el-icon-plus"></i>
-							</a>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<el-dialog class="qr-dialog"
-				   width="80%"
-				   :visible.sync="qrVisible">
-			<div class="qr-content"><img src="qr.jpg" alt=""></div>
-			<span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元</span>
-		</el-dialog>
-	</div>
-	<a v-show="detailItem" class="back-button" @click="unselectItem()">
-		<i class="el-icon-back"></i>
-	</a>
+                        </div>
+                        <div class="title">{{item.title}}</div>
+                        <div class="price"><em>{{item.salePrice}}<span>元</span></em>
+                            <del>{{item.price}}<span>元</span></del>
+                        </div>
+                        <div class="stock">库存{{item.stock}}份</div>
+                        <div class="buy-pane">
+                            <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)" href="javascript:">
+                                <i class="el-icon-minus"></i>
+                            </a>
+                            <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
+                            <a class="add" @click="addItem(item)" href="javascript:">
+                                <i class="el-icon-plus"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-	<div class="machine-footer" v-show="totalCount > 0">
-		<div class="cart-content">
-			<div class="cart-item" v-for="item in cartItems">
-				<span class="count"><em>×{{item.buyCount}}</em></span>
-				<img src="download.jpg" alt="">
-			</div>
-		</div>
-		<div class="cart-icon">
-			<span class="total-count">{{totalCount}}</span>
-			<i class="el-icon-goods"></i>
-		</div>
-		<a href="javascript:" class="go-to-pay" @click="showQR()">
-			去支付
-		</a>
-		<div class="total-price">
-			<div class="price">总计：<em>{{totalPrice}}</em>元
-				<!--<del>{{totalPriceOriginal}}元</del>-->
-			</div>
-			<!--<div class="tip">含限购商品，实际金额以支付结果为准</div>-->
-		</div>
-	</div>
+    </div>
+    <el-dialog class="qr-dialog"
+        width="80%"
+        :visible.sync="qrVisible">
+        <div class="qr-content"><img src="qr.jpg" alt=""></div>
+        <span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元</span>
+    </el-dialog>
+    <a v-if="view == 'detail'" class="back-button" @click="unselectItem()">
+        <img src="back-button.png">
+    </a>
+
+    <div class="list-cover" v-show="showCartContent" @click="showCartContent = false"></div>
+    <div class="machine-footer" v-show="totalCount > 0">
+        <div class="bar">
+            <div class="cart-content" v-show="showCartContent">
+                <div class="header">
+                    <a @click="showCartContent = false"><i class="el-icon-close"></i></a>
+                    <h6>选品栏</h6>
+                    <a class="clear" @click="clearCart()"><i class="el-icon-delete"></i>清空</a>
+                </div>
+
+                <div class="cart-item" v-for="item in cartItems">
+                    <div class="small-img"><img :src="item.images[0]" alt=""></div>
+                    <div class="title">
+                        <h6>{{item.title}}</h6>
+                    </div>
+                    <div class="price"><em>{{item.salePrice}}</em>元
+                    </div>
+
+
+                    <div class="buy-pane">
+                        <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)"
+                           href="javascript:">
+                            <i class="el-icon-minus"></i>
+                        </a>
+                        <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
+                        <a class="add" @click="addItem(item)" href="javascript:">
+                            <i class="el-icon-plus"></i>
+                        </a>
+                        <em>库存{{item.stock}}件</em>
+                    </div>
+
+                </div>
+            </div>
+            <div class="cart-icon" @click="showCartContent = !showCartContent">
+                <span class="total-count">{{totalCount}}</span>
+                <img src="cart.png">
+            </div>
+            <a href="javascript:" class="go-to-pay" @click="showQR()">
+                <span>去支付</span>
+                <img src="pay-button.png">
+            </a>
+            <div class="total-price">
+                <div class="price">总计：<em>{{totalPrice}}</em>元
+                    <!--<del>{{totalPriceOriginal}}元</del>-->
+                </div>
+                <!--<div class="tip">含限购商品，实际金额以支付结果为准</div>-->
+            </div>
+        </div>
+        <img class="cart-background" src="bottom-background.png">
+    </div>
+
 </div>
-<script src="randomock.js"></script>
+<!--<script src="randomock.js"></script>-->
+<script src="https://cdn.bootcss.com/lodash.js/4.17.10/lodash.min.js"></script>
 <script src="https://cdn.bootcss.com/vue/2.5.16/vue.js"></script>
 <script src="https://cdn.bootcss.com/element-ui/2.4.0/index.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script>
-	let rootUrl = 'api';
-	function getUrl(url,param){
+    // let resourceRoot = 'http://139.224.54.234:8082/';
+    let resourceRoot = '';
+    let apiRoot = 'api/';
+    // let apiRoot = 'http://139.224.54.234:8081/';
 
-	    return new Promise(function(rs,rj){
-            $.get(rootUrl + url,param)
-                .done(function(resp){
+    const adShowWait = 60000;
+    const adStayDuration = 30000;
+
+    function getUrl(url, param) {
+
+        return new Promise(function (rs, rj) {
+            $.get(apiRoot + url, param)
+                .done(function (resp) {
                     rs(resp);
-				})
-				.fail(function(resp){
-				    rj(resp);
-				})
-		})
-	}
+                })
+                .fail(function (resp) {
+                    rj(resp);
+                })
+        })
+    }
+
+    function showInfo(err) {
+
+    }
 
 
-	// let items = $rm($rm.repeat($rm.integer(10, 15), {
-	// 	id : $rm.index(),
-	// 	title: $rm.current('id').append('面膜'),
-	// 	price: $rm.float(3,50).toFixed(2),
-	// 	stock: $rm.integer(1,999),
-	// 	buyCount: 0,
-	// 	description: $rm.text($rm.integer(50,200)),
-	// 	promotions: $rm.repeat($rm.integer(1,10),{
-	// 		type: $rm.choose('返豆','满赠','满减','限享','促销'),
-	// 		title: $rm.choose('用现金反6豆','满2件赠1瓶125ml扎啤','满200元减40元','会员限享2件','时段打折/购买优惠/其他活动'),
-	// 		description: $rm.text('会员用现金满100元返10联豆会员用现金满100元',$rm.integer(50,200))
-	// 	}),
-	// 	rate: $rm.integer(1,5)
-	// }));
-	let vm = new Vue({
-		el: '#mfsj-container',
-		data: {
-		    deviceTaobaoNo : '1',
-			machineTitle: '膜法世家99号',
-			machineNumber: '12005',
-			totalCount: 0,
-			totalPrice: 89.4,
-			totalPriceOriginal: 105.2,
-			qrVisible: false,
-			promotionDetailVisible: false,
-			detailItem: null,
-			onsaleItems: null
-		},
-		computed: {
-			cartItems() {
-				return (this.onsaleItems || []).filter(i => i.buyCount > 0);
-			},
-		},
-		created() {
-			this.refreshCart();
-			this.queryItems();
-		},
-		methods: {
-		    queryItems(){
-                getUrl('product/list',{deviceTaobaoNo : this.deviceTaobaoNo })
-					.then((resp)=> this.onsaleItems = resp.data.map((d)=>{
-					    return {
-							taobaoNo : d.productTaobaoNo,
-							title: d.name,
-							hot : d.hot,
-							images : d.images.length == 0  || (d.images.length == 1 && d.images[0] == '') ? ['download.jpg'] : d.images,
-							price: d.price,
-							salePrice : d.salePrice,
-							stock: d.stock,
-							buyCount: 0,
-							unit : d.unit,
-							description: '',
-                            specifications : d.specifications,
+    let vm = new Vue({
+        el: '#mfsj-container',
+        data: {
+            view: 'ads',
+            deviceTaobaoNo: '1',
+            machineTitle: '膜法世家99号',
+            machineNumber: '12005',
+            totalCount: 0,
+            totalPrice: 89.4,
+            totalPriceOriginal: 105.2,
+            qrVisible: false,
+            promotionDetailVisible: false,
+            detailItem: null,
+            onsaleItems: null,
+
+            ads: null,
+            showAd: null,
+            showAdIndex: 0,
+
+            showCartContent: false,
+
+        },
+        computed: {
+            cartItems() {
+                return (this.onsaleItems || []).filter(i => i.buyCount > 0);
+            },
+        },
+        created() {
+            this.refreshCart();
+            this.queryItems();
+            this.queryAds();
+
+            setInterval(_ => this.randomSelectAds(), adStayDuration);
+            this.adsShowDebounce = _.debounce(_ => {
+                this.view = 'ads';
+            }, adShowWait);
+        },
+        methods: {
+            queryAds() {
+                getUrl('advert/list', {deviceTaobaoNo: this.deviceTaobaoNo})
+                    .then((resp) => {
+                        this.ads = resp.data.map((ad) => {
+                            ad.image = resourceRoot + ad.image;
+                            return ad;
+                        });
+                        this.randomSelectAds();
+                    }).catch((resp, status, err) => {
+                    this.$message(resp.statusText);
+                });
+            },
+            randomSelectAds() {
+                let choose = this.ads || [];
+
+                if (choose.length > 0) {
+                    this.showAd = choose[this.showAdIndex];
+                    this.showAdIndex = (this.showAdIndex + 1) % choose.length;
+                }
+                else {
+                    this.showAd = null;
+                }
+            },
+            clickAd(ad) {
+                let item = this.onsaleItems.find((item) => item.taobaoNo == ad.url);   //taobaoNumber
+                if (item) {
+                    this.selectItem(item);
+                }
+                else {
+                    this.view = 'list';
+                }
+            },
+            everyClick() {
+                this.adsShowDebounce();
+            },
+            queryItems() {
+                getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
+                    .then((resp) => this.onsaleItems = resp.data.map((d) => {
+                        // let images = ['download.jpg'];
+                        let images = (d.images || []).map((i)=> resourceRoot + i);
+                        return {
+                            taobaoNo: d.productTaobaoNo,
+                            title: d.name,
+                            hot: d.hot,
+                            images: images.length > 0 ? images : ['download.jpg'],
+                            price: d.price,
+                            salePrice: d.salePrice,
+                            stock: d.stock,
+                            buyCount: 0,
+                            unit: d.unit,
+                            description: '',
+                            specifications: d.specifications,
                             promotions: d.promotion,
-						};
-					}));
-			},
-			addItem(item) {
-				item.buyCount = item.buyCount + 1;
-				this.refreshCart();
-			},
-			removeItem(item) {
-				item.buyCount = Math.max(0, item.buyCount - 1);
-				this.refreshCart();
-			},
-			selectItem(item){
-		        if(item.detailInfo){
+                        };
+                    }));
+            },
+            addItem(item) {
+                if (item.buyCount < item.stock) {
+                    item.buyCount = item.buyCount + 1;
+                    this.refreshCart();
+                }
+            },
+            removeItem(item) {
+                item.buyCount = Math.max(0, item.buyCount - 1);
+                this.refreshCart();
+            },
+            selectItem(item) {
+                if (item.detailInfo) {
                     this.detailItem = item;
-				}
-				else{
+                    this.view = 'detail';
+                }
+                else {
                     getUrl(`/product/detail/${this.deviceTaobaoNo}/${item.taobaoNo}`)
-                        .then((data)=>{
+                        .then((data) => {
                             let detailItem = data.data;
                             item.rate = detailItem.score;
                             // item.content = detailItem.content;
-                            item.description = "asdaasd fqwd afsdf qw dvasd vadawdfq wedgasd gasdkfhqwk jnvlaksjdfh alhflqkwehjf";
+                            item.description = detailItem.content;
                             item.detailInfo = detailItem;
                             this.detailItem = item;
+                            this.view = 'detail';
                         })
-				}
-			},
-			unselectItem(){
-				this.detailItem = null;
-			},
-			showQR() {
-				this.qrVisible = true;
-			},
-			refreshCart() {
-				let r = this.cartItems.reduce((o, b) => {
-					o.price = o.price + b.price * b.buyCount;
-					o.count = o.count + b.buyCount;
-					o.priceOriginal = o.price;
-					return o;
-				}, {
-					price: 0,
-					priceOriginal: 0,
-					count: 0
-				});
+                }
+            },
+            unselectItem() {
+                this.detailItem = null;
+                this.view = 'list';
+            },
+            showQR() {
+                this.qrVisible = true;
+            },
+            refreshCart() {
+                let r = this.cartItems.reduce((o, b) => {
+                    o.price = o.price + b.price * b.buyCount;
+                    o.count = o.count + b.buyCount;
+                    o.priceOriginal = o.price;
+                    return o;
+                }, {
+                    price: 0,
+                    priceOriginal: 0,
+                    count: 0
+                });
 
-				this.totalPrice = r.price.toFixed(2);
-				this.totalPriceOriginal = this.totalPrice;
-				this.totalCount = r.count;
-			},
-			longCut(text, length) {
-				if (text.length > length) {
-					return text.substr(0, length) + '...';
-				}
-				else {
-					return text;
-				}
-			},
-			seePromotionDetails() {
+                this.totalPrice = r.price.toFixed(2);
+                this.totalPriceOriginal = this.totalPrice;
+                this.totalCount = r.count;
 
-			}
-		}
-	});
+                if (this.totalCount == 0) {
+                    this.showCartContent = false;
+                }
+            },
+            clearCart() {
+                this.$confirm('清空购物车？')
+                    .then(_ => {
+                        for (let item of this.onsaleItems) {
+                            item.buyCount = 0;
+                        }
+                        this.refreshCart();
+                    })
+            },
+            longCut(text, length) {
+                if (text.length > length) {
+                    return text.substr(0, length) + '...';
+                }
+                else {
+                    return text;
+                }
+            },
+            seePromotionDetails() {
+
+            }
+        }
+    });
 </script>
 </body>
 </html>

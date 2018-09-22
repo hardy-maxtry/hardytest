@@ -85,23 +85,24 @@ body {
 #mfsj-container .back-button {
   display: block;
   position: fixed;
-  top: 10%;
-  font-size: 2em;
-  background-color: gray;
-  padding: 0.2em 0.5em;
+  top: 200px;
+  z-index: 10;
+}
+#mfsj-container .back-button > img {
+  width: 60px;
+}
+#mfsj-container div.ads {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
   z-index: 999;
 }
-#mfsj-container .back-button > i {
-  padding: 0.2em;
-  display: inline-block;
-  border-radius: 99px;
-  background-color: white;
-  color: white;
-  background-color: gray;
-  border: solid 2px white;
-}
-#mfsj-container .back-button > span {
-  color: white;
+#mfsj-container div.ads > img {
+  position: absolute;
+  width: 100%;
+  height: 100%;
 }
 #mfsj-container div.machine-header {
   background-color: #343435;
@@ -132,6 +133,22 @@ body {
   padding: 0.5em;
   border-radius: 1em;
 }
+#mfsj-container div.machine-header > img {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+}
+#mfsj-container div.list-cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0.5;
+  background-color: black;
+  z-index: 100;
+}
 #mfsj-container div.machine-footer {
   height: 100px;
   position: fixed;
@@ -140,79 +157,109 @@ body {
   color: white;
   background-color: #393739;
   border-top: solid 1px black;
+  z-index: 200;
 }
 #mfsj-container div.machine-footer div.cart-content {
   position: absolute;
   left: 10px;
-  bottom: 120px;
-  width: 80px;
-  max-height: 320px;
+  right: 10px;
+  bottom: 140px;
   background-color: white;
-  border-radius: 99px;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  box-shadow: 5px 5px 20px #00000055;
-  z-index: 99;
+  z-index: 900;
+  color: black;
+  padding: 1em;
+  border-radius: 10px;
 }
-#mfsj-container div.machine-footer div.cart-content div.cart-item {
-  position: relative;
-  margin: 10px;
-  overflow: hidden;
+#mfsj-container div.machine-footer div.cart-content > div.header {
+  padding: 0.5em 0;
+  border-bottom: solid 1px #ebeced;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+}
+#mfsj-container div.machine-footer div.cart-content > div.header > a {
+  padding: 0.2em;
+}
+#mfsj-container div.machine-footer div.cart-content > div.header > a.clear {
+  font-size: 16px;
+  color: #696a6b;
+}
+#mfsj-container div.machine-footer div.cart-content > div.header > h6 {
+  font-weight: bold;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1em 0;
+  border-bottom: solid 1px #ebeced;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.small-img > img {
   width: 60px;
   height: 60px;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.price {
+  color: #e3676f;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.price > em {
+  font-size: 1.2em;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.buy-pane {
+  position: relative;
   border-radius: 99px;
 }
-#mfsj-container div.machine-footer div.cart-content div.cart-item span.count {
-  position: relative;
-  margin-top: 1em;
-  display: block;
-  z-index: 99;
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.buy-pane > a {
+  color: black;
+  text-decoration: none;
+  display: inline-block;
+  border-radius: 99px;
+  width: 2em;
+  height: 2em;
+  line-height: 2em;
+  text-align: center;
+  background-color: white;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.buy-pane > a.add {
+  background-color: #f6c870;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.buy-pane > a.remove {
+  border: solid 1px gray;
+}
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.buy-pane > span {
+  line-height: 2em;
+  display: inline-block;
+  width: 2em;
   text-align: center;
 }
-#mfsj-container div.machine-footer div.cart-content div.cart-item span.count em {
-  display: inline-block;
-  background-color: white;
-  padding: 0.1em 0.2em;
-  border-radius: 1em;
-}
-#mfsj-container div.machine-footer div.cart-content div.cart-item img {
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.buy-pane > em {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 60px;
-  height: 60px;
+  width: 100%;
+  text-align: center;
+  color: #f2aa63;
 }
 #mfsj-container div.machine-footer div.cart-icon {
   position: absolute;
   left: 10px;
   top: -20px;
-  width: 80px;
-  height: 80px;
 }
-#mfsj-container div.machine-footer div.cart-icon span.total-count {
+#mfsj-container div.machine-footer div.cart-icon > span.total-count {
   position: absolute;
-  right: 0;
-  top: -10px;
+  right: -10px;
+  top: 0;
   background-color: #dc6e63;
   color: white;
   display: inline-block;
-  height: 30px;
-  width: 30px;
+  height: 20px;
+  width: 20px;
   border-radius: 20px;
-  line-height: 2em;
+  line-height: 20px;
   text-align: center;
-  font-size: 0.5em;
+  font-size: 6px;
   padding: 0 0.5em;
 }
-#mfsj-container div.machine-footer div.cart-icon i {
-  border: solid 1px black;
-  background-color: white;
-  border-radius: 99px;
-  line-height: 1.5em;
-  text-align: center;
-  width: 100%;
-  height: 100%;
-  font-size: 3em;
+#mfsj-container div.machine-footer div.cart-icon > img {
+  width: 100px;
+  height: 100px;
 }
 #mfsj-container div.machine-footer div.total-price {
   float: left;
@@ -233,16 +280,42 @@ body {
   height: 80px;
   float: right;
   width: 30%;
-  background-color: #f3b964;
   color: black;
   text-align: center;
   text-decoration: none;
   line-height: 80px;
   margin-top: 10px;
   font-size: 25px;
+  position: relative;
+}
+#mfsj-container div.machine-footer a.go-to-pay > span {
+  position: absolute;
+  z-index: 1;
+  text-align: center;
+  display: block;
+  width: 110%;
+}
+#mfsj-container div.machine-footer a.go-to-pay > img {
+  border: 0;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#mfsj-container div.machine-footer div.bar {
+  background-color: #393739;
+  width: 100%;
+  height: 100px;
+}
+#mfsj-container div.machine-footer img.cart-background {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: -20px;
+  z-index: -1;
 }
 #mfsj-container div.machine-list {
   padding-top: 105px;
+  padding-bottom: 120px;
 }
 #mfsj-container div.items-layout-scoll div.items {
   white-space: nowrap;
@@ -425,7 +498,7 @@ body {
 }
 #mfsj-container .item-details > div.infos {
   background-color: white;
-  padding: 1em;
+  padding: 1em 1em 3em 1em;
 }
 #mfsj-container .item-details > div.infos > div.title {
   font-size: 1.6em;
@@ -446,13 +519,16 @@ body {
 }
 #mfsj-container .item-details > div.infos > div.rate > i {
   font-size: 1.2em;
-  margin: 0.2em 0;
+  margin: 0.2em 0.2em;
+  color: #f5c844;
 }
 #mfsj-container .item-details > div.infos > div.rate > span.stock {
   color: gray;
 }
 #mfsj-container .item-details > div.infos > div.price-panel {
   position: relative;
+  padding-bottom: 2em;
+  border-bottom: solid 1px #e4e5e6;
 }
 #mfsj-container .item-details > div.infos > div.price-panel > span.price {
   font-size: 1.6em;
@@ -468,7 +544,7 @@ body {
   font-size: 1.5em;
   position: absolute;
   right: 5px;
-  bottom: 5px;
+  bottom: 20px;
   border-radius: 99px;
 }
 #mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a {
