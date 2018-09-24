@@ -34,9 +34,11 @@
         <div class="infos">
             <div class="title">{{detailItem.title}}</div>
             <div class="description">{{detailItem.description}}</div>
-            <!--<div class="promotions">-->
-            <!--<span v-for="p in detailItem.promotions">{{p.title}}</span>-->
-            <!--</div>-->
+            <div class="promotions">
+            <span v-for="p in detailItem.promotions">
+								{{p.promotionName}}
+            </span>
+            </div>
             <div class="rate">
                 <i class="el-icon-star-on" v-for="i in detailItem.rate"></i>
                 <i class="el-icon-star-off" v-for="i in (5-detailItem.rate)"></i>
@@ -60,6 +62,12 @@
                     <a class="add" @click="addItem(detailItem)" href="javascript:">
                         <i class="el-icon-plus"></i>
                     </a>
+                </div>
+            </div>
+            <div class="promotions-details">
+                <div class="promotion-detail" v-for="p in detailItem.promotions">
+                    <span class="type">{{ p.typeName }}</span>
+                    <span class="desc">{{ p.description }}</span>
                 </div>
             </div>
         </div>
@@ -156,7 +164,7 @@
                     <div class="infos">
                         <div class="promotions">
 							<span v-for="p in item.promotions">
-								{{p.title}}
+								{{p.promotionName}}
 							</span>
                         </div>
                         <div class="title">{{item.title}}</div>
@@ -179,12 +187,7 @@
         </div>
 
     </div>
-    <el-dialog class="qr-dialog"
-        width="80%"
-        :visible.sync="qrVisible">
-        <div class="qr-content"><img src="qr.jpg" alt=""></div>
-        <span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元</span>
-    </el-dialog>
+
     <a v-if="view == 'detail'" class="back-button" @click="unselectItem()">
         <img src="back-button.png">
     </a>
@@ -196,7 +199,7 @@
                 <div class="header">
                     <a @click="showCartContent = false"><i class="el-icon-close"></i></a>
                     <h6>选品栏</h6>
-                    <a class="clear" @click="clearCart()"><i class="el-icon-delete"></i>清空</a>
+                    <a class="clear" @click="confirmClearCart()"><i class="el-icon-delete"></i>清空</a>
                 </div>
 
                 <div class="cart-item" v-for="item in cartItems">
@@ -207,16 +210,18 @@
                     <div class="price"><em>{{item.salePrice}}</em>元
                     </div>
 
+                    <div class="stock">
+                        <div class="buy-pane">
+                            <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)"
+                               href="javascript:">
+                                <i class="el-icon-minus"></i>
+                            </a>
+                            <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
+                            <a class="add" @click="addItem(item)" href="javascript:">
+                                <i class="el-icon-plus"></i>
+                            </a>
 
-                    <div class="buy-pane">
-                        <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)"
-                           href="javascript:">
-                            <i class="el-icon-minus"></i>
-                        </a>
-                        <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
-                        <a class="add" @click="addItem(item)" href="javascript:">
-                            <i class="el-icon-plus"></i>
-                        </a>
+                        </div>
                         <em>库存{{item.stock}}件</em>
                     </div>
 
@@ -226,20 +231,35 @@
                 <span class="total-count">{{totalCount}}</span>
                 <img src="cart.png">
             </div>
-            <a href="javascript:" class="go-to-pay" @click="showQR()">
-                <span>去支付</span>
-                <img src="pay-button.png">
-            </a>
+
             <div class="total-price">
                 <div class="price">总计：<em>{{totalPrice}}</em>元
                     <!--<del>{{totalPriceOriginal}}元</del>-->
                 </div>
                 <!--<div class="tip">含限购商品，实际金额以支付结果为准</div>-->
             </div>
+            <a href="javascript:" class="go-to-pay" @click="showQR()">
+                <span>去支付</span>
+                <img src="pay-button.png">
+            </a>
         </div>
         <img class="cart-background" src="bottom-background.png">
     </div>
-
+    <el-dialog class="qr-dialog"
+               width="80%"
+                top="30vh"
+               :show-close="false"
+                :center="true"
+               :visible.sync="qrVisible">
+        <div class="qr-content" @click="qrVisible = false">
+            <h6>淘宝扫一扫，支付{{totalPrice}}元</h6>
+            <img class="qr" src="qr.jpg" alt="">
+            <img class="qr-background" src="qrbg.png">
+        </div>
+        <!--<span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元-->
+            <!--<i class="el-icon-error" @click="qrVisible = false"></i>-->
+        <!--</span>-->
+    </el-dialog>
 </div>
 <!--<script src="randomock.js"></script>-->
 <script src="https://cdn.bootcss.com/lodash.js/4.17.10/lodash.min.js"></script>
@@ -247,13 +267,12 @@
 <script src="https://cdn.bootcss.com/element-ui/2.4.0/index.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script>
-    // let resourceRoot = 'http://139.224.54.234:8082/';
     let resourceRoot = '';
+    // let resourceRoot = 'http://139.224.54.234:8082/';
     let apiRoot = 'api/';
     // let apiRoot = 'http://139.224.54.234:8081/';
-
-    const adShowWait = 60000;
-    const adStayDuration = 30000;
+    const adShowWait = 600000;
+    const adStayDuration = 5000;
 
     function getUrl(url, param) {
 
@@ -307,6 +326,7 @@
 
             setInterval(_ => this.randomSelectAds(), adStayDuration);
             this.adsShowDebounce = _.debounce(_ => {
+                this.clearCart();
                 this.view = 'ads';
             }, adShowWait);
         },
@@ -349,8 +369,8 @@
             queryItems() {
                 getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                     .then((resp) => this.onsaleItems = resp.data.map((d) => {
-                        // let images = ['download.jpg'];
-                        let images = (d.images || []).map((i)=> resourceRoot + i);
+                        let images = ['download.jpg'];
+                        // let images = (d.images || []).map((i)=> resourceRoot + i);
                         return {
                             taobaoNo: d.productTaobaoNo,
                             title: d.name,
@@ -363,7 +383,11 @@
                             unit: d.unit,
                             description: '',
                             specifications: d.specifications,
-                            promotions: d.promotion,
+                            promotions: d.promotion.map(p => {
+                                p.typeName = ['', '促销', '满折', '满减'][p.type] || '满减';
+                                p.description = '满' + p.quotaQuantity + '件立享折扣价'  + p.price + '元' //'ERROR 等API';
+                                return p;
+                            }),
                         };
                     }));
             },
@@ -422,14 +446,17 @@
                     this.showCartContent = false;
                 }
             },
-            clearCart() {
+            confirmClearCart() {
                 this.$confirm('清空购物车？')
                     .then(_ => {
-                        for (let item of this.onsaleItems) {
-                            item.buyCount = 0;
-                        }
-                        this.refreshCart();
+                        this.clearCart();
                     })
+            },
+            clearCart() {
+                for (let item of this.onsaleItems) {
+                    item.buyCount = 0;
+                }
+                this.refreshCart();
             },
             longCut(text, length) {
                 if (text.length > length) {
