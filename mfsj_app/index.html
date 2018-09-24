@@ -369,8 +369,8 @@
             queryItems() {
                 getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                     .then((resp) => this.onsaleItems = resp.data.map((d) => {
-                        let images = ['download.jpg'];
-                        // let images = (d.images || []).map((i)=> resourceRoot + i);
+                        // let images = ['download.jpg'];
+                        let images = (d.images || []).map((i)=> resourceRoot + i);
                         return {
                             taobaoNo: d.productTaobaoNo,
                             title: d.name,
