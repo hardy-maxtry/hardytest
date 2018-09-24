@@ -24,13 +24,20 @@
         <el-col :span="8">
           <el-form-item label="促销类型" prop="type">
             <el-select v-model="form.type" placeholder="请选择促销类型" style="width:90%;">
-              <el-option label="定额" value="1"/>
-              <el-option label="满额折扣" value="2"/>
-              <el-option label="满额立减" value="3"/>
+              <!-- <el-option label="定额" value="1" :disabled="false"/>
+              <el-option label="满额折扣" value="2" :disabled="true"/>
+              <el-option label="满额立减" value="3" :disabled="true"/> -->
+              <el-option
+                v-for="item in conditionTypes"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+                :disabled="item.disabled">
+              </el-option>
             </el-select>
             <el-tooltip class="item" effect="dark" placement="top-start">
               <div slot="content">
-                定额：只要选购了活动商品，就视为满足活动条件，活动商品总结算价 = 固定折扣价，建议作为限购优惠来使用<br/>
+                定额：只要选购足量活动商品，就可以以活动价购买这些商品，活动商品总结算价 = 固定折扣价，例如，设置数量=2，折扣价5元，则顾客购买两件活动商品时，总共只需要支付5元<br/>
                 满额折扣：满足条件后，活动商品总结算价 = 活动商品总价 x 满额折扣比例<br/>
                 满额立减：满足条件后，活动商品总结算价 = 活动商品总价 - 满额立减额度</div>
               <i class="el-icon-question"></i>
@@ -46,9 +53,9 @@
             <!-- <el-input v-model="form.total" type="number"></el-input> -->
             <el-input-number v-model="form.total" :precision="2" :step="1" ></el-input-number>
           </el-form-item>
-          <el-form-item v-if="form.type==1" label="固定折扣价(元)" prop="price">
-            <!-- <el-input v-model="form.price"></el-input> -->
-            <el-input-number v-model="form.price" :precision="2" :step="1" ></el-input-number>
+          <el-form-item v-if="form.type==1" label="满X件立减" prop="quotaQuantity">
+            <!-- <el-input v-model="form.total" type="number"></el-input> -->
+            <el-input-number v-model="form.quotaQuantity"  :step="1" ></el-input-number>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -60,6 +67,10 @@
             <!-- <el-input v-model="form.subtraction"></el-input> -->
             <el-input-number v-model="form.subtraction" :precision="2" :step="1" ></el-input-number>
 
+          </el-form-item>
+          <el-form-item v-if="form.type==1" label="固定折扣价(元)" prop="price">
+            <!-- <el-input v-model="form.price"></el-input> -->
+            <el-input-number v-model="form.price" :precision="2" :step="1" ></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>
@@ -162,7 +173,8 @@ export default {
         "subtraction": 0, //满减金额? type=3时, 活动商品一次性购买足量金额后，将减去 subtraction 的金额
         "total": 0, // 满减总额? 活动商品一次性购买足量金额后，触发discount或者  subtraction
         "discount": 0, // 折扣百分比,float, 8折就填0.8. type=2时, 活动商品一次性购买足量金额后，将乘以discount的数字，作为最终结算金额
-        "type": "1" // 1=定额，2=折扣，3=满减
+        "type": "1", // 1=定额，2=折扣，3=满减
+        quotaQuantity: 1 // 满X件触发折扣
       },
       fileList: [],
       machines : [{
@@ -196,6 +208,13 @@ export default {
 
             //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
         ],
+        
+        quotaQuantity: [
+            {type: 'number', message: '数量必须是数字', trigger: 'change' },
+            { validator: this.checkQty, trigger: 'change' },
+
+            //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+        ],
         total:[
             {required: true, type: 'number', message: '请输入数字格式的达标金额', trigger: 'change' },
             { validator: this.checkTotal, trigger: 'change' },
@@ -224,6 +243,18 @@ export default {
       pageProductTaobaoNo : '',
       pageLimitQuantity : 1,
       promotion_sys_id : null,
+      conditionTypes: [{
+          value: '1',
+          label: '定额'
+        }, {
+          value: '2',
+          label: '满额折扣',
+          disabled: true
+        }, {
+          value: '3',
+          label: '满额立减',
+          disabled: true
+        }],
     }
   },
   mounted(){
@@ -385,6 +416,14 @@ export default {
       // debugger
       if(value <= 0 || value >= 100){
             callback(new Error('折扣百分比必须在1-99之间'));
+          }
+      callback();
+    },
+    checkQty(rule, value, callback){
+      // console.log(arguments);
+      // debugger
+      if(value <= 0){
+            callback(new Error('数量必须大于0'));
           }
       callback();
     },
