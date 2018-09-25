@@ -24,18 +24,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :span="8">
-          <el-form-item label="商品成本（元）" prop="price">
-            {{form.price}}
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="商品售价（元）" prop="salePrice">
-            {{form.salePrice}}
-          </el-form-item>
-        </el-col>
-      </el-row>
+      
       
       <el-row>
         <el-col :span="8">
@@ -46,6 +35,18 @@
         <el-col :span="8">
           <el-form-item label="销售单位" prop="unit">
             {{form.unit}}
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="商品成本（元）" prop="price">
+            {{form.price}}
+          </el-form-item>
+        </el-col>
+        <el-col :span="8">
+          <el-form-item label="商品售价（元）" prop="salePrice">
+            <el-input-number v-model="form.salePrice" :precision="2" :step="1" ></el-input-number>
           </el-form-item>
         </el-col>
       </el-row>
@@ -141,6 +142,12 @@ export default {
           //   { required: true, message: '请输入活动名称', trigger: 'change' },
           //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
           // ],
+        salePrice: [
+            {type: 'number', message: '价格必须是数字', trigger: 'change' },
+            { validator: this.checkPrice, trigger: 'change' },
+
+            //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
+        ],
       },
     }
   },
@@ -268,7 +275,15 @@ export default {
           this.$message.error('上传头像图片大小不能超过 2MB!');
         }
         return isJPG && isLt2M;
-      }
+      },
+      checkPrice(rule, value, callback){
+        // console.log(arguments);
+        // debugger
+        if(value <= 0){
+              callback(new Error('价格必须大于0'));
+            }
+        callback();
+      },
   }
 }
 </script>

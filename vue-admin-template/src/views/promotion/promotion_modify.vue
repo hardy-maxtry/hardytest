@@ -53,7 +53,7 @@
             <!-- <el-input v-model="form.total" type="number"></el-input> -->
             <el-input-number v-model="form.total" :precision="2" :step="1" ></el-input-number>
           </el-form-item>
-          <el-form-item v-if="form.type==1" label="满X件立减" prop="quotaQuantity">
+          <el-form-item v-if="form.type==1" label="满X件享折扣" prop="quotaQuantity">
             <!-- <el-input v-model="form.total" type="number"></el-input> -->
             <el-input-number v-model="form.quotaQuantity"  :step="1" ></el-input-number>
           </el-form-item>
