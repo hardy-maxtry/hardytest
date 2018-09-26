@@ -67,6 +67,11 @@
           width="100">
         </el-table-column>
         <el-table-column
+          prop="adPositionTypestr"
+          label="广告位置"
+          width="120">
+        </el-table-column>
+        <el-table-column
           prop="image"
           label="图片地址">
           <template slot-scope="scope">
@@ -118,7 +123,11 @@ let adStatus = {
   1 : '上线',
   2 : '下线',
 }
-
+let adPositions = {
+  1 : '待机界面',
+  2 : '故障界面',
+  3 : '出货界面上部'
+}
 export default {
   data() {
     return {
@@ -207,6 +216,7 @@ export default {
             x.statusStr = adStatus[x.status];
             x.machine = x.advertDevice[0].deviceShowName;
             x.imageUrl = urls.url_prefix + '/' + x.image;
+            x.adPositionTypestr = adPositions[x.positionType];
             return x;
           });
           // console.log(res.data.data)
