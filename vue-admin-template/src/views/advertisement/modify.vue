@@ -16,7 +16,15 @@
             </el-select>
           </el-form-item>
         </el-col>
-        
+        <el-col :span="8">
+          <el-form-item label="广告展示位置" prop="positionType">
+            <el-select v-model="form.positionType" placeholder="请选择展示位置">
+              <el-option label="待机界面" :value="1"/>
+              <el-option label="故障界面" :value="2"/>
+              <el-option label="出货界面上部" :value="3"/>
+            </el-select>
+          </el-form-item>
+        </el-col>
       </el-row>
       <el-row>
       <!-- <el-form-item label="生效期" > -->
@@ -67,7 +75,7 @@
       <el-row>
         <el-col :span="8">
           <el-form-item label="广告类型" prop="type">
-            <el-select v-model="form.type" placeholder="请选择广告类型">
+            <el-select v-model="form.type" placeholder="请选择广告类型" :disabled="ad_type_disabled">
               <el-option label="图片" :value="0"/>
               <el-option label="链接" :value="1"/>
             </el-select>
@@ -124,7 +132,8 @@ export default {
         image: '',
         type: '0',
         url: '',
-        desc: ''
+        desc: '',
+        positionType : 1,
       },
       fileList: [],
       machines : [{
@@ -160,11 +169,22 @@ export default {
       },
       options4 : [],
       loading : false,
+      ad_type_disabled : false,
     }
   },
   computed:{
     headers(){
       return {token : this.$store.state.user.token};
+    }
+  },
+  watch:{
+    "form.positionType" : function(newVal, oldVal){
+      if(newVal != 1){
+        this.form.type = 0;
+        this.ad_type_disabled = true;
+      }else{
+        this.ad_type_disabled = false;
+      }
     }
   },
   mounted(){
