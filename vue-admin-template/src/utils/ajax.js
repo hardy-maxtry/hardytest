@@ -37,17 +37,30 @@ service.interceptors.response.use(
     if (res.code != 200) {
       
       if(res.code == 400){
+        if(res.msg){
+          Message({
+            message: res.msg,
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }else{
+          Message({
+            message: '网络请求出错，请联系管理员',
+            type: 'error',
+            duration: 5 * 1000
+          })
+        }
+        
+        return;
+      }else{
         Message({
-          message: res.msg,
+          message: '网络请求出错，请联系管理员',
           type: 'error',
           duration: 5 * 1000
         })
+        return;
       }
-      Message({
-        message: '网络请求出错，请联系管理员',
-        type: 'error',
-        duration: 5 * 1000
-      })
+      
       // 50008:非法的token; 50012:其他客户端登录了;  50014:Token 过期了;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         MessageBox.confirm(

@@ -114,6 +114,12 @@ export const constantRouterMap = [
     },
     children: [
       {
+        path: 'add',
+        name: '新增商品',
+        component: () => import('@/views/product/add'),
+        meta: { title: '新增商品' }
+      },
+      {
         path: 'index',
         name: '商品列表',
         component: () => import('@/views/product/index'),
@@ -171,6 +177,41 @@ export const constantRouterMap = [
         name: '促销编辑',
         component: () => import('@/views/promotion/promotion_modify'),
         meta: { title: '促销编辑' },
+        hidden : true,
+      }
+    ]
+  },
+  {
+    path: '/device',
+    component: Layout,
+    name: '售货机管理',
+    meta: {
+      title: '售货机管理'
+    },
+    children: [
+      // {
+      //   path: 'index',
+      //   name: '促销列表',
+      //   component: () => import('@/views/product/index'),
+      //   meta: { title: '促销列表' }
+      // },
+      {
+        path: 'list',
+        name: '售货机列表',
+        component: () => import('@/views/device/device_list'),
+        meta: { title: '售货机列表' }
+      },
+      {
+        path: 'add',
+        name: '售货机添加',
+        component: () => import('@/views/device/device_add'),
+        meta: { title: '售货机添加' }
+      },
+      {
+        path: 'modify',
+        name: '售货机编辑',
+        component: () => import('@/views/device/device_modify'),
+        meta: { title: '售货机编辑' },
         hidden : true,
       }
     ]

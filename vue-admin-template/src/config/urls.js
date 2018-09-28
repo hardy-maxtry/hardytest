@@ -9,10 +9,16 @@ export default {
     ad_updatestatus : '/advert/update-status',
 
     device_list : '/device/list-down',
+    device_list_full : '/device/list',
+    device_init : '/device/device-init',
+    device_update : '/device/update',
+    device_update_state : '/device/update-state/',
 
     product_list :'/product/list' ,
     product_detail : '/product/detail/',
     product_edit : '/product/edit',
+    product_add : '/product/add',
+
     schedule_list : '/scheduling/list',
     schedule_add : '/scheduling/add'   ,
     schedule_update_status :'/scheduling/update-status',

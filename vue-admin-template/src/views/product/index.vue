@@ -38,12 +38,12 @@
         </el-table-column>
         <el-table-column
           prop="price"
-          label="进价"
+          label="成本价"
           width="120">
         </el-table-column>
         <el-table-column
           prop="salePrice"
-          label="售价"
+          label="销售价"
           width="120">
         </el-table-column>
         <el-table-column
@@ -59,9 +59,9 @@
         <el-table-column
           fixed="right"
           label="操作"
-          width="100">
+          width="200">
           <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="small">编辑</el-button>
+            <el-button @click="handleClick(scope.row)" type="mini"  size="small">编辑</el-button>
             <!-- <el-button type="text" size="small">编辑</el-button> -->
           </template>
         </el-table-column>

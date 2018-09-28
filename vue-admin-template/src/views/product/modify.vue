@@ -9,7 +9,7 @@
         </el-col>
         <el-col :span="8">
           <el-form-item label="商品名称" prop="id">
-            {{form.name}}
+            <el-input v-model="form.name" placeholder="商品名称" style="width:90%"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="8">
@@ -29,12 +29,12 @@
       <el-row>
         <el-col :span="8">
           <el-form-item label="商品规格" prop="specifications">
-            {{form.specifications}}
+            <el-input v-model="form.specifications" placeholder="例如: 20ml/片" style="width:90%"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="8">
           <el-form-item label="销售单位" prop="unit">
-            {{form.unit}}
+            <el-input v-model="form.unit" placeholder="例如: 片" style="width:90%"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
