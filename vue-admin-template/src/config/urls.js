@@ -38,4 +38,6 @@ export default {
     user_list :'/user/list',
     user_updatepassword :'/user/update-password',
     user_updatestatus :'/user/update-status/',
+
+    order_list :'/order/list',
 }

@@ -216,6 +216,29 @@ export const constantRouterMap = [
       // }
     ]
   },
+  {
+    path: '/order',
+    component: Layout,
+    name: '订单管理',
+    meta: {
+      title: '订单管理'
+    },
+    children: [
+      {
+        path: 'list',
+        name: '订单列表',
+        component: () => import('@/views/order/order_list'),
+        meta: { title: '订单列表' }
+      },
+      {
+        path: 'detail',
+        name: '订单详情',
+        component: () => import('@/views/order/order_detail'),
+        meta: { title: '订单详情(开发中)' }
+      },
+      
+    ]
+  },
   // {
   //   path: '/nested',
   //   component: Layout,
