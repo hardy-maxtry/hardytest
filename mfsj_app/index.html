@@ -18,11 +18,31 @@
     </div>
 
     <div class="machine-header" v-if="view == 'list'">
-        <em>{{machineTitle}}</em>
-        <div>
-            <span>{{machineNumber}}</span>
+        <em>{{deviceInfo.showName}}</em>
+        <div @click="clickMachineInfo()">
+            <span>{{deviceInfo.deviceTaobaoNo}}</span>
         </div>
         <img src="top-background.png">
+
+        <el-dialog :append-to-body="true"
+                   :fullscreen="true"
+                   title="修改机器信息"
+                   :visible.sync="machineInfoDialog">
+            <div>
+                <el-form :model="machineInfo" :rules="machineInfoRules" ref="machineInfoForm" label-width="80px" >
+                    <el-form-item label="机器编号" prop="deviceNo">
+                        <el-input v-model="machineInfo.deviceNo"></el-input>
+                    </el-form-item>
+                    <el-form-item label="门店编号" prop="shopId">
+                        <el-input v-model.number="machineInfo.shopId"></el-input>
+                    </el-form-item>
+                </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+                    <el-button @click="machineInfoDialog = false">取消</el-button>
+                    <el-button type="primary" @click="confirmMachineInfo">确定</el-button>
+              </span>
+        </el-dialog>
     </div>
 
     <div v-if="view == 'detail'" class="item-details">
@@ -66,8 +86,8 @@
             </div>
             <div class="promotions-details">
                 <div class="promotion-detail" v-for="p in detailItem.promotions">
-                    <span class="type">{{ p.typeName }}</span>
-                    <span class="desc">{{ p.description }}</span>
+                    <span class="type">{{ p.type }}</span>
+                    <span class="desc">购买满{{ p.quotaQuantity }}件减</span>
                 </div>
             </div>
         </div>
@@ -229,7 +249,7 @@
             </div>
             <div class="cart-icon" @click="showCartContent = !showCartContent">
                 <span class="total-count">{{totalCount}}</span>
-                <img src="cart.png">
+                <img src="cart-bag.png">
             </div>
 
             <div class="total-price">
@@ -247,9 +267,9 @@
     </div>
     <el-dialog class="qr-dialog"
                width="80%"
-                top="30vh"
+               top="30vh"
                :show-close="false"
-                :center="true"
+               :center="true"
                :visible.sync="qrVisible">
         <div class="qr-content" @click="qrVisible = false">
             <h6>淘宝扫一扫，支付{{totalPrice}}元</h6>
@@ -257,7 +277,7 @@
             <img class="qr-background" src="qrbg.png">
         </div>
         <!--<span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元-->
-            <!--<i class="el-icon-error" @click="qrVisible = false"></i>-->
+        <!--<i class="el-icon-error" @click="qrVisible = false"></i>-->
         <!--</span>-->
     </el-dialog>
 </div>
@@ -267,12 +287,13 @@
 <script src="https://cdn.bootcss.com/element-ui/2.4.0/index.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
 <script>
-    let resourceRoot = '';
-    // let resourceRoot = 'http://139.224.54.234:8082/';
-    let apiRoot = 'api/';
-    // let apiRoot = 'http://139.224.54.234:8081/';
+    const resourceRoot = 'http://139.224.54.234:8082/';
+    const apiRoot = 'api/';
+    // const resourceRoot = 'http://139.224.54.234:8082/';
+    // const apiRoot = 'http://139.224.54.234:8081/';
     const adShowWait = 600000;
     const adStayDuration = 5000;
+    const checkMachineDuration = 5000;
 
     function getUrl(url, param) {
 
@@ -287,18 +308,28 @@
         })
     }
 
-    function showInfo(err) {
+    function getInfo(name) {
+        return localStorage[name];
+    }
 
+    function setInfo(name, value) {
+        localStorage[name] = value;
     }
 
 
     let vm = new Vue({
         el: '#mfsj-container',
         data: {
-            view: 'ads',
-            deviceTaobaoNo: '1',
-            machineTitle: '膜法世家99号',
-            machineNumber: '12005',
+            view: 'list',
+            deviceTaobaoNo: '',
+            deviceShopId: '',
+            // machineTitle: '膜法世家99号',
+            // machineNumber: '12005',
+            deviceInfo : {
+                showName : '请初始化',
+                deviceTaobaoNo :"000000"
+            },
+
             totalCount: 0,
             totalPrice: 89.4,
             totalPriceOriginal: 105.2,
@@ -307,30 +338,124 @@
             detailItem: null,
             onsaleItems: null,
 
-            ads: null,
+            ads: [],
             showAd: null,
             showAdIndex: 0,
+            machineError : false,
 
             showCartContent: false,
 
+            machineInfoDialog: false,
+            machineInfo: {
+                deviceNo: '',
+                shopId: '',
+            },
+            machineInfoRules: {
+                deviceNo: [{
+                    required: true, message: '请输入机器编号'
+                }],
+                shopId: [{
+                    required: true, message: '请输入门店编号'
+                }]
+            },
+            machineInfoClicks : 0,
+            machineInfoClicksDebounce : null,
         },
         computed: {
             cartItems() {
                 return (this.onsaleItems || []).filter(i => i.buyCount > 0);
             },
+            adsShowing(){
+                return this.ads.filter(a=> a.positionType == (this.machineError ? 2 : 1 ))
+            }
         },
         created() {
-            this.refreshCart();
-            this.queryItems();
-            this.queryAds();
-
             setInterval(_ => this.randomSelectAds(), adStayDuration);
+            setInterval(_ => this.queryMachineInfo(),checkMachineDuration);
+
             this.adsShowDebounce = _.debounce(_ => {
                 this.clearCart();
                 this.view = 'ads';
             }, adShowWait);
+
+            this.machineInfoClicksDebounce = _.debounce(_=>{
+                this.machineInfoClicks = 0;
+            },1000);
+
+            this.deviceTaobaoNo = getInfo('deviceNo');
+
+            this.initMachine();
+        },
+        watch : {
+            machineError(value){
+                if(value){
+                    this.view = 'ads';
+                }
+                this.randomSelectAds();
+
+            }
         },
         methods: {
+            clickMachineInfo(){
+                this.machineInfoClicks++;
+                this.machineInfoClicksDebounce();
+                if(this.machineInfoClicks > 8){
+                    this.showMachineInfo();
+                }
+            },
+            showMachineInfo() {
+                this.machineInfo.deviceNo = this.deviceTaobaoNo;
+                this.machineInfo.shopId = '';
+                this.machineInfoDialog = true;
+            },
+            confirmMachineInfo() {
+                this.$refs['machineInfoForm'].validate((valid) => {
+                    if (valid) {
+                        getUrl('device/detail', {deviceTaobaoNo: this.machineInfo.deviceNo})
+                            .then(resp => {
+                                if (resp.data.shopId == this.machineInfo.shopId) {
+                                    this.deviceInfo = resp.data;
+                                    this.$message('注册成功');
+                                    this.deviceTaobaoNo = resp.data.deviceTaobaoNo;
+                                    setInfo('deviceNo', this.deviceTaobaoNo);
+                                    this.initMachine();
+                                    this.machineInfoDialog = false;
+                                }
+                                else {
+                                    this.$message({
+                                        message: '注册失败，门店编号不匹配，请重新检查输入',
+                                        type: 'warning'
+                                    })
+                                }
+                            });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            initMachine() {
+                if (this.deviceTaobaoNo) {
+                    this.refreshCart();
+                    this.queryMachineInfo();
+                    this.queryItems();
+                    this.queryAds();
+                    if(this.adsShowing.length > 0){
+                        this.view = 'ads';
+                    }
+                }
+            },
+            queryMachineInfo(){
+                if(this.deviceTaobaoNo){
+                    getUrl('device/detail', {deviceTaobaoNo: this.deviceTaobaoNo})
+                        .then(resp => {
+                                this.deviceInfo = resp.data;
+                                this.machineError = false;
+                        }).catch(resp=> {
+                            this.machineError = true;
+                    });
+                }
+                
+            },
             queryAds() {
                 getUrl('advert/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                     .then((resp) => {
@@ -338,13 +463,17 @@
                             ad.image = resourceRoot + ad.image;
                             return ad;
                         });
+                        if(this.adsShowing.length > 0){
+                            this.view = 'ads';
+                        }
+
                         this.randomSelectAds();
                     }).catch((resp, status, err) => {
                     this.$message(resp.statusText);
                 });
             },
             randomSelectAds() {
-                let choose = this.ads || [];
+                let choose = this.adsShowing || [];
 
                 if (choose.length > 0) {
                     this.showAd = choose[this.showAdIndex];
@@ -355,6 +484,7 @@
                 }
             },
             clickAd(ad) {
+                if(this.machineError) return;
                 let item = this.onsaleItems.find((item) => item.taobaoNo == ad.url);   //taobaoNumber
                 if (item) {
                     this.selectItem(item);
@@ -369,8 +499,8 @@
             queryItems() {
                 getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                     .then((resp) => this.onsaleItems = resp.data.map((d) => {
-                        // let images = ['download.jpg'];
-                        let images = (d.images || []).map((i)=> resourceRoot + i);
+                        let images = ['download.jpg'];
+                        // let images = (d.images || []).map((i)=> resourceRoot + i);
                         return {
                             taobaoNo: d.productTaobaoNo,
                             title: d.name,
@@ -383,11 +513,12 @@
                             unit: d.unit,
                             description: '',
                             specifications: d.specifications,
-                            promotions: d.promotion.map(p => {
-                                p.typeName = ['', '促销', '满折', '满减'][p.type] || '满减';
-                                p.description = '满' + p.quotaQuantity + '件立享折扣价'  + p.price + '元' //'ERROR 等API';
-                                return p;
-                            }),
+                            promotions: d.promotion
+                            // promotions: d.promotion.map(p => {
+                            //     p.typeName = ['', '促销', '满折', '满减'][p.type];
+                            //     p.description = 'ERROR 等API';
+                            //     return p;
+                            // }),
                         };
                     }));
             },
