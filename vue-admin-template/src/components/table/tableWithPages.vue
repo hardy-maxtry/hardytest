@@ -13,20 +13,17 @@
                     :key="index"
                     min-width="20rem" >
                 </el-table-column>
-                <!-- <el-table-column fixed="right" label="操作" v-bind="buttons" min-width="40rem">
+                <el-table-column fixed="right" label="操作" v-bind="buttons" min-width="40rem" v-if="showButtons1">
                     <template slot-scope="scope">
                         <el-button  v-for="(item, index) in buttons" 
-                            @click.native.prevent="item.fn(scope.$index, filteredTableData)"  
+                            @click.native.prevent="item.fn(scope.$index, tableData.data)"  
                             size="small" 
                             :key="index" 
-                            v-if="item.show(scope.$index, filteredTableData)"
-                            :style="{float: item.right ? 'right' : 'left' }"
-                            :type="item.buttonType"
-                            :disabled="!!item.disabled">
+                        >
                         {{item.label}}
                         </el-button>
                     </template>
-                </el-table-column> -->
+                </el-table-column>
             </el-table>
         </el-row>
         <el-row>
@@ -53,11 +50,18 @@ export default {
     },
     pageChanged:{
         type :Function
+    },
+    showButtons:{
+        type: Boolean
+    },
+    buttons :{
+        type : Array
     }
   },
   data: function(){
       return {
-          currentPage : 1
+          currentPage : 1,
+          showButtons1 : !!this.showButtons,
       }
   },
   computed: {

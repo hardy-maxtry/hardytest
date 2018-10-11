@@ -15,11 +15,12 @@
               <el-select
                 v-model="form.productTaobaoNo"
                 filterable
+                :filter-method="filterProduct"
                 multiple
                 placeholder="输入商品名称"
                 :loading="loading">
                 <el-option
-                  v-for="item in options4"
+                  v-for="item in options4_computed"
                   :key="item.productTaobaoNo"
                   :label="item.name"
                   :value="item.productTaobaoNo">
@@ -99,6 +100,21 @@ export default {
       },
       options4: [],
       loading: false,
+      productFilterText : '',
+    }
+  },
+  watch(){
+
+  },
+  computed:{
+    options4_computed(){
+      if(this.productFilterText == ''){
+        return this.options4;
+      }else{
+        return this.options4.filter(x=>{
+          return x.productTaobaoNo.toString().indexOf(this.productFilterText) >= 0 || x.name.indexOf(this.productFilterText) >= 0
+        })
+      }
     }
   },
   mounted(){
@@ -106,7 +122,7 @@ export default {
     let that = this;
     axios.get(`${urls.device_list}?showName=`)
       .then(function(data){
-        console.log(data);
+        // console.log(data);
         that.machines = data.data;
       });
     let postData = 
@@ -206,6 +222,10 @@ export default {
             callback(new Error('开始日期不能晚于结束日期'));
           }
       callback();
+    },
+    filterProduct(val){
+      // console.log(arguments);
+      this.productFilterText = val
     }
   }
 }

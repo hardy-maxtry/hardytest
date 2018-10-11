@@ -239,6 +239,29 @@ export const constantRouterMap = [
       
     ]
   },
+  {
+    path: '/user',
+    component: Layout,
+    name: '用户管理',
+    meta: {
+      title: '用户管理'
+    },
+    children: [
+      {
+        path: 'user',
+        name: '我的信息',
+        component: () => import('@/views/user/user'),
+        meta: { title: '我的信息' }
+      },
+      {
+        path: 'admin',
+        name: '管理员入口',
+        component: () => import('@/views/user/admin'),
+        meta: { title: '管理员入口(开发中)' }
+      },
+      
+    ]
+  },
   // {
   //   path: '/nested',
   //   component: Layout,

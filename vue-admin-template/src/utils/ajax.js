@@ -51,7 +51,7 @@ service.interceptors.response.use(
           })
         }
         
-        return;
+        return Promise.reject(res);
       }else{
         Message({
           message: '网络请求出错，请联系管理员',

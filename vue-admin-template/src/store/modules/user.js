@@ -16,6 +16,9 @@ const user = {
     SET_NAME: (state, name) => {
       state.name = name
     },
+    SET_ID: (state, id) => {
+      state.id = id
+    },
     SET_AVATAR: (state, avatar) => {
       state.avatar = avatar
     },
@@ -49,6 +52,8 @@ const user = {
           setToken2(data)
           commit('SET_TOKEN', data.token)
           commit('SET_NAME', data.name)
+          commit('SET_ID', data.id)
+
           commit('SET_ROLES', data.role ? [data.role] : [])
           resolve()
         }).catch(error => {
@@ -93,6 +98,8 @@ const user = {
             reject('用户没有指定角色权限')
           }
           commit('SET_NAME', data.name)
+          commit('SET_ID', data.id)
+
           commit('SET_AVATAR', data.avatar)
           resolve(response)
         }).catch(error => {

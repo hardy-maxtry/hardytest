@@ -8,7 +8,7 @@
           </el-form-item>
         </el-col>
         <el-col :span="8">
-          <el-form-item label="商品名称" prop="id">
+          <el-form-item label="商品名称" prop="name">
             <el-input v-model="form.name" placeholder="商品名称" style="width:90%"></el-input>
           </el-form-item>
         </el-col>
@@ -75,6 +75,23 @@
           <el-input :disabled="true" v-model="fileList.map(x=>x.url).toString()"></el-input>
         </el-col> -->
       </el-form-item>
+      <el-form-item label="商品缩略图" prop="cover">
+        <el-col :span="4">
+        <el-upload
+          class="avatar-uploader"
+          action="/apiback/common/upload"
+          :show-file-list="false"
+          :headers="headers"
+          :on-success="handleAvatarSuccess"
+          :on-preview="handlePreview"
+          :before-upload="beforeAvatarUpload">
+          <!-- <el-button size="small" type="primary">点击上传</el-button> -->
+
+          <img v-if="form.cover != null && form.cover != ''" :src="form.cover" class="avatar">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </el-upload>
+        </el-col>
+      </el-form-item>
       <el-form-item label="商品描述" prop="content">
         <el-input 
           type="textarea"
@@ -109,7 +126,8 @@ export default {
         image: '',
         type: '1',
         url: '',
-        desc: ''
+        desc: '',
+        cover: '',
       },
       fileList: [
         // {
@@ -276,6 +294,22 @@ export default {
         }
         return isJPG && isLt2M;
       },
+      beforeAvatarUpload(file) {
+        const isJPG = file.type === 'image/jpeg';
+        const isLt2M = file.size / 1024 / 1024 < 2;
+
+        if (!isJPG) {
+          this.$message.error('上传图片只能是 JPG 格式!');
+        }
+        if (!isLt2M) {
+          this.$message.error('上传图片大小不能超过 2MB!');
+        }
+        return isJPG && isLt2M;
+      },
+      handleAvatarSuccess(res, file) {
+        // this.form.cover = URL.createObjectURL(file.raw);
+        this.$set(this.form, 'cover', urls.url_prefix + '/' + res.data)
+      },
       checkPrice(rule, value, callback){
         // console.log(arguments);
         // debugger
@@ -295,5 +329,29 @@ export default {
 .el-select {
   width: 100%;
 }
+
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409EFF;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
+  }
 </style>
 

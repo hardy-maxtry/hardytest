@@ -15,12 +15,14 @@
               <el-select
                 v-model="form.productTaobaoNo"
                 filterable
+                :filter-method="filterProduct"
+
                 multiple
                 placeholder="输入商品名称"
                 :loading="loading"
                 >
                 <el-option
-                  v-for="item in options4"
+                  v-for="item in options4_computed"
                   :key="item.productTaobaoNo"
                   :label="item.name"
                   :value="item.productTaobaoNo"
@@ -208,12 +210,22 @@ export default {
       loading : false,
       selectedProductName:'',
       selectedProductID : '',
-      scheduleMultipleSelection: []
+      scheduleMultipleSelection: [],
+      productFilterText : ''
     }
   },
   computed:{
     showApproveToolbar(){
       return this.productScheduleTableData != null && Array.isArray(this.productScheduleTableData) && this.productScheduleTableData.length > 0;
+    },
+    options4_computed(){
+      if(this.productFilterText == ''){
+        return this.options4;
+      }else{
+        return this.options4.filter(x=>{
+          return x.productTaobaoNo.toString().indexOf(this.productFilterText) >= 0 || x.name.indexOf(this.productFilterText) >= 0
+        })
+      }
     }
   },
   mounted(){
@@ -395,6 +407,10 @@ export default {
         });
       })
     },
+    filterProduct(val){
+      // console.log(arguments);
+      this.productFilterText = val
+    }
   }
 }
 </script>

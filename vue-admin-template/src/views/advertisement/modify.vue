@@ -125,7 +125,8 @@ export default {
   data() {
     return {
       form: {
-        advertDevice: '',
+        advertDevice: [],
+        advertDeviceList: [],
         title: '',
         startTime: '',
         endTime: '',
@@ -218,14 +219,21 @@ export default {
       })
     axios.get(`${urls.ad_detail}${ad_sys_id}`)
       .then(function(data){
-        console.log(data);
+        // console.log(data);
         that.form = data.data;
-        that.form.startTime = new Date(that.form.startTime);
-        that.form.endTime = new Date(that.form.endTime);
-        that.form.advertDeviceList = that.form.advertDevice.map(x=>{
+        
+        that.$set(that.form, 'startTime', new Date(that.form.startTime))
+        that.$set(that.form, 'endTime', new Date(that.form.endTime))
+        that.$set(that.form, 'advertDeviceList', JSON.parse(JSON.stringify(that.form.advertDevice.map(x=>{
           // return parseInt(x.deviceTaobaoNo);
           return x.deviceTaobaoNo;
-        });
+        }))))
+        
+        // debugger
+        // that.form.advertDeviceList = that.form.advertDevice.map(x=>{
+        //   // return parseInt(x.deviceTaobaoNo);
+        //   return x.deviceTaobaoNo;
+        // });
         if(data.data.image == '' || data.data.image == null){
           that.fileList = [];
         }else{
