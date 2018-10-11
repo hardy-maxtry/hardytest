@@ -68,6 +68,10 @@
             :on-exceed="handleExceed"
             :file-list="fileList">
             <el-button size="small" type="primary">点击上传</el-button>
+            &nbsp;
+            <el-tooltip class="item" effect="light" content="正方形 最多三张 推荐像素 500*500 jpg文件" placement="top" >
+              <i class="el-icon-question"></i>
+            </el-tooltip>
             <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
           </el-upload>
         </el-col>
@@ -89,7 +93,15 @@
 
           <img v-if="form.cover != null && form.cover != ''" :src="form.cover" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          
+          
         </el-upload>
+        
+        </el-col>
+        <el-col :span="2">
+          <el-tooltip class="item" effect="light" content="正方形 最多一张 推荐像素 200*200 jpg文件" placement="top" >
+            <i class="el-icon-question"></i>
+          </el-tooltip>
         </el-col>
       </el-form-item>
       <el-form-item label="商品描述" prop="content">
@@ -329,7 +341,9 @@ export default {
 .el-select {
   width: 100%;
 }
-
+  .avatar-uploader {
+    width : 90%;
+  }
   .avatar-uploader .el-upload {
     border: 1px dashed #d9d9d9;
     border-radius: 6px;
