@@ -7,7 +7,7 @@
           content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no"/>
-    <link href="https://cdn.bootcss.com/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
     <link href="mfsj.css" rel="stylesheet">
     <title>膜法世家</title>
 </head>
@@ -46,8 +46,8 @@
     </div>
 
     <div v-if="view == 'detail'" class="item-details">
-        <el-carousel :interval="10000">
-            <el-carousel-item v-for="img in detailItem.images" :key="img">
+        <el-carousel :interval="5000" height="30vh" :autoplay="true">
+            <el-carousel-item v-for="img in detailItem.images" :key="img" arrow="always">
                 <img :src="img" alt="" width="100%" height="100%">
             </el-carousel-item>
         </el-carousel>
@@ -267,13 +267,14 @@
     </div>
     <el-dialog class="qr-dialog"
                width="80%"
-               top="30vh"
+               top="10vh"
                :show-close="false"
                :center="true"
                :visible.sync="qrVisible">
         <div class="qr-content" @click="qrVisible = false">
             <h6>淘宝扫一扫，支付{{totalPrice}}元</h6>
-            <img class="qr" src="qr.jpg" alt="">
+            <!-- <img class="qr" src="qr.jpg" alt=""> -->
+            <img class="qr" :src="qrImg" alt="">
             <img class="qr-background" src="qrbg.png">
         </div>
         <!--<span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元-->
@@ -282,15 +283,18 @@
     </el-dialog>
 </div>
 <!--<script src="randomock.js"></script>-->
-<script src="https://cdn.bootcss.com/lodash.js/4.17.10/lodash.min.js"></script>
-<script src="https://cdn.bootcss.com/vue/2.5.16/vue.js"></script>
-<script src="https://cdn.bootcss.com/element-ui/2.4.0/index.js"></script>
-<script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/index.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script>
     const resourceRoot = 'http://139.224.54.234:8082/';
     const apiRoot = 'api/';
+    const apiBackRoot = 'apiBack/';
+
     // const resourceRoot = 'http://139.224.54.234:8082/';
     // const apiRoot = 'http://139.224.54.234:8081/';
+
     const adShowWait = 600000;
     const adStayDuration = 5000;
     const checkMachineDuration = 5000;
@@ -325,10 +329,7 @@
             deviceShopId: '',
             // machineTitle: '膜法世家99号',
             // machineNumber: '12005',
-            deviceInfo : {
-                showName : '请初始化',
-                deviceTaobaoNo :"000000"
-            },
+            deviceInfo : {},
 
             totalCount: 0,
             totalPrice: 89.4,
@@ -360,6 +361,7 @@
             },
             machineInfoClicks : 0,
             machineInfoClicksDebounce : null,
+            qrImg : '',
         },
         computed: {
             cartItems() {
@@ -445,16 +447,13 @@
                 }
             },
             queryMachineInfo(){
-                if(this.deviceTaobaoNo){
-                    getUrl('device/detail', {deviceTaobaoNo: this.deviceTaobaoNo})
-                        .then(resp => {
-                                this.deviceInfo = resp.data;
-                                this.machineError = false;
-                        }).catch(resp=> {
-                            this.machineError = true;
-                    });
-                }
-                
+                getUrl('device/detail', {deviceTaobaoNo: this.deviceTaobaoNo})
+                    .then(resp => {
+                            this.deviceInfo = resp.data;
+                            this.machineError = false;
+                    }).catch(resp=> {
+                        this.machineError = true;
+                });
             },
             queryAds() {
                 getUrl('advert/list', {deviceTaobaoNo: this.deviceTaobaoNo})
@@ -499,8 +498,8 @@
             queryItems() {
                 getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                     .then((resp) => this.onsaleItems = resp.data.map((d) => {
-                        let images = ['download.jpg'];
-                        // let images = (d.images || []).map((i)=> resourceRoot + i);
+                        // let images = ['download.jpg'];
+                        let images = (d.images || []).map((i)=> resourceRoot + i);
                         return {
                             taobaoNo: d.productTaobaoNo,
                             title: d.name,
@@ -554,7 +553,40 @@
                 this.detailItem = null;
                 this.view = 'list';
             },
+            // showQR() {
+            //     this.qrVisible = true;
+            // },
             showQR() {
+                let postData = {
+                    deviceTaobaoNo : this.deviceInfo.deviceTaobaoNo,
+                    item : this.cartItems.map(x=>{
+                       return { 
+                            productTaobaoNo : x.taobaoNo ,
+                            quantity : x.buyCount,
+                            salePrice : x.salePrice,
+                            saleTotalPrice :  x.buyCount * x.salePrice,
+                            sku : '0'
+                       }
+                    })
+                }
+                let that = this;
+                // console.log(this.cartItems, postData)
+                
+                // $.post(apiRoot + '/order/create', this.cartItems, function(result){
+                //     console.log(result)
+                // })
+                
+                $.ajax({
+                    method : 'post',
+                    url : apiRoot + 'order/create',
+                    contentType: "application/json; charset=utf-8",
+                    data: JSON.stringify(postData),
+                    dataType: "json",
+                    success: function (result) {
+                        // console.log(result)
+                        that.qrImg = result.data.smallPicUrl;
+                    },
+                })
                 this.qrVisible = true;
             },
             refreshCart() {
