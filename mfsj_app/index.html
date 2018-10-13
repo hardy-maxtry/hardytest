@@ -32,7 +32,7 @@
             </el-form>
         </div>
         <div v-if="!loginToken">
-            <el-form  :model="loginInfo" :rules="loginInfoRules" ref="loginInfoForm" label-width="80px">
+            <el-form :model="loginInfo" :rules="loginInfoRules" ref="loginInfoForm" label-width="80px">
                 <el-form-item label="用户名" prop="username">
                     <el-input v-model="loginInfo.username"></el-input>
                 </el-form-item>
@@ -160,7 +160,7 @@
                 </div>
 
                 <div class="cart-item" v-for="item in cartItems">
-                    <div class="small-img"><img :src="item.images[0]" alt=""></div>
+                    <div class="small-img"><img :src="item.cover" alt=""></div>
                     <div class="title">
                         <h6>{{item.title}}</h6>
                     </div>
@@ -288,17 +288,17 @@
     const deliveryCheckInterval = 5000; //出货状态轮询时间
     const deliveryStayDuration = 300000;
 
-    function __get(url, param,headers) {
+    function __get(url, param, headers) {
         return new Promise(function (rs, rj) {
             $.ajax({
                 method: 'get',
                 url: url,
                 data: param,
                 dataType: "json",
-                headers : headers,
+                headers: headers,
             }).done(function (resp) {
-                    rs(resp);
-                })
+                rs(resp);
+            })
                 .fail(function (resp) {
                     rj(resp);
                 })
@@ -322,16 +322,16 @@
         })
     }
 
-    function getUrl(url, param,headers) {
-        return __get(apiRoot + url, param,headers);
+    function getUrl(url, param, headers) {
+        return __get(apiRoot + url, param, headers);
     }
 
     function postUrl(url, param) {
         return __postJson(apiRoot + url, param);
     }
 
-    function getBackUrl(url, param,headers) {
-        return __get(apiBackRoot + url, param,headers);
+    function getBackUrl(url, param, headers) {
+        return __get(apiBackRoot + url, param, headers);
     }
 
     function postBackUrl(url, param) {
@@ -429,18 +429,18 @@
 
                 machineInfoDialog: false,
                 loginToken: null,
-                loginInfo : {
-                    username : '',
+                loginInfo: {
+                    username: '',
                     password: ''
                 },
-                loginInfoRules : {
+                loginInfoRules: {
                     username: [{
                         required: true, message: '请输入用户名'
                     }],
                     password:
-                    [{
-                        required: true, message: '请输入密码'
-                    }]
+                        [{
+                            required: true, message: '请输入密码'
+                        }]
                 },
                 machineInfo:
                     {
@@ -506,25 +506,14 @@
             }
             ,
             created() {
+                this.deviceTaobaoNo = getInfo('deviceNo');
+
+
                 setInterval(_ => this.randomSelectAds(), adStayDuration);
                 setInterval(_ => {
-                        if (this.deviceTaobaoNo) {
-                            getUrl('device/detail', {deviceTaobaoNo: this.deviceTaobaoNo})
-                                .then(resp => {
-                                    if (resp.data.status > 0) {
-                                        //正常
-                                        this.deviceInfo = resp.data;
-                                        this.machineError = false;
-                                    }
-                                    else {
-                                        this.machineError = true;
-                                    }
-                                }).catch(resp => {
-                                this.machineError = true;
-                            })
-                        }
-                    }, checkMachineDuration
-                );
+                    this.queryDeviceInfo();
+                }, checkMachineDuration);
+                this.queryDeviceInfo();
 
                 setInterval(_ => {
                     this.queryAds();
@@ -538,8 +527,7 @@
                 this.machineInfoClicksDebounce = _.debounce(_ => {
                     this.machineInfoClicks = 0;
                 }, 1000);
-
-                this.deviceTaobaoNo = getInfo('deviceNo');
+                
                 this.initMachine();
             }
             ,
@@ -562,6 +550,9 @@
                     if (value != 'delivery') {
                         HandleBag.clear(this.deliveryBag);
                     }
+                    if (value == 'detail') {
+                        window.scrollTo(0, 0);
+                    }
                 }
             }
             ,
@@ -580,24 +571,25 @@
                     this.machineInfoDialog = true;
                 }
                 ,
-                confirmLoginInfo(){
-                    postBackUrl('logon/sign-in',{
-                        "password":this.loginInfo.password,
+                confirmLoginInfo() {
+                    postBackUrl('logon/sign-in', {
+                        "password": this.loginInfo.password,
                         "userName": this.loginInfo.username
-                    }).then(_=>{
-                        if(_.code == '200'){
+                    }).then(_ => {
+                        if (_.code == '200') {
                             this.loginToken = _.data.token;
                         }
-                        else{
+                        else {
                             this.$message({
-                                message : _.msg,
-                                type : 'error'
+                                message: _.msg,
+                                type: 'error'
                             })
-                        };
-                    }).catch(_=>{
+                        }
+                        ;
+                    }).catch(_ => {
                         this.$message({
-                            message : _,
-                            type : 'error'
+                            message: _,
+                            type: 'error'
                         })
                     });
                 },
@@ -608,10 +600,10 @@
                             getBackUrl('device/device-init',
                                 {
                                     deviceTaobaoNo: this.machineInfo.deviceNo,
-                                    shopId : this.machineInfo.shopId
-                            },{
-                                token : this.loginToken
-                            })
+                                    shopId: this.machineInfo.shopId
+                                }, {
+                                    token: this.loginToken
+                                })
                                 .then(resp => {
                                     if (resp.data) {
                                         this.$message('注册成功');
@@ -658,6 +650,23 @@
                     });
                 }
                 ,
+                queryDeviceInfo() {
+                    if (this.deviceTaobaoNo) {
+                        getUrl('device/detail', {deviceTaobaoNo: this.deviceTaobaoNo})
+                            .then(resp => {
+                                if (resp.data.status > 0) {
+                                    //正常
+                                    this.deviceInfo = resp.data;
+                                    this.machineError = false;
+                                }
+                                else {
+                                    this.machineError = true;
+                                }
+                            }).catch(resp => {
+                            this.machineError = true;
+                        })
+                    }
+                },
                 randomSelectAds() {
                     let choose = this.adsShowing || [];
 

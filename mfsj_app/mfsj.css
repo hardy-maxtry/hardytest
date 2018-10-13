@@ -151,7 +151,7 @@ body {
   z-index: -1;
 }
 #mfsj-container div.list-cover {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   right: 0;
