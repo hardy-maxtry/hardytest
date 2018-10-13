@@ -69,9 +69,17 @@ abbr,
 acronym {
   border: 0;
 }
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
 body {
   font-size: 30px;
-  background-color: #323032;
+  background-color: #282020;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -469,26 +477,36 @@ body {
   width: 100%;
   padding-left: 3%;
 }
-#mfsj-container .qr-dialog div.qr-content img.qr {
+#mfsj-container .qr-dialog div.qr-content div.qr {
   position: absolute;
   width: 60%;
   margin-top: 35%;
   margin-left: 21%;
 }
+#mfsj-container .qr-dialog div.qr-content div.qr > img {
+  width: 100%;
+}
+#mfsj-container .qr-dialog div.qr-content div.wait {
+  padding-top: 60%;
+  position: absolute;
+  font-size: 2em;
+  text-align: center;
+  width: 100%;
+}
 #mfsj-container .qr-dialog div.qr-content h6 {
   position: absolute;
   width: 100%;
   top: 23%;
-  font-size: 1.2em;
+  font-size: 1.5em;
 }
 @media (min-width: 400px) {
   #mfsj-container .qr-dialog div.qr-content h6 {
-    font-size: 1.5em;
+    font-size: 1.8em;
   }
 }
 @media (min-width: 500px) {
   #mfsj-container .qr-dialog div.qr-content h6 {
-    font-size: 1.8em;
+    font-size: 2em;
   }
 }
 #mfsj-container .qr-dialog .el-dialog {
@@ -500,6 +518,132 @@ body {
 }
 #mfsj-container .qr-dialog .el-dialog__body {
   padding: 0;
+}
+#mfsj-container div.delivery {
+  padding-bottom: 4em;
+}
+#mfsj-container div.delivery > div.pay-success {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+#mfsj-container div.delivery > div.pay-success > div.dialog {
+  margin: 30% 0;
+  box-sizing: content-box;
+  width: 100%;
+  z-index: 25;
+  position: relative;
+}
+#mfsj-container div.delivery > div.pay-success > div.dialog > img {
+  margin: 0 10%;
+  text-align: center;
+  width: 80%;
+}
+#mfsj-container div.delivery > div.pay-success > div.dialog > span.price-info-large {
+  text-align: center;
+  display: block;
+  position: absolute;
+  top: 40%;
+  left: 0;
+  right: 0;
+}
+#mfsj-container div.delivery > div.pay-success > div.dialog > span.price-info-large > em {
+  font-size: 2.4em;
+}
+#mfsj-container div.delivery > div.pay-success > div.dialog > span.price-info-small {
+  display: flex;
+  left: 25%;
+  right: 25%;
+  top: 65%;
+  position: absolute;
+}
+#mfsj-container div.delivery > div.pay-success > div.dialog > span.price-info-small > span {
+  flex: 1;
+  color: gray;
+}
+#mfsj-container div.delivery > div.pay-success > div.bg-cover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #000000;
+  opacity: 0.5;
+  z-index: 24;
+}
+#mfsj-container div.delivery > div.item-list {
+  padding: 0 0.8em;
+  position: relative;
+}
+#mfsj-container div.delivery > div.item-list > img.delivery-bg {
+  position: absolute;
+  width: 100%;
+  left: 0;
+  z-index: 10;
+  top: -20%;
+}
+#mfsj-container div.delivery > div.item-list > div.user {
+  padding: 0.5em 0;
+  font-size: 1.3em;
+  display: flex;
+  color: #f7ac37;
+  z-index: 21;
+  position: relative;
+}
+#mfsj-container div.delivery > div.item-list > div.user > div.name {
+  text-align: left;
+  flex: 1;
+}
+#mfsj-container div.delivery > div.item-list > div.user > div.status {
+  text-align: right;
+  flex: 1;
+}
+#mfsj-container div.delivery > div.item-list > div.header {
+  border-top: lightgray dashed 2px;
+  display: flex;
+  font-size: 0.6em;
+  color: #b3b4b6;
+  padding: 2em 0;
+  z-index: 21;
+  position: relative;
+}
+#mfsj-container div.delivery > div.item-list > div.header > div.order-id {
+  flex: 1;
+  white-space: nowrap;
+  text-align: left;
+}
+#mfsj-container div.delivery > div.item-list > div.header > div.total-count {
+  flex: 1;
+  text-align: right;
+}
+#mfsj-container div.delivery > div.item-list > div.delivery-item {
+  display: flex;
+  align-items: center;
+  margin: 1.4em 0;
+}
+#mfsj-container div.delivery > div.item-list > div.delivery-item > div.cover {
+  width: 100px;
+}
+#mfsj-container div.delivery > div.item-list > div.delivery-item > div.cover > img {
+  width: 100%;
+}
+#mfsj-container div.delivery > div.item-list > div.delivery-item > div.title {
+  padding: 0.2em 0.5em;
+  font-size: 0.8em;
+  color: #fff;
+  flex: 9;
+}
+#mfsj-container div.delivery > div.item-list > div.delivery-item > div.title > span {
+  color: #b3b4b6;
+}
+#mfsj-container div.delivery > div.item-list > div.delivery-item > div.status {
+  font-size: 0.8em;
+  color: #c9a76f;
+}
+#mfsj-container div.delivery > div.item-list > div.footer {
+  border-bottom: lightgray dashed 2px;
 }
 #mfsj-container div.machine-footer {
   height: 150px;
@@ -556,7 +700,8 @@ body {
   flex: 99;
 }
 #mfsj-container div.machine-footer div.cart-content > div.cart-item > div.price {
-  width: 4em;
+  width: 5em;
+  white-space: nowrap;
   flex: 1;
   margin-left: 0.4em;
   color: #e3676f;

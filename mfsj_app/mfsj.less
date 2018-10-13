@@ -30,11 +30,21 @@ q:before,q:after {
 abbr,acronym {
 	border: 0;
 }
+* {
+	-webkit-touch-callout:none;
+	-webkit-user-select:none;
+	-khtml-user-select:none;
+	-moz-user-select:none;
+	-ms-user-select:none;
+	user-select:none;
+}
 
 @pageWidth : 100%;
 body{
 	//min-width:540px;
-	background-color: #323032;
+	font-size:30px;
+	//background-color: #323032;
+	background-color: #282020;
 	width:100%;
 	margin: 0;
 	padding: 0;
@@ -63,9 +73,10 @@ body{
 		display: block;
 		position: fixed;
 		top: 200px;
+		width: 20%;
 		z-index: 10;
 		>img{
-			width: 60px;
+			width:100%;
 		}
 	}
 	div.ads{
@@ -90,6 +101,7 @@ body{
 
 		padding: 0 1em;
 		z-index: 999;
+		overflow: hidden;
 
 		line-height: @header-height;
 		height: @header-height;
@@ -225,9 +237,9 @@ body{
 				background-color: #fff;
 				padding: 1% 2%;
 				//overflow: hidden;
-				width: 46%;
+				width: 47%;
 				margin-left: 2%;
-				margin-right: 2%;
+				//margin-right: 2%;
 				margin-top: 65px;
 				margin-bottom: 5%;
 				//padding: 1%;
@@ -315,7 +327,7 @@ body{
 				overflow: hidden;
 				span{
 					margin: 0.2em 0.2em;
-					font-size: 0.6em;
+					font-size: 0.8em;
 					display: block;
 					float: left;
 					padding: 0.2em 0.4em;
@@ -363,7 +375,7 @@ body{
 						border-radius: 3px;
 						margin-right: 0.5em;
 						color: white;
-						background-color: #ff5f8f;
+						background-color: #d78280;
 						padding: 0.2em 0.4em;
 						font-size: 0.8em;
 					}
@@ -458,22 +470,32 @@ body{
 				width:100%;
 				padding-left: 3%;
 			}
-			img.qr{
+			div.qr{
 				position: absolute;
 				width: 60%;
 				margin-top: 35%;
 				margin-left: 21%;
+				>img{
+					width: 100%;
+				}
+			}
+			div.wait{
+				padding-top: 60%;
+				position: absolute;
+				font-size: 2em;
+				text-align: center;
+				width: 100%;
 			}
 			h6{
 				position: absolute;
 				width: 100%;
 				top: 23%;
-				font-size: 1.2em;
+				font-size: 1.5em;
 				@media(min-width: 400px){
-					font-size: 1.5em;
+					font-size: 1.8em;
 				}
 				@media(min-width: 500px){
-					font-size: 1.8em;
+					font-size: 2em;
 				}
 			}
 		}
@@ -489,7 +511,134 @@ body{
 			padding: 0;
 		}
 	}
-	@footerHeight:100px;
+	div.delivery{
+		padding-bottom: 4em;
+
+		>div.pay-success{
+			position: absolute;
+			top:0;
+			left:0;
+			right:0;
+			bottom: 0;
+			>div.dialog{
+				margin: 30% 0;
+				box-sizing: content-box;
+				width: 100%;
+				z-index: 25;
+				position: relative;
+				>img{
+					margin: 0 10%;
+					text-align: center;
+					width: 80%;
+				}
+				>span.price-info-large{
+					text-align: center;
+					display: block;
+					position: absolute;
+					top: 40%;
+					left: 0;
+					right: 0;
+					>em{
+						font-size: 2.4em;
+					}
+				}
+				>span.price-info-small{
+					display: flex;
+					left: 25%;
+					right: 25%;
+					top: 65%;
+					position: absolute;
+					>span{
+						flex: 1;
+						color: gray;
+					}
+				}
+			}
+			>div.bg-cover{
+				position: absolute;
+				top:0;
+				left:0;
+				right:0;
+				bottom:0;
+				background-color: #000000;
+				opacity: 0.5;
+				z-index: 24;
+			}
+		}
+		>div.item-list{
+			padding: 0 0.8em;
+			position: relative;
+			>img.delivery-bg{
+				position: absolute;
+				width: 100%;
+				left: 0;
+				z-index: 10;
+				top: -20%;
+			}
+			>div.user{
+				padding: 0.5em 0;
+				font-size: 1.3em;
+				display:flex;
+				color: #f7ac37;
+				z-index: 21;
+				position: relative;
+				>div.name{
+					text-align: left;
+					flex:1;
+				}
+				>div.status{
+					text-align: right;
+					flex:1;
+				}
+			}
+			>div.header{
+				border-top:lightgray dashed 2px;
+				display: flex;
+				font-size: 0.6em;
+				color: #b3b4b6;
+				padding: 2em 0;
+				z-index: 21;
+				position: relative;
+				>div.order-id{
+					flex:1;
+					white-space: nowrap;
+					text-align: left;
+				}
+				>div.total-count{
+					flex:1;
+					text-align: right;
+				}
+			}
+			>div.delivery-item{
+				display:flex;
+				align-items: center;
+				margin: 1.4em 0;
+				>div.cover{
+					width: 100px;
+					>img{
+						width: 100%;
+					}
+				}
+				>div.title{
+					padding: 0.2em 0.5em;
+					font-size: 0.8em;
+					color: #fff;
+					flex:9;
+					>span{
+						color: #b3b4b6;
+					}
+				}
+				>div.status{
+					font-size: 0.8em;
+					color: #c9a76f;
+				}
+			}
+			>div.footer{
+				border-bottom:lightgray dashed 2px;
+			}
+		}
+	}
+	@footerHeight:150px;
 	div.machine-footer{
 		height: @footerHeight;
 		position: fixed;
@@ -503,26 +652,28 @@ body{
 			position: absolute;
 			left: 10px;
 			right: 10px;
-			bottom: 140px;
+			bottom: @footerHeight*1.4;
 			background-color: white;
 			z-index: 900;
 			color: black;
 			padding: 1em;
 			border-radius: 10px;
 			>div.header{
+
 				padding: 0.5em 0;
 				border-bottom: solid 1px #ebeced;
 				display: flex;
 				justify-content: space-between;
-				font-size: 20px;
+				font-size: 1em;
 				>a{
 					padding: 0.2em;
 					&.clear{
-						font-size: 16px;
+						font-size: 1em;
 						color: #696a6b;
 					}
 				}
 				>h6{
+					padding: 0.2em;
 					font-weight: bold;
 				}
 			}
@@ -540,8 +691,12 @@ body{
 				}
 				>div.title{
 					margin-left:0.4em;
+					flex:99;
 				}
 				>div.price{
+					width: 5em;
+					white-space: nowrap;
+					flex:1;
 					margin-left:0.4em;
 					>em{
 						font-size: 1.2em;
@@ -601,12 +756,12 @@ body{
 				background-color: #dc6e63;
 				color: white;
 				display: inline-block;
-				height: 20px;
-				width: 20px;
-				border-radius: 20px;
-				line-height: 20px;
+				height: 1.5em;
+				width: 1.5em;
+				border-radius: 1em;
+				line-height: 1.5em;
 				text-align: center;
-				font-size: 6px;
+				font-size: 1em;
 				padding: 0 0.5em;
 			}
 			>img{
@@ -619,15 +774,14 @@ body{
 			line-height: @footerHeight;
 			padding-right: 0.5em;
 			margin-left: 25%;
-			margin-top: 20px;
 			white-space: nowrap;
 			div.price{
-				line-height: 3em;
-				font-size: 1.2em;
+				line-height: @footerHeight;
+				font-size: @footerHeight /4;
 				em{
-					font-size: 1.2em;
+					font-size: 1em;
 					@media (min-width: 400px){
-						font-size: 1.6em;
+						font-size: @footerHeight /3;
 					}
 				}
 			}
@@ -662,7 +816,7 @@ body{
 			position: relative;
 			background-color: #393739;
 			width: 100%;
-			height: 100px;
+			height: @footerHeight;
 		}
 		img.cart-background{
 			position: absolute;
@@ -670,6 +824,7 @@ body{
 			left: 0;
 			bottom: -20px;
 			z-index: -1;
+			height: @footerHeight + 40px;
 		}
 	}
 }

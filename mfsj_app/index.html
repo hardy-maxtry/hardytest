@@ -29,7 +29,7 @@
                    title="修改机器信息"
                    :visible.sync="machineInfoDialog">
             <div>
-                <el-form :model="machineInfo" :rules="machineInfoRules" ref="machineInfoForm" label-width="80px" >
+                <el-form :model="machineInfo" :rules="machineInfoRules" ref="machineInfoForm" label-width="80px">
                     <el-form-item label="机器编号" prop="deviceNo">
                         <el-input v-model="machineInfo.deviceNo"></el-input>
                     </el-form-item>
@@ -253,7 +253,7 @@
             </div>
 
             <div class="total-price">
-                <div class="price">总计：<em>{{totalPrice}}</em>元
+                <div class="price">总计：<em>{{totalSalePrice}}</em>元
                     <!--<del>{{totalPriceOriginal}}元</del>-->
                 </div>
                 <!--<div class="tip">含限购商品，实际金额以支付结果为准</div>-->
@@ -272,37 +272,86 @@
                :center="true"
                :visible.sync="qrVisible">
         <div class="qr-content" @click="qrVisible = false">
-            <h6>淘宝扫一扫，支付{{totalPrice}}元</h6>
-            <!-- <img class="qr" src="qr.jpg" alt=""> -->
-            <img class="qr" :src="qrImg" alt="">
+            <h6>淘宝扫一扫，支付{{totalSalePrice}}元</h6>
+            <div id="payQR" class="qr" v-show="qrImage"></div>
+            <div class="wait" v-show="!qrImage">正在生成支付二维码，请稍后 <i class="el-icon-loading"></i>
+            </div>
             <img class="qr-background" src="qrbg.png">
         </div>
         <!--<span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元-->
         <!--<i class="el-icon-error" @click="qrVisible = false"></i>-->
         <!--</span>-->
     </el-dialog>
+    <div class="delivery" v-if="view == 'delivery'">
+        <div class="pay-success" v-if="paySuccessVisible">
+            <div class="dialog">
+                <span class="price-info-large">
+                    <em>{{ payOrderPrice }}</em>元
+                </span>
+                <span class="price-info-small">
+                    <span>支付宝支付</span>
+                    <em>{{payOrderPrice}}元</em>
+                </span>
+                <img src="delivery.png" alt="">
+            </div>
+            <div class="bg-cover"></div>
+        </div>
+        <el-carousel :interval="5000" height="30vh" :autoplay="true" indicator-position="none" arrow="never">
+            <el-carousel-item v-for="img in adsDelivery" :key="img.image" arrow="always">
+                <img :src="img.image" alt="" width="100%" height="100%">
+            </el-carousel-item>
+        </el-carousel>
+        <div class="item-list">
+            <img src="delivery-bg.png" alt="" class="delivery-bg">
+            <div class="user">
+                <div class="name">{{deliveryInfo.username}}</div>
+                <div class="status">出货中...</div>
+            </div>
+            <div class="header">
+                <div class="order-id">订单编号：{{deliveryInfo.deliveryOrderId}}</div>
+                <div class="total-count">共{{deliveryInfo.deliveryItems.length}}件商品</div>
+            </div>
+            <div v-for="item in deliveryInfo.deliveryItems" class="delivery-item">
+                <div class="cover">
+                    <img :src="item.cover" alt="">
+                </div>
+                <div class="title">
+                    <h6>{{ item.title }}</h6>
+                    <span>×{{ item.count }}</span>
+                </div>
+                <div class="status">
+                    <em>{{ getDeliveryStatus(item.status) }}</em>
+                </div>
+            </div>
+            <div class="footer"></div>
+        </div>
+    </div>
 </div>
 <!--<script src="randomock.js"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/index.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="qrcode.min.js"></script>
 <script>
+    // const resourceRoot = 'http://139.224.54.234:8082/';
+    // const apiRoot = 'http://139.224.54.234:8081/';
+
     const resourceRoot = 'http://139.224.54.234:8082/';
     const apiRoot = 'api/';
     const apiBackRoot = 'apiBack/';
 
-    // const resourceRoot = 'http://139.224.54.234:8082/';
-    // const apiRoot = 'http://139.224.54.234:8081/';
+    const adShowWait = 60000; //无操作显示广告等待时间
+    const adStayDuration = 5000; //每张广告持续时间
+    const checkMachineDuration = 5000; //机器状态轮询时间
 
-    const adShowWait = 600000;
-    const adStayDuration = 5000;
-    const checkMachineDuration = 5000;
+    const qrWaitDuration = 300000; //二维码超时时间
+    const qrCheckInterval = 5000; //扫码状态轮询时间
+    const deliveryCheckInterval = 5000; //出货状态轮询时间
 
-    function getUrl(url, param) {
-
+    function __get(url, param) {
         return new Promise(function (rs, rj) {
-            $.get(apiRoot + url, param)
+            $.get(url, param)
                 .done(function (resp) {
                     rs(resp);
                 })
@@ -310,6 +359,39 @@
                     rj(resp);
                 })
         })
+    }
+
+    function __postJson(url, param) {
+        return new Promise(function (rs, rj) {
+            $.ajax({
+                method: 'post',
+                url: url,
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify(param),
+                dataType: "json"
+            }).done(function (resp) {
+                rs(resp);
+            })
+                .fail(function (resp) {
+                    rj(resp);
+                })
+        })
+    }
+
+    function getUrl(url, param) {
+        return __get(apiRoot + url, param);
+    }
+
+    function postUrl(url, param) {
+        return __postJson(apiRoot + url, param);
+    }
+
+    function getBackUrl(url, param) {
+        return __get(apiBackRoot + url, param);
+    }
+
+    function postBackUrl(url, param) {
+        return __postJson(apiBackRoot + url, param);
     }
 
     function getInfo(name) {
@@ -320,6 +402,49 @@
         localStorage[name] = value;
     }
 
+    function HandleBag() {
+        this._timeoutBag = [];
+        this._intervalBag = [];
+        this.clear = function () {
+            this._timeoutBag.forEach(_ => clearTimeout(_));
+            this._intervalBag.forEach(_ => clearInterval(_));
+            this._timeoutBag.length = 0;
+            this._intervalBag.length = 0;
+        };
+
+        this.setTimeout = function (handle, timeout) {
+            this._timeoutBag.push(setTimeout(handle, timeout));
+        };
+        this.setInterval = function (handle, timeout ,first) {
+            if(first) handle();
+            this._intervalBag.push(setInterval(handle, timeout));
+        };
+    }
+
+    HandleBag.clear = function (bag) {
+        if (bag) bag.clear();
+    };
+
+    function PromiseDebounce() {
+    }
+
+    PromiseDebounce.create = function (handle) {
+        let exists = null;
+        return function () {
+            if (exists) {
+                //直接跳过不执行
+                return Promise.reject('debounce cancel');
+            }
+            else {
+                exists = handle();
+                return exists.then(_ => {
+                    exists = null;
+                    return _;
+                });
+            }
+        }
+    };
+
 
     let vm = new Vue({
         el: '#mfsj-container',
@@ -329,20 +454,24 @@
             deviceShopId: '',
             // machineTitle: '膜法世家99号',
             // machineNumber: '12005',
-            deviceInfo : {},
+            deviceInfo: {},
 
             totalCount: 0,
-            totalPrice: 89.4,
-            totalPriceOriginal: 105.2,
+            totalPrice: 0,
+            totalSalePrice: 0,
+
             qrVisible: false,
+            qrImage: false,
+            qrTimer: 0,
+
             promotionDetailVisible: false,
             detailItem: null,
-            onsaleItems: null,
+            onsaleItems: [],
 
             ads: [],
             showAd: null,
             showAdIndex: 0,
-            machineError : false,
+            machineError: false,
 
             showCartContent: false,
 
@@ -359,49 +488,78 @@
                     required: true, message: '请输入门店编号'
                 }]
             },
-            machineInfoClicks : 0,
-            machineInfoClicksDebounce : null,
-            qrImg : '',
+            machineInfoClicks: 0,
+            machineInfoClicksDebounce: null,
+
+            paySuccessVisible: false,
+            payOrderPrice: 0,
+            payOrderId: null,
+            deliveryInfo: {
+                deliveryOrderId: 1233329295491234,
+                deliveryItems: []
+            },
+            deliveryStatus: {
+                "-3": '取消',
+                "-2": '异常',
+                "-1": '缺货',
+                "1": '准备中',
+                "2": '取货中',
+                "3": '出货中',
+                "4": '已取货'
+            }
         },
         computed: {
             cartItems() {
                 return (this.onsaleItems || []).filter(i => i.buyCount > 0);
             },
-            adsShowing(){
-                return this.ads.filter(a=> a.positionType == (this.machineError ? 2 : 1 ))
+            adsShowing() {
+                return this.ads.filter(a => a.positionType == (this.machineError ? 2 : 1))
+            },
+            adsDelivery() {
+                return this.ads.filter(a => a.positionType == 3);
             }
         },
         created() {
             setInterval(_ => this.randomSelectAds(), adStayDuration);
-            setInterval(_ => this.queryMachineInfo(),checkMachineDuration);
+            setInterval(_ => this.queryMachineInfo(), checkMachineDuration);
 
             this.adsShowDebounce = _.debounce(_ => {
                 this.clearCart();
                 this.view = 'ads';
             }, adShowWait);
 
-            this.machineInfoClicksDebounce = _.debounce(_=>{
+            this.machineInfoClicksDebounce = _.debounce(_ => {
                 this.machineInfoClicks = 0;
-            },1000);
+            }, 1000);
 
             this.deviceTaobaoNo = getInfo('deviceNo');
-
             this.initMachine();
+
         },
-        watch : {
-            machineError(value){
-                if(value){
+        watch: {
+            machineError(value) {
+                if (value) {
                     this.view = 'ads';
                 }
                 this.randomSelectAds();
-
+            },
+            qrVisible(value) {
+                if (!value) {
+                    //清除二维码的所有计时器
+                    HandleBag.clear(this.qrBag);
+                }
+            },
+            view(value) {
+                if (value != 'delivery') {
+                    HandleBag.clear(this.deliveryBag);
+                }
             }
         },
         methods: {
-            clickMachineInfo(){
+            clickMachineInfo() {
                 this.machineInfoClicks++;
                 this.machineInfoClicksDebounce();
-                if(this.machineInfoClicks > 8){
+                if (this.machineInfoClicks > 8) {
                     this.showMachineInfo();
                 }
             },
@@ -437,22 +595,22 @@
             },
             initMachine() {
                 if (this.deviceTaobaoNo) {
-                    this.refreshCart();
+                    this.clearCart();
                     this.queryMachineInfo();
                     this.queryItems();
                     this.queryAds();
-                    if(this.adsShowing.length > 0){
+                    if (this.adsShowing.length > 0) {
                         this.view = 'ads';
                     }
                 }
             },
-            queryMachineInfo(){
+            queryMachineInfo() {
                 getUrl('device/detail', {deviceTaobaoNo: this.deviceTaobaoNo})
                     .then(resp => {
-                            this.deviceInfo = resp.data;
-                            this.machineError = false;
-                    }).catch(resp=> {
-                        this.machineError = true;
+                        this.deviceInfo = resp.data;
+                        this.machineError = false;
+                    }).catch(resp => {
+                    this.machineError = true;
                 });
             },
             queryAds() {
@@ -462,7 +620,7 @@
                             ad.image = resourceRoot + ad.image;
                             return ad;
                         });
-                        if(this.adsShowing.length > 0){
+                        if (this.adsShowing.length > 0) {
                             this.view = 'ads';
                         }
 
@@ -483,7 +641,12 @@
                 }
             },
             clickAd(ad) {
-                if(this.machineError) return;
+                // //todo: debug
+                // this.payOrderId = '762b2f06-2e63-4eda-9aa2-a40e811092ce';
+                // this.toDeliveryView();
+                // return;
+
+                if (this.machineError) return;
                 let item = this.onsaleItems.find((item) => item.taobaoNo == ad.url);   //taobaoNumber
                 if (item) {
                     this.selectItem(item);
@@ -499,7 +662,7 @@
                 getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                     .then((resp) => this.onsaleItems = resp.data.map((d) => {
                         // let images = ['download.jpg'];
-                        let images = (d.images || []).map((i)=> resourceRoot + i);
+                        let images = (d.images || []).map((i) => resourceRoot + i);
                         return {
                             taobaoNo: d.productTaobaoNo,
                             title: d.name,
@@ -513,11 +676,6 @@
                             description: '',
                             specifications: d.specifications,
                             promotions: d.promotion
-                            // promotions: d.promotion.map(p => {
-                            //     p.typeName = ['', '促销', '满折', '满减'][p.type];
-                            //     p.description = 'ERROR 等API';
-                            //     return p;
-                            // }),
                         };
                     }));
             },
@@ -553,56 +711,113 @@
                 this.detailItem = null;
                 this.view = 'list';
             },
-            // showQR() {
-            //     this.qrVisible = true;
-            // },
             showQR() {
-                let postData = {
-                    deviceTaobaoNo : this.deviceInfo.deviceTaobaoNo,
-                    item : this.cartItems.map(x=>{
-                       return { 
-                            productTaobaoNo : x.taobaoNo ,
-                            quantity : x.buyCount,
-                            salePrice : x.salePrice,
-                            saleTotalPrice :  x.buyCount * x.salePrice,
-                            sku : '0'
-                       }
+                this.qrImage = false;
+                this.payOrderId = null;
+                HandleBag.clear(this.qrBag);
+
+                this.qrBag = new HandleBag();
+                this.qrBag.setTimeout(_ => {
+                    //超时关闭
+                    this.qrVisible = false;
+                }, qrWaitDuration);
+
+                this.qrTimer = Math.round(qrWaitDuration / 1000);
+                this.qrBag.setInterval(_ => {
+                    //QR倒计时
+                    this.qrTimer = this.qrTimer - 1;
+                }, 1000);
+
+                //保持不显示广告
+                this.qrBag.setInterval(_ => this.adsShowDebounce(), 10000);
+
+                let checkOrderStatus = PromiseDebounce.create(_ => {
+                    return getUrl(`order/status/${this.payOrderId}`);
+                });
+                this.qrBag.setInterval(_ => {
+                    checkOrderStatus().then(_ => {
+                        if (_.data == 2 || _.data >= 20) {
+                            //已支付
+                            this.qrVisible = false;
+                            this.toDeliveryView()
+                        }
+                    }).catch(_ => {
+                        console.error('check qr status', _);
+                    });
+                }, qrCheckInterval);
+
+                postUrl('order/create', {
+                    deviceTaobaoNo: this.deviceInfo.deviceTaobaoNo,
+                    item: this.cartItems.map(x => {
+                        return {
+                            productTaobaoNo: x.taobaoNo,
+                            quantity: x.buyCount,
+                            salePrice: x.salePrice,
+                            saleTotalPrice: x.buyCount * x.salePrice,
+                            sku: '0'
+                        }
                     })
-                }
-                let that = this;
-                // console.log(this.cartItems, postData)
-                
-                // $.post(apiRoot + '/order/create', this.cartItems, function(result){
-                //     console.log(result)
-                // })
-                
-                $.ajax({
-                    method : 'post',
-                    url : apiRoot + 'order/create',
-                    contentType: "application/json; charset=utf-8",
-                    data: JSON.stringify(postData),
-                    dataType: "json",
-                    success: function (result) {
-                        // console.log(result)
-                        that.qrImg = result.data.smallPicUrl;
-                    },
-                })
+                }).then(resp => {
+                    if (!this.qrCreator) {
+                        this.qrCreator = new QRCode(document.getElementById("payQR"), {
+                            text: resp.data.qrcode,
+                            width: 400,
+                            height: 400,
+                            colorDark: "#000000",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.H
+                        });
+                    }
+                    else {
+                        this.qrCreator.clear();
+                        this.qrCreator.makeCode(resp.data.qrcode);
+                    }
+
+                    this.payOrderId = resp.data.orderId;
+                    this.qrImage = true;
+                });
+
                 this.qrVisible = true;
+            },
+            toDeliveryView() {
+                this.payOrderPrice = this.totalSalePrice;
+                this.clearCart();
+                this.paySuccessVisible = true;
+
+
+                this.deliveryBag = new HandleBag();
+                this.deliveryBag.setTimeout(_ => this.paySuccessVisible = false, 5000);
+
+                let checkDeliveryStatus = PromiseDebounce.create(_ => {
+                    return getUrl(`order/pickup-status/${this.payOrderId}`);
+                });
+                this.deliveryBag.setInterval(_ => {
+                    checkDeliveryStatus().then(_ => {
+                        this.deliveryInfo = _.data;
+                    });
+                }, deliveryCheckInterval,true);
+
+                this.deliveryBag.setTimeout(_=>{
+                    this.view = 'list';
+                    this.adsShowDebounce();
+                },60000);
+
+                this.view = 'delivery';
             },
             refreshCart() {
                 let r = this.cartItems.reduce((o, b) => {
                     o.price = o.price + b.price * b.buyCount;
+                    o.salePrice = o.salePrice + b.salePrice * b.buyCount;
                     o.count = o.count + b.buyCount;
-                    o.priceOriginal = o.price;
                     return o;
                 }, {
                     price: 0,
-                    priceOriginal: 0,
+                    salePrice: 0,
                     count: 0
                 });
 
                 this.totalPrice = r.price.toFixed(2);
-                this.totalPriceOriginal = this.totalPrice;
+                this.totalSalePrice = r.salePrice.toFixed(2);
                 this.totalCount = r.count;
 
                 if (this.totalCount == 0) {
@@ -628,6 +843,10 @@
                 else {
                     return text;
                 }
+            },
+            getDeliveryStatus(status){
+                let r = this.deliveryStatus[status];
+                return r || '准备中';
             },
             seePromotionDetails() {
 
