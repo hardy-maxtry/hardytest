@@ -473,6 +473,13 @@ body {
 #mfsj-container .qr-dialog div.qr-content {
   text-align: center;
 }
+#mfsj-container .qr-dialog div.qr-content em.timer {
+  position: absolute;
+  top: 23%;
+  right: 13%;
+  font-size: 2em;
+  color: red;
+}
 #mfsj-container .qr-dialog div.qr-content img.qr-background {
   width: 100%;
   padding-left: 3%;
@@ -691,18 +698,20 @@ body {
   padding: 1em 0;
   border-bottom: solid 1px #ebeced;
 }
+#mfsj-container div.machine-footer div.cart-content > div.cart-item > div.small-img {
+  flex: 0 0 2em;
+}
 #mfsj-container div.machine-footer div.cart-content > div.cart-item > div.small-img > img {
-  width: 60px;
-  height: 60px;
+  width: 2em;
+  height: 2em;
 }
 #mfsj-container div.machine-footer div.cart-content > div.cart-item > div.title {
+  flex: 1 1;
   margin-left: 0.4em;
-  flex: 99;
 }
 #mfsj-container div.machine-footer div.cart-content > div.cart-item > div.price {
-  width: 5em;
+  flex: 0 0 4em;
   white-space: nowrap;
-  flex: 1;
   margin-left: 0.4em;
   color: #e3676f;
 }
@@ -710,7 +719,8 @@ body {
   font-size: 1.2em;
 }
 #mfsj-container div.machine-footer div.cart-content > div.cart-item > div.stock {
-  margin-left: 0.4em;
+  flex: 0 0 7em;
+  text-align: right;
   position: relative;
 }
 #mfsj-container div.machine-footer div.cart-content > div.cart-item > div.stock > div.buy-pane {

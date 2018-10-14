@@ -466,6 +466,13 @@ body{
 		}
 		div.qr-content{
 			text-align: center;
+			em.timer{
+				position: absolute;
+				top: 23%;
+				right: 13%;
+				font-size: 2em;
+				color: red;
+			}
 			img.qr-background{
 				width:100%;
 				padding-left: 3%;
@@ -684,19 +691,19 @@ body{
 				padding: 1em 0;
 				border-bottom: solid 1px #ebeced;
 				>div.small-img{
+					flex:0 0 2em;
 					>img{
-						width: 60px;
-						height: 60px;
+						width: 2em;
+						height: 2em;
 					}
 				}
 				>div.title{
+					flex: 1 1;
 					margin-left:0.4em;
-					flex:99;
 				}
 				>div.price{
-					width: 5em;
+					flex: 0 0 4em;
 					white-space: nowrap;
-					flex:1;
 					margin-left:0.4em;
 					>em{
 						font-size: 1.2em;
@@ -704,7 +711,9 @@ body{
 					color: #e3676f;
 				}
 				>div.stock{
-					margin-left:0.4em;
+					flex:0 0 7em;
+					//margin-left:0.4em;
+					text-align: right;
 					position: relative;
 					>div.buy-pane{
 
