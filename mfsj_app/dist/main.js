@@ -1,6 +1,6 @@
 'use strict';
 
-var resourceRoot = 'http://139.224.54.234:8082/';
+var resourceRoot = '/';
 var apiRoot = 'api/';
 var apiBackRoot = 'apiBack/';
 
