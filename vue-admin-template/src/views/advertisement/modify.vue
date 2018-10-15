@@ -103,7 +103,7 @@
         </el-col>
       </el-row>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">保存</el-button>
+        <el-button type="primary" :loading="loading" @click="onSubmit">保存</el-button>
       </el-form-item>
     </el-form>
 
@@ -258,8 +258,10 @@ export default {
         let that = this;
         this.$refs['adCreateForm'].validate((valid) => {
           if (valid) {
+            this.loading = true;
             this.$message('正在保存')
             this.modifyAd().then(function(res){
+              that.loading = false;
               if(res.data !== false){
                 that.$message({
                   message : '更新广告成功，请重新审核上线',
@@ -272,6 +274,7 @@ export default {
                 });
               }
             }).catch(function(){
+              that.loading = false;
               that.$message({
                 message : '修改广告失败',
                 type : 'warning',

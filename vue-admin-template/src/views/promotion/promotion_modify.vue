@@ -1,139 +1,9 @@
 <template>
   <div class="app-container">
-    <el-form ref="adCreateForm" :rules="rules" :model="form" label-width="120px">
-      <el-row>
-        <el-col :span="8">
-          <el-form-item label="促销名称" prop="name">
-            <el-input v-model="form.name"></el-input>
-          </el-form-item>
-        </el-col>
-
-        <el-col :span="8">
-          <el-form-item label="参加次数" prop="allowTimes">
-            <!-- <el-input v-model="form.allowTimes" style="width:90%;"></el-input> -->
-            <el-input-number v-model="form.allowTimes" ></el-input-number>
-            
-            <el-tooltip class="item" effect="dark" content="每位客户可以参加几次活动" placement="top-start">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-          </el-form-item>
-        </el-col>
+        <promotion-from ref="promotionForm" :promotion_form="form"></promotion-from>
+        <el-row>
+          <el-button type="primary" :loading="loading" :disabled="addButtonDisabled" @click="onSubmit">修改促销活动</el-button>
       </el-row>
-      <hr class="style-one"/>
-      <el-row>
-        <el-col :span="8">
-          <el-form-item label="促销类型" prop="type">
-            <el-select v-model="form.type" placeholder="请选择促销类型" style="width:90%;">
-              <!-- <el-option label="定额" value="1" :disabled="false"/>
-              <el-option label="满额折扣" value="2" :disabled="true"/>
-              <el-option label="满额立减" value="3" :disabled="true"/> -->
-              <el-option
-                v-for="item in conditionTypes"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-                :disabled="item.disabled">
-              </el-option>
-            </el-select>
-            <el-tooltip class="item" effect="dark" placement="top-start">
-              <div slot="content">
-                定额：只要选购足量活动商品，就可以以活动价购买这些商品，活动商品总结算价 = 固定折扣价，例如，设置数量=2，折扣价5元，则顾客购买两件活动商品时，总共只需要支付5元<br/>
-                满额折扣：满足条件后，活动商品总结算价 = 活动商品总价 x 满额折扣比例<br/>
-                满额立减：满足条件后，活动商品总结算价 = 活动商品总价 - 满额立减额度</div>
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-          </el-form-item>
-        </el-col>
-
-      </el-row>
-      <el-row>
-        <el-col :span="8">
-
-          <el-form-item v-if="form.type==3 || form.type == 2" label="达标金额(元)" prop="total">
-            <!-- <el-input v-model="form.total" type="number"></el-input> -->
-            <el-input-number v-model="form.total" :precision="2" :step="1" ></el-input-number>
-          </el-form-item>
-          <el-form-item v-if="form.type==1" label="满X件享折扣" prop="quotaQuantity">
-            <!-- <el-input v-model="form.total" type="number"></el-input> -->
-            <el-input-number v-model="form.quotaQuantity"  :step="1" ></el-input-number>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item v-if="form.type==2" label="折扣百分比(1-99)" prop="discount">
-            <!-- <el-input v-model="form.discount"></el-input> -->
-            <el-input-number v-model="form.discount" :precision="2" :step="1"  :max="100"></el-input-number>
-          </el-form-item>
-          <el-form-item v-if="form.type==3" label="立减金额(元)" prop="subtraction">
-            <!-- <el-input v-model="form.subtraction"></el-input> -->
-            <el-input-number v-model="form.subtraction" :precision="2" :step="1" ></el-input-number>
-
-          </el-form-item>
-          <el-form-item v-if="form.type==1" label="固定折扣价(元)" prop="price">
-            <!-- <el-input v-model="form.price"></el-input> -->
-            <el-input-number v-model="form.price" :precision="2" :step="1" ></el-input-number>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <hr class="style-one"/>
-      <el-row>
-        <!-- <el-col :span="8">
-          <el-form-item label="售货机" prop="deviceTaobaoNo">
-            <el-select v-model="form.deviceTaobaoNo" placeholder="请选择售货机">
-              <el-option v-for="(item, index) in machines" :label="item.deviceShowName" :value="item.deviceTaobaoNo" :key="index"/>
-            </el-select>
-          </el-form-item>
-        </el-col> -->
-        <el-col :span="8">
-          <el-form-item label="商品ID" prop="pageProductTaobaoNo">
-            <!-- <el-input v-model="form.productTaobaoNo" placeholder="输入商品名称查询"></el-input> -->
-              <el-select
-                v-model="pageProductTaobaoNo"
-                filterable
-                placeholder="输入商品名称"
-                :loading="loading">
-                <el-option
-                  v-for="item in options4"
-                  :key="item.productTaobaoNo"
-                  :label="item.name"
-                  :value="item.productTaobaoNo">
-                    <span style="float: left">{{ item.productTaobaoNo }}</span>
-                    <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
-                </el-option>
-              </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="限购件数" prop="pageLimitQuantity">
-            <!-- <el-input v-model="pageLimitQuantity"></el-input> -->
-            <el-input-number v-model="pageLimitQuantity"  ></el-input-number>
-            <el-tooltip class="item" effect="dark" content="一位顾客参与一次活动中，最多可以够买几件商品，超出部分将以原价结算" placement="top-start">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <hr class="style-one"/>
-      <el-row>
-      <!-- <el-form-item label="生效期" > -->
-        <el-col :span="8">
-          <el-form-item label="开始日期" prop="beginTime">
-            <el-date-picker v-model="form.beginTime" type="date" placeholder="开始日期" style="width: 100%;"/>
-          </el-form-item>
-        </el-col>
-        <!-- <el-col :span="2" class="line">-</el-col> -->
-        <el-col :span="8">
-          <el-form-item label="结束日期" prop="saleDateEnd">
-            <el-date-picker v-model="form.endTime" type="date" placeholder="结束日期" style="width: 100%;"/>
-          </el-form-item>
-        </el-col>
-      </el-row>
-      <!-- </el-form-item> -->
-      
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">保存</el-button>
-      </el-form-item>
-    </el-form>
-
   </div>
 </template>
 
@@ -141,6 +11,7 @@
 import axios from '@/utils/ajax';
 import urls from '@/config/urls';
 import getQueryString from '@/utils/getQueryString';
+import promotionFrom from '@/components/promotion'
 
 import {parseTime} from '@/utils/index';
 let adTypes = {
@@ -148,7 +19,10 @@ let adTypes = {
   1 : '链接',
 }
 export default {
+    components : {promotionFrom},
+
   data() {
+    
     return {
       form: {
         "id": 0 , //促销ID
@@ -255,6 +129,7 @@ export default {
           label: '满额立减',
           disabled: true
         }],
+      addButtonDisabled : false,
     }
   },
   mounted(){
@@ -297,25 +172,67 @@ export default {
         that.$set(that.form, 'type', that.form.type.toString());        
         that.$set(that.form, 'beginTime', new Date(that.form.beginTime));        
         that.$set(that.form, 'endTime', new Date(that.form.endTime));        
-        that.$set(that, 'pageProductTaobaoNo', that.form.item[0].productTaobaoNo);
-        that.$set(that, 'pageLimitQuantity', that.form.item[0].limitQuantity);
+        // that.$set(that, 'pageProductTaobaoNo', that.form.item[0].productTaobaoNo);
+        // that.$set(that, 'pageLimitQuantity', that.form.item[0].limitQuantity);
       })
   },
   methods: {
     onSubmit() {
-        this.$refs['adCreateForm'].validate((valid) => {
-          if (valid) {
-            this.$message('正在保存')
-            this.modifyPromotion();
-            // this.getAd();
-          } else {
-            console.log('error submit!!');
-            return false;
-          }
-        });
+      this.$refs['promotionForm'].getPromotionForm()
+        .then(this.modifyPromotion)
+        .catch(function(error){
+        console.log(error);
+      });
+      return;
+        // this.$refs['adCreateForm'].validate((valid) => {
+        //   if (valid) {
+        //     this.$message('正在保存')
+        //     this.modifyPromotion();
+        //     // this.getAd();
+        //   } else {
+        //     console.log('error submit!!');
+        //     return false;
+        //   }
+        // });
       // this.$message('submit!')
     },
-    modifyPromotion(){
+    modifyPromotion(promotionForm){
+      let that = this;
+      that.loading = true;
+
+      let postData = JSON.parse(JSON.stringify(promotionForm))
+      postData.beginTime = parseTime(postData.beginTime,'{y}-{m}-{d}');
+      postData.endTime =  parseTime(postData.endTime,'{y}-{m}-{d}');
+      // postData.code = new Date().getTime().toString()
+      postData.status = 1;
+      console.log(postData)
+      // return;
+      axios.post(`${urls.promotion_modify}`, postData)
+        .then(function(res){
+          console.log(res);
+          that.loading = false;
+          if(res.data !== false){
+            that.$message({
+              message: '修改促销成功，请到促销列表页面查看!',
+              type: 'success'
+            })
+            that.addButtonDisabled = true;
+          }else{
+            that.$message({
+              message: '修改促销失败，请联系管理员!',
+              type: 'warning'
+            })
+          }
+          
+        })
+        .catch(function(error){
+          that.loading = true;
+
+          console.log(error)
+
+        })
+    },
+    modifyPromotion_back(){
       let that = this;
       let postData = JSON.parse(JSON.stringify(this.form))
       postData.beginTime = parseTime(postData.beginTime,'{y}-{m}-{d}');

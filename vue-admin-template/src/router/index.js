@@ -207,13 +207,13 @@ export const constantRouterMap = [
         component: () => import('@/views/device/device_add'),
         meta: { title: '售货机添加' }
       },
-      // {
-      //   path: 'modify',
-      //   name: '售货机编辑',
-      //   component: () => import('@/views/device/device_modify'),
-      //   meta: { title: '售货机编辑' },
-      //   hidden : true,
-      // }
+      {
+        path: 'modify',
+        name: '售货机库存',
+        component: () => import('@/views/device/device_inventory'),
+        meta: { title: '售货机库存' },
+        // hidden : true,
+      }
     ]
   },
   {

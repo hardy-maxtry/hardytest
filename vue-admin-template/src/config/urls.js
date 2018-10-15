@@ -14,6 +14,8 @@ export default {
     device_update : '/device/update',
     device_update_state : '/device/update-state/',
 
+    inventory_list :'/inventory/list',
+    
     product_list :'/product/list' ,
     product_detail : '/product/detail/',
     product_edit : '/product/edit',

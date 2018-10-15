@@ -2,7 +2,7 @@
   <div class="dashboard-container">
     <div class="dashboard-text">name:{{ name }}</div>
     <div class="dashboard-text">roles:<span v-for="role in roles" :key="role">{{ roleTypes[role] }}</span></div>
-    <el-button @click="adminEnter">管理员入口</el-button>
+    <el-button v-if="roles[0]==2" @click="adminEnter">管理员入口</el-button>
   </div>
 </template>
 

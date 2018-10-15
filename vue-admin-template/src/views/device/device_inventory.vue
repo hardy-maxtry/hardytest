@@ -1,24 +1,27 @@
 <template>
   <div class="app-container">
-    <el-form ref="orderSearchForm" :rules="rules" :model="form" label-width="120px">
+    <el-form ref="inventorySearchForm" :rules="rules" :model="form" label-width="120px">
+
       <el-row>
         <el-col :span="8">
-          <el-form-item label="电商订单号" prop="orderId">
-            <el-input v-model="form.orderId"></el-input>
+          <el-form-item label="售货机" prop="deviceTaobaoNo">
+            <el-select v-model="form.deviceTaobaoNo" clearable placeholder="请选择售货机">
+              <el-option v-for="(item, index) in machines" :label="item.deviceShowName" :value="item.deviceTaobaoNo" :key="index"/>
+            </el-select>
           </el-form-item>
         </el-col>
-
         <el-col :span="8">
-          <el-form-item label="商品ID" prop="productTaobaoId">
+          <el-form-item label="商品ID" prop="productTaobaoNo">
             <!-- <el-input v-model="form.productTaobaoNo" placeholder="输入商品名称查询"></el-input> -->
               <el-select
-                v-model="form.productTaobaoId"
+                v-model="form.productTaobaoNo"
                 filterable
-                
+                :filter-method="filterProduct"
+                clearable
                 placeholder="输入商品名称"
                 :loading="loading">
                 <el-option
-                  v-for="item in options4"
+                  v-for="item in options4_computed"
                   :key="item.productTaobaoNo"
                   :label="item.name"
                   :value="item.productTaobaoNo">
@@ -29,25 +32,7 @@
           </el-form-item>
         </el-col>
       </el-row>
-      <el-row>
-        <el-col :span="8">
-          <el-form-item label="淘宝订单号" prop="taobaoOrderId">
-            <el-input v-model="form.taobaoOrderId"></el-input>
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="订单状态" prop="status">
-            <el-select v-model="form.status" placeholder="请选择">
-              <el-option
-                v-for="item in statusTypes"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
+      
       <el-form-item>
         <el-button type="primary" @click="onSubmit">查询</el-button>
       </el-form-item>
@@ -63,48 +48,18 @@ import tableWithPages from '@/components/table/tableWithPages.vue';
 
 import {parseTime} from '@/utils/index';
 
-let statusTypes = {
- "0": '已创建',
- "1":"待支付",
-//  "1":"待支付（促销判断通过）",
- "11":"已扫描",
- "2":"已支付",
- // "3":"出货",
- "-30":"取消",
- "-20":"异常",
- "-10":"缺货",
- "10":"准备中",
- "20":"取货中",
- "30":"出货中",
- "40":"已取货"
- }
 export default {
   name : 'orderlist',
   components: {tableWithPages},
   data() {
-    let orderStatusTypes = [{
-      label : '不指定',
-      value : '-1',
-    }];
-    for(let k in statusTypes){
-      orderStatusTypes.push(
-        {
-          label : statusTypes[k],
-          value : k
-        }
-      );
-    }
+    
     return {
       form: {
-        "orderId": "",
         "pageIndex": 1,
         "pageSize": 50,
-        "productTaobaoId": "",
-        "productTaobaoName": "",
-        "status": '-1',
-        taobaoOrderId : ""
+        "productTaobaoNo": "",
+        "deviceTaobaoNo": '',
       },
-      statusTypes : orderStatusTypes,
       rules:{
         // deviceTaobaoNo: [
         //     { required: true, message: '请选择机器ID', trigger: 'change' },
@@ -147,48 +102,62 @@ export default {
           //   width : null,
           // },
           {
-            columnName: 'id',
-            label : '订单号',
-            width : null,
-          },
-          {
-            columnName: 'taobaoCode',
-            label : '淘宝订单号',
-            width : null,
-          },
-          {
             columnName: 'deviceTaobaoNo',
-            label : '设备号',
+            label : '淘宝设备ID',
             width : null,
           },
           {
-            columnName: 'statusStr',
-            label : '订单状态',
+            columnName: 'deviceName',
+            label : '设备名称',
             width : null,
           },
           {
-            columnName: 'totalPrice',
-            label : '订单金额(元)',
+            columnName: 'productTaobaoNo',
+            label : '淘宝商品ID',
             width : null,
           },
           {
-            columnName: 'orderDate',
-            label : '订单时间',
+            columnName: 'productName',
+            label : '商品名称',
+            width : 400,
+          },
+          {
+            columnName: 'stock',
+            label : '当前库存',
             width : null,
           },
+
         ],
       },
       options4 : [],
       totalOrders : 0,
+      productFilterText :"",
+      machines : [],
+    }
+  },
+  computed:{
+    options4_computed(){
+      if(this.productFilterText == ''){
+        return this.options4;
+      }else{
+        return this.options4.filter(x=>{
+          return x.productTaobaoNo.toString().indexOf(this.productFilterText) >= 0 || x.name.indexOf(this.productFilterText) >= 0
+        })
+      }
     }
   },
   mounted(){
     // console.log(urls.ad_list);
     let that = this;
+    axios.get(`${urls.device_list}?showName=`)
+      .then(function(data){
+        // console.log(data);
+        that.machines = data.data;
+      });
     let postData = 
         {
           "name": '',
-          "pageIndex": 1,
+          "pageIndex": 0,
           "pageSize": 100,
           "productTaobaoNo": ""
         };
@@ -204,11 +173,11 @@ export default {
   },
   methods: {
     onSubmit() {
-        this.$refs['orderSearchForm'].validate((valid) => {
+        this.$refs['inventorySearchForm'].validate((valid) => {
           if (valid) {
             this.$message('正在查询')
             this.form.pageIndex = 1;
-            this.queryOrder();
+            this.queryInventory();
             // this.getAd();
           } else {
             console.log('error submit!!');
@@ -217,7 +186,7 @@ export default {
         });
       // this.$message('submit!')
     },
-    queryOrder(){
+    queryInventory(){
       let that = this;
       let postData = JSON.parse(JSON.stringify(this.form))
       
@@ -225,16 +194,11 @@ export default {
       // return;
       this.tableData.loading = true;
 
-      axios.post(`${urls.order_list}`, postData)
+      axios.post(`${urls.inventory_list}`, postData)
         .then(function(res){
           that.tableData.loading = false;
           if(res.data && res.data!=null){
-            that.tableData.data = res.data.data.map(x=>{
-              x.statusStr = statusTypes[x.status];
-              x.orderDate = parseTime(new Date(x.createAt),'{y}年{m}月{d}日 {h}:{i}:{s}');
-
-              return x;
-            });
+            that.tableData.data = res.data.data;
             that.totalOrders = res.data.totalCount ;  
 
             that.$message({
@@ -271,7 +235,11 @@ export default {
     },
     changePage(val){
       this.form.pageIndex = val;
-      this.queryOrder();
+      this.queryInventory();
+    },
+    filterProduct(val){
+      // console.log(arguments);
+      this.productFilterText = val
     }
     
     

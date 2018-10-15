@@ -112,7 +112,7 @@
         </el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">保存</el-button>
+        <el-button type="primary" :loading="loading" @click="onSubmit">保存</el-button>
       </el-form-item>
     </el-form>
 
@@ -179,6 +179,7 @@ export default {
             //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
         ],
       },
+      loading : false,
     }
   },
   computed:{
@@ -237,9 +238,11 @@ export default {
         images: this.fileList.map(x=>x.real_url),
         id : this.item_sys_id,
       }
+      that.loading = true;
       axios.post(`${urls.product_edit}`, postData)
         .then(function(res){
           console.log(res.data.data);
+          that.loading = false;
           if(res.data !== false){
             that.$message({
               message : '更新商品成功',
@@ -254,6 +257,7 @@ export default {
         })
         .catch(function(error){
           console.log(error)
+          that.loading = false;
         })
     },
     onCancel() {

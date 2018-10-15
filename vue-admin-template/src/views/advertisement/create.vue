@@ -103,7 +103,7 @@
         </el-col>
       </el-row>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">创建</el-button>
+        <el-button type="primary" :loading="loading" @click="onSubmit" :disabled='addButtonDisable'>创建</el-button>
       </el-form-item>
     </el-form>
 
@@ -167,6 +167,7 @@ export default {
       },
       loading : false,
       ad_type_disabled : false,
+      addButtonDisable : false,
     }
   },
   watch:{
@@ -217,20 +218,42 @@ export default {
       })
       console.log(this.form.advertDevice);
         let that = this;
+        
         this.$refs['adCreateForm'].validate((valid) => {
           if (valid) {
+            that.loading = true;
             this.$message('正在保存')
-            this.createAd().then(function(){
-              that.$message({
-                message : '创建广告成功,请到广告列表查看',
-                type : 'success',
-              })
+            this.createAd().then(function(res){
+              that.loading = false;
+              debugger
+              if(res.data !== false){
+                that.$message({
+                  message : '创建广告成功,请到广告列表查看',
+                  type : 'success',
+                });
+                that.addButtonDisable = true;
+              }else{
+                that.$message({
+                  message : '新建广告失败',
+                  type : 'warning',
+                });
+              }
+                // console.log(res.data.data);
             }).catch(function(){
               that.$message({
                 message : '创建广告失败',
                 type : 'warning',
               })
+              that.loading = false;
             });
+            // .then(function(){
+            //   that.$message({
+            //     message : '创建广告成功,请到广告列表查看',
+            //     type : 'success',
+            //   })
+            //   that.addButtonDisable = true;
+            // })
+            
           } else {
             console.log('error submit!!');
             return false;
@@ -247,20 +270,20 @@ export default {
       postData.startTime = parseTime(postData.startTime,'{y}-{m}-{d}');
       postData.endTime = parseTime(postData.endTime,'{y}-{m}-{d}');
       return axios.post(`${urls.ad_add}`, postData)
-        .then(function(res){
-          if(res.data !== false){
-            that.$message({
-              message : '新建广告成功',
-              type : 'success',
-            });
-          }else{
-            that.$message({
-              message : '新建广告失败',
-              type : 'warning',
-            });
-          }
-            // console.log(res.data.data);
-        })
+        // .then(function(res){
+        //   if(res.data !== false){
+        //     that.$message({
+        //       message : '新建广告成功',
+        //       type : 'success',
+        //     });
+        //   }else{
+        //     that.$message({
+        //       message : '新建广告失败',
+        //       type : 'warning',
+        //     });
+        //   }
+        //     // console.log(res.data.data);
+        // })
         // .catch(function(error){
         //   console.log(error)
         // })

@@ -48,7 +48,7 @@
       <!-- </el-form-item> -->
       
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">创建</el-button>
+        <el-button type="primary" :loading="loading" @click="onSubmit" :disabled="addButtonDisabled">{{addButtonName}}</el-button>
       </el-form-item>
     </el-form>
 
@@ -101,6 +101,8 @@ export default {
       options4: [],
       loading: false,
       productFilterText : '',
+      addButtonDisabled : false,
+      addButtonName : '创建排期'
     }
   },
   watch(){
@@ -158,6 +160,7 @@ export default {
     },
     createProductSchedule(){
       let that = this;
+      that.loading = true;
       let postData = JSON.parse(JSON.stringify(this.form))
       postData.saleDateStart = parseTime(postData.saleDateStart,'{y}-{m}-{d}');
       postData.saleDateEnd =  parseTime(postData.saleDateEnd,'{y}-{m}-{d}');
@@ -165,11 +168,14 @@ export default {
       // return;
       axios.post(`${urls.schedule_add}`, postData)
         .then(function(res){
+          that.loading = false;
           if(res.data !== false){
             that.$message({
               message : '创建排期成功，请到商品排期页面查看',
               type : 'success',
             });
+            that.addButtonName = '已创建'
+            that.addButtonDisabled = true;
           }else{
             that.$message({
               message : '创建排期失败',
@@ -179,7 +185,7 @@ export default {
         })
         .catch(function(error){
           console.log(error)
-
+          that.loading = false;
         })
     },
     onCancel() {
