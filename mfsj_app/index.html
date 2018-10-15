@@ -19,6 +19,7 @@
                title="修改机器信息"
                :visible.sync="machineInfoDialog">
         <div v-if="loginToken">
+            <div class="debug-info"><span>Url : {{url}}</span> <span> App Version : {{version}}</span></div>
             <el-form :model="machineInfo" :rules="machineInfoRules" ref="machineInfoForm" label-width="80px">
                 <el-form-item label="机器编号" prop="deviceNo">
                     <el-input v-model="machineInfo.deviceNo"></el-input>

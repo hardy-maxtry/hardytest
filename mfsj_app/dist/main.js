@@ -1,6 +1,6 @@
 'use strict';
 
-var resourceRoot = '/';
+var resourceRoot = 'http://139.224.54.234:8082/';
 var apiRoot = 'api/';
 var apiBackRoot = 'apiBack/';
 
@@ -15,6 +15,55 @@ var qrWaitAfterScanuration = 300000; //二维码扫描后超时时间
 var qrCheckInterval = 5000; //扫码状态轮询时间
 var deliveryCheckInterval = 5000; //出货状态轮询时间
 var deliveryStayDuration = 60000;
+
+!function (e) {
+    var i = {},
+        t = {},
+        n = 0;
+    e.rocNative = {
+        __nativeCall: function __nativeCall(e, t, n) {
+            var a = i[e];
+            delete i[e], "function" == typeof a && a(t, n);
+        }, __callNative: function __callNative(t, a, o) {
+            "function" == typeof o && (n++, i[n] = o);
+            var r = JSON.stringify({ name: t, callbackId: "function" == typeof o ? n : -1, param: a === undefined ? {} : a });
+            if (e.__rocAndroid) {
+                e.__rocAndroid.postMessage(r);
+                return true;
+            }
+            if (e.webkit && window.webkit.messageHandlers.rociOS) {
+                window.webkit.messageHandlers.rociOS.postMessage(r);
+                return true;
+            }
+            return false;
+        }, __onEvent: function __onEvent(e, i) {
+            if (e && i && "function" == typeof i) {
+                (t[e] || (t[e] = [])).push(i);
+            }
+        }, __clearEvent: function __clearEvent(e) {
+            e && delete t[e];
+        }, __fireEvent: function __fireEvent(e, i) {
+            var n = t[e];
+            n && n.forEach(function (e) {
+                e(i);
+            });
+        }, on: function on(e, i) {
+            rocNative.__onEvent(e, i);
+        }, off: function off(e) {
+            rocNative.__clearEvent(e);
+        }
+    }, function () {
+        Array.prototype.slice.apply(arguments).forEach(function (i) {
+            e.rocNative[i] = function (t) {
+                return new Promise(function (n, a) {
+                    e.rocNative.__callNative(i, t, function (e, i) {
+                        null !== e ? a({ error: e, result: i }) : n(i);
+                    }) ? void 0 : a('native not exists');
+                });
+            };
+        });
+    }("appVersion", "appInit", "heartBeat", "getAppSetting", "setAppSetting");
+}(window);
 
 function __get(url, param, headers) {
     return new Promise(function (rs, rj) {
@@ -65,11 +114,19 @@ function postBackUrl(url, param) {
 }
 
 function getInfo(name) {
-    return localStorage[name];
+    return rocNative.getAppSetting({
+        name: name
+    }).then(function (r) {
+        return r.result || localStorage[name];
+    });
 }
 
 function setInfo(name, value) {
     localStorage[name] = value;
+    rocNative.setAppSetting({
+        name: name,
+        value: value
+    });
 }
 
 function HandleBag() {
@@ -120,6 +177,9 @@ PromiseDebounce.create = function (handle) {
 var vm = new Vue({
     el: '#mfsj-container',
     data: {
+        url: null,
+        appVersion: null,
+
         view: 'ads',
         deviceTaobaoNo: '',
         deviceShopId: '',
@@ -185,9 +245,6 @@ var vm = new Vue({
 
         deliveryOrderStatus: 0,
         orderStatusDic: {
-            "-3": '取消',
-            "-2": '异常',
-            "-1": '缺货',
             "0": '已创建',
             "1": '待支付',
             "11": '已扫描',
@@ -224,13 +281,21 @@ var vm = new Vue({
             });
         }
     },
-
     created: function created() {
         var _this2 = this;
 
-        this.deviceTaobaoNo = getInfo('deviceNo');
-        // this.deviceTaobaoNo = "100001";
+        this.url = window.location.href;
+        rocNative.appVersion().then(function (r) {
+            _this2.version = '' + r.appVersion;
+        }).catch(function (e) {
+            return console.error(e);
+        });
 
+        rocNative.appInit();
+        setInterval(function (_) {
+            //给App发送心跳
+            rocNative.heartBeat();
+        }, 3000);
 
         setInterval(function (_) {
             return _this2.randomSelectAds();
@@ -251,9 +316,11 @@ var vm = new Vue({
 
         this.machineInfoClicksDebounce = _.debounce(function (_) {
             _this2.machineInfoClicks = 0;
-        }, 1000);
+        }, 500);
 
-        this.initMachine();
+        getInfo('deviceNo').then(function (r) {
+            _this2.deviceTaobaoNo = r;
+        });
     },
 
     watch: {
@@ -279,6 +346,16 @@ var vm = new Vue({
             if (value == 'detail') {
                 window.scrollTo(0, 0);
             }
+        },
+        machineInfoDialog: function machineInfoDialog(value) {
+            //打开或关闭对话框
+            this.loginToken = null;
+            this.loginInfo.username = '';
+            this.loginInfo.password = '';
+        },
+        deviceTaobaoNo: function deviceTaobaoNo(value) {
+            setInfo("deviceNo", value);
+            this.initMachine();
         }
     },
 
@@ -349,6 +426,11 @@ var vm = new Vue({
                                 type: 'error'
                             });
                         }
+                    }).catch(function (e) {
+                        _this4.$message({
+                            message: '注册失败，服务器错误，请重试',
+                            type: 'error'
+                        });
                     });
                 } else {
                     return false;
@@ -365,19 +447,21 @@ var vm = new Vue({
         queryAds: function queryAds() {
             var _this5 = this;
 
-            getUrl('advert/list', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
-                _this5.ads = resp.data.map(function (ad) {
-                    ad.image = resourceRoot + ad.image;
-                    return ad;
-                });
-                // if (this.adsShowing.length > 0) {
-                //     this.view = 'ads';
-                // }
+            if (this.deviceTaobaoNo) {
+                getUrl('advert/list', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
+                    _this5.ads = resp.data.map(function (ad) {
+                        ad.image = resourceRoot + ad.image;
+                        return ad;
+                    });
+                    // if (this.adsShowing.length > 0) {
+                    //     this.view = 'ads';
+                    // }
 
-                _this5.randomSelectAds();
-            }).catch(function (resp, status, err) {
-                _this5.$message(resp.statusText);
-            });
+                    _this5.randomSelectAds();
+                }).catch(function (resp, status, err) {
+                    _this5.$message(resp.statusText);
+                });
+            }
         },
         queryDeviceInfo: function queryDeviceInfo() {
             var _this6 = this;
@@ -428,28 +512,30 @@ var vm = new Vue({
         queryItems: function queryItems() {
             var _this7 = this;
 
-            getUrl('product/list', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
-                return _this7.onsaleItems = resp.data.map(function (d) {
-                    // let images = ['download.jpg'];
-                    var images = (d.images || []).map(function (i) {
-                        return resourceRoot + i;
+            if (this.deviceTaobaoNo) {
+                getUrl('product/list', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
+                    return _this7.onsaleItems = resp.data.map(function (d) {
+                        // let images = ['download.jpg'];
+                        var images = (d.images || []).map(function (i) {
+                            return resourceRoot + i;
+                        });
+                        return {
+                            taobaoNo: d.productTaobaoNo,
+                            title: d.name,
+                            hot: d.hot,
+                            images: images.length > 0 ? images : ['download.jpg'],
+                            price: d.price,
+                            salePrice: d.salePrice,
+                            stock: d.stock,
+                            buyCount: 0,
+                            unit: d.unit,
+                            description: '',
+                            specifications: d.specifications,
+                            promotions: d.promotion
+                        };
                     });
-                    return {
-                        taobaoNo: d.productTaobaoNo,
-                        title: d.name,
-                        hot: d.hot,
-                        images: images.length > 0 ? images : ['download.jpg'],
-                        price: d.price,
-                        salePrice: d.salePrice,
-                        stock: d.stock,
-                        buyCount: 0,
-                        unit: d.unit,
-                        description: '',
-                        specifications: d.specifications,
-                        promotions: d.promotion
-                    };
                 });
-            });
+            }
         },
         addItem: function addItem(item) {
             if (item.buyCount < item.stock) {
