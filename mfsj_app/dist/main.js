@@ -5,8 +5,9 @@ var apiRoot = 'api/';
 var apiBackRoot = 'apiBack/';
 
 var adShowWait = 60000; //无操作显示广告等待时间
-var adStayDuration = 5000; //每张广告持续时间
+var adStayDuration = 15000; //每张广告持续时间
 var checkMachineDuration = 5000; //机器状态轮询时间
+var checkMachineFail = 0;
 var queryAdsDuration = 60000;
 var queryItemDuration = 60000;
 
@@ -26,7 +27,11 @@ var deliveryStayDuration = 60000;
             delete i[e], "function" == typeof a && a(t, n);
         }, __callNative: function __callNative(t, a, o) {
             "function" == typeof o && (n++, i[n] = o);
-            var r = JSON.stringify({ name: t, callbackId: "function" == typeof o ? n : -1, param: a === undefined ? {} : a });
+            var r = JSON.stringify({
+                name: t,
+                callbackId: "function" == typeof o ? n : -1,
+                param: a === undefined ? {} : a
+            });
             if (e.__rocAndroid) {
                 e.__rocAndroid.postMessage(r);
                 return true;
@@ -58,7 +63,7 @@ var deliveryStayDuration = 60000;
                 return new Promise(function (n, a) {
                     e.rocNative.__callNative(i, t, function (e, i) {
                         null !== e ? a({ error: e, result: i }) : n(i);
-                    }) ? void 0 : a('native not exists');
+                    }) ? void 0 : n({});
                 });
             };
         });
@@ -309,6 +314,12 @@ var vm = new Vue({
             _this2.queryAds();
         }, queryAdsDuration);
 
+        setInterval(function (_) {
+            if (_this2.view == 'ads') {
+                _this2.queryItems();
+            }
+        }, queryItemDuration);
+
         this.adsShowDebounce = _.debounce(function (_) {
             _this2.clearCart();
             _this2.view = 'ads';
@@ -471,11 +482,18 @@ var vm = new Vue({
                     if (resp.data.status > 0) {
                         _this6.deviceInfo = resp.data;
                         _this6.machineError = false;
+                        checkMachineFail = 0;
                     } else {
-                        _this6.machineError = true;
+                        checkMachineFail++;
+                        if (checkMachineFail > 10) {
+                            _this6.machineError = true;
+                        }
                     }
                 }).catch(function (resp) {
-                    _this6.machineError = true;
+                    checkMachineFail++;
+                    if (checkMachineFail > 10) {
+                        _this6.machineError = true;
+                    }
                 });
             }
         },
@@ -673,6 +691,9 @@ var vm = new Vue({
             this.deliveryBag.setInterval(function (r) {
                 checkOrderStatus().then(function (r) {
                     _this10.deliveryOrderStatus = r.data;
+                    if (_this10.deliveryOrderStatus == 40 && _this10.deliveryTimer > 5) {
+                        _this10.deliveryTimer = 5;
+                    }
                 }).catch(function (_) {
                     console.error('check qr status', _);
                 });
@@ -687,6 +708,13 @@ var vm = new Vue({
             }, 1000);
 
             this.view = 'delivery';
+        },
+        confirmExitDelivery: function confirmExitDelivery() {
+            var _this11 = this;
+
+            this.$confirm('退出出货界面？').then(function (_) {
+                _this11.view = 'list';
+            }, function (_) {});
         },
         refreshCart: function refreshCart() {
             var r = this.cartItems.reduce(function (o, b) {
@@ -709,10 +737,10 @@ var vm = new Vue({
             }
         },
         confirmClearCart: function confirmClearCart() {
-            var _this11 = this;
+            var _this12 = this;
 
             this.$confirm('清空购物车？').then(function (_) {
-                _this11.clearCart();
+                _this12.clearCart();
             });
         },
         clearCart: function clearCart() {
@@ -757,4 +785,8 @@ var vm = new Vue({
         seePromotionDetails: function seePromotionDetails() {}
     }
 });
+
+window.__openSecretConfigPanel = function () {
+    vm.showMachineInfo();
+};
 //# sourceMappingURL=main.js.map

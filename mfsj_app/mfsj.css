@@ -863,4 +863,7 @@ body {
   z-index: -1;
   height: 190px;
 }
+.el-message-box {
+  transform: scaleX(1.5) scaleY(1.5);
+}
 /*# sourceMappingURL=mfsj.css.map */
