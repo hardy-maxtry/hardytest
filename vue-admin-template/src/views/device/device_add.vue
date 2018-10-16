@@ -2,8 +2,8 @@
   <div class="app-container">
     <el-form ref="deviceAddForm" :rules="rules" :model="form" label-width="120px">
       <el-row>
-        注意1，请首先在ERP中，基础字典->仓库，添加设备，并勾选面膜机
-        注意2，正常流程下，应该在售货机上做售货机添加的操作，本页面作为后备使用
+        注意1，请首先在ERP中，基础字典->仓库，添加设备，并勾选面膜机<br>
+        注意2，本页面添加设备后，设备处于未激活状态，可以配置该设备上的商品排期，广告等数据，当设备在大屏上激活后，将直接展示维护好的数据
       </el-row>
       <el-row>
         <el-col :span="8">
@@ -114,6 +114,7 @@ export default {
         params :{
           deviceTaobaoNo : this.form.deviceTaobaoNo,
           shopId : this.form.shopId,
+          action : 'add',
         }
       })
         .then(function(res){
