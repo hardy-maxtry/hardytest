@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link href="mfsj-ews.css" rel="stylesheet">
+    <title>膜法世家</title>
+</head>
+<body>
+    <div id="mfsj-ews" class="mfsj-ews-container">
+        <h5>
+            <img src="mfsj-title.png">
+        </h5>
+        <div class="order-items">
+            <div class="item" v-for="item in items">
+                <img src="cover.png">
+                <div class="info">
+                    <h6>{{item.title}}</h6>
+                    <p>{{item.desc}}</p>
+                    <div class="promotions">
+                        <span v-for="p in item.promotions">{{p}}</span>
+                    </div>
+                    <div class="price-stock">
+                        <em>¥{{item.price}}</em>
+                        <span>×{{item.stock}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="promotions">
+            <div class="promotion" v-for="p in promotions">
+                <div class="title">{{p.title}}</div>
+                <div class="price">{{p.price}}元</div>
+                <div class="toggle">
+                    <div class="toggle-switch"><i></i></div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="footer">
+            <div class="join-member">
+                加入品牌会员 享特价购买
+            </div>
+            <a class="not-member-pay">
+                <img src="non-member.jpg" alt="">
+            </a>
+            <a class="member-pay">
+                <img src="member.jpg">
+            </a>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

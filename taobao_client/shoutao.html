@@ -1,0 +1,81 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+            <script src="//g.alicdn.com/tmapp/tida/3.3.37/tida.js?appkey=24952524"></script> 
+            <meta name="spm-id" content="a1z51.24952524"/>
+    </head>
+<body>
+
+    <span>mfsj手淘端</span>
+    <br>
+    <span id="initresult"></span>
+    <br>
+    <span id="authresult"></span>
+    <br>
+    <span id="mixNickresult"></span>
+    <br>
+    <input id="mixNick">
+    <br>
+    <span id="openUIDresult"></span>
+    <br>
+    <span id="openUID"></span>
+    <br/>
+    <button type="button" id="follow" onclick="followstore()">关注天猫旗舰店</button>
+
+    <script>
+        Tida.ready({
+            //module: ["device", "media", "server", "social", "widget", "sensor", "share", "buy", "draw", "im", "calendar", "prize"],
+            sellerNick : '膜法世家官方旗舰店',
+            console:1,  //  默认关闭, 值为1时打开浮层console. 
+        }, function() {
+            document.getElementById('initresult').innerText = '初始化tida成功';
+            Tida.doAuth(true, function(data){
+                if(data.finish){
+                    // 授权成功 可以顺利调用需要授权的接口了
+                    var options = {
+                        sellerNick: "膜法世家官方旗舰店"
+                    };
+                    document.getElementById('authresult').innerText = '点击授权';
+                    
+                    Tida.mixNick(options, function (data) {
+                        document.getElementById('mixNickresult').innerText = '获取混淆nick如下';
+                        document.getElementById('mixNick').value = JSON.stringify(data);
+                        document.getElementById('mixNick').focus()
+                        document.getElementById('mixNick').select()
+                        document.execCommand("copy")
+                        alert(JSON.stringify(data))
+
+                        
+                    });
+                    Tida.user.openuid(function (d) {
+                        document.getElementById('openUIDresult').innerText = '获取openUID成功'
+                        document.getElementById('openUID').innerText = JSON.stringify(d);
+
+                        // alert(JSON.stringify(d))
+                    }, function (d) {
+                        document.getElementById('openUIDresult').innerText = '获取openUID失败';
+                        document.getElementById('openUID').innerText = JSON.stringify(d);
+
+                        // alert(JSON.stringify(d))
+                    })
+                }else {
+                    // 未能成功授权
+                    document.getElementById('authresult').innerText = '点击拒绝授权';
+
+                    alert('授权失败')
+                }
+            });
+        //do something you want
+        });
+        function followstore(){
+            Tida.subscribe.add({
+                accountId:'368609005'
+            },function(data){
+                alert(JSON.stringify(data))
+            },function (e) {
+                alert(JSON.stringify(e))
+            })
+        }
+    </script>
+</body>
+</html>
