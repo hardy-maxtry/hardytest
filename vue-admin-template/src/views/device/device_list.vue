@@ -64,8 +64,18 @@
           >
         </el-table-column>
         <el-table-column
+          prop="erpStatusStr"
+          label="设备ERP状态"
+          >
+          <template slot-scope="scope">
+            <span v-if="scope.row.erpStatus==1" style="color:#5baf5b;">{{ scope.row.erpStatusStr }}</span>
+            <span v-else-if="scope.row.erpStatus==0" style="color:#f78989;">{{ scope.row.erpStatusStr }}</span>
+            <span v-else>{{ scope.row.erpStatusStr }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="statusStr"
-          label="设备状态"
+          label="设备电商状态"
           >
           <template slot-scope="scope">
             <span v-if="scope.row.status==1" style="color:#5baf5b;">{{ scope.row.statusStr }}</span>
@@ -185,6 +195,7 @@ export default {
           if(res.data){
             that.deviceListTableData = res.data.data.map(x=>{
               x.statusStr = statusTypes[x.status];
+              x.erpStatusStr = statusTypes[x.erpStatus]
               return x;
             });
             
