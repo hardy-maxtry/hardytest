@@ -64,6 +64,16 @@
           >
         </el-table-column>
         <el-table-column
+          prop="initStatusStr"
+          label="设备激活状态"
+          >
+          <template slot-scope="scope">
+            <span v-if="scope.row.initStatus==1" style="color:#5baf5b;">{{ scope.row.initStatusStr }}</span>
+            <span v-else-if="scope.row.initStatus==0" style="color:#f78989;">{{ scope.row.initStatusStr }}</span>
+            <span v-else>{{ scope.row.initStatusStr }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
           prop="erpStatusStr"
           label="设备ERP状态"
           >
@@ -117,6 +127,10 @@ import {parseTime} from '@/utils/index';
 let statusTypes = {
   0 : '下线',
   1 : '上线',
+}
+let initStatusTypes = {
+  0 : '未激活',
+  1 : '已激活',
 }
 export default {
   data() {
@@ -195,7 +209,8 @@ export default {
           if(res.data){
             that.deviceListTableData = res.data.data.map(x=>{
               x.statusStr = statusTypes[x.status];
-              x.erpStatusStr = statusTypes[x.erpStatus]
+              x.erpStatusStr = statusTypes[x.erpStatus];
+              x.initStatusStr = initStatusTypes[x.initStatus];
               return x;
             });
             
