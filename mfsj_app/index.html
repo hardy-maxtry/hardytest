@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
-    <link href="mfsj.css?v=1.04" rel="stylesheet">
+    <link href="mfsj.css?v=1.05" rel="stylesheet">
     <title>膜法世家</title>
 </head>
 <body>
@@ -153,7 +153,7 @@
             </div>
     </div>
 
-    <a v-if="view == 'detail' || view == 'delivery'" class="back-button" @click="unselectItem()">
+    <a v-if="view == 'detail' || view == 'delivery'" class="back-button" @click="backToList()">
         <img src="back-button.png">
     </a>
 
@@ -290,6 +290,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/index.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="qrcode.min.js"></script>
-<script src="dist/main.js?v=1.04"></script>
+<script src="dist/main.js?v=1.05"></script>
 </body>
 </html>

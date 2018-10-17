@@ -91,6 +91,9 @@ body {
 #mfsj-container.detail {
   background-color: white;
 }
+#mfsj-container.detail div.pay-menu {
+  top: 60%;
+}
 #mfsj-container .gap {
   height: 50px;
 }
@@ -306,6 +309,9 @@ body {
 }
 #mfsj-container div.items > div.item > div.infos > div.price > span {
   font-size: 0.5em;
+}
+#mfsj-container div.items > div.item > div.infos > div.price > del {
+  color: gray;
 }
 #mfsj-container div.items > div.item > div.infos > div.buy-pane {
   border-radius: 99px;
@@ -697,7 +703,7 @@ body {
   position: absolute;
   right: 20%;
   color: white;
-  top: 50%;
+  top: 53%;
   font-size: 0.8em;
 }
 #mfsj-container div.pay-menu > img {

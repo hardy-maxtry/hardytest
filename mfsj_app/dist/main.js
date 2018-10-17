@@ -483,7 +483,8 @@ var vm = new Vue({
 
             if (this.deviceTaobaoNo) {
                 getUrl('device/detail', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
-                    if (resp.data.status > 0) {
+                    if (resp.data.status > -2) {
+                        //todo:状态
                         _this6.deviceInfo = resp.data;
                         _this6.machineError = false;
                         // checkMachineFail = 0;
@@ -587,8 +588,11 @@ var vm = new Vue({
                 });
             }
         },
-        unselectItem: function unselectItem() {
+        backToList: function backToList() {
             this.detailItem = null;
+            if (this.view == 'delivery') {
+                this.queryItems();
+            }
             this.view = 'list';
         },
         showQR: function showQR() {
