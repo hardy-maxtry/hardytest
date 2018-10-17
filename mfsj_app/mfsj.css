@@ -88,6 +88,9 @@ body {
   overflow: hidden;
   padding-bottom: 6em;
 }
+#mfsj-container.detail {
+  background-color: white;
+}
 #mfsj-container .gap {
   height: 50px;
 }
@@ -230,6 +233,9 @@ body {
 #mfsj-container .buy-pane-common > a.add {
   background-color: #f6c870;
 }
+#mfsj-container .buy-pane-common > a.add.max-count {
+  background-color: #b5b5b6;
+}
 #mfsj-container .buy-pane-common > a.remove {
   border: solid 1px gray;
 }
@@ -289,6 +295,9 @@ body {
 }
 #mfsj-container div.items > div.item > div.infos > div.title {
   font-size: 1.1em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 #mfsj-container div.items > div.item > div.infos > div.price > em {
   font-size: 1.4em;
@@ -318,6 +327,9 @@ body {
 }
 #mfsj-container div.items > div.item > div.infos > div.buy-pane > a.add {
   background-color: #f6c870;
+}
+#mfsj-container div.items > div.item > div.infos > div.buy-pane > a.add.max-count {
+  background-color: #b5b5b6;
 }
 #mfsj-container div.items > div.item > div.infos > div.buy-pane > a.remove {
   border: solid 1px gray;
@@ -400,7 +412,7 @@ body {
   font-size: 0.6em;
 }
 #mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane {
-  font-size: 1.2em;
+  font-size: 1.1em;
   position: absolute;
   right: 5px;
   bottom: 1em;
@@ -420,6 +432,9 @@ body {
 }
 #mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a.add {
   background-color: #f6c870;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a.add.max-count {
+  background-color: #b5b5b6;
 }
 #mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a.remove {
   border: solid 1px gray;
@@ -504,9 +519,9 @@ body {
 }
 #mfsj-container .qr-dialog div.qr-content div.qr {
   position: absolute;
-  width: 47%;
-  margin-top: 55.5%;
-  margin-left: 26.7%;
+  width: 27%;
+  margin-top: 63%;
+  margin-left: 37%;
 }
 #mfsj-container .qr-dialog div.qr-content div.qr > img {
   width: 100%;
@@ -674,7 +689,7 @@ body {
 #mfsj-container div.pay-menu {
   position: fixed;
   right: 0;
-  top: 60%;
+  top: 50%;
   width: 15%;
   z-index: 11;
 }
@@ -687,6 +702,7 @@ body {
 }
 #mfsj-container div.pay-menu > img {
   width: 100%;
+  display: block;
 }
 #mfsj-container div.pay-menu > span.total-count {
   position: absolute;
@@ -791,6 +807,9 @@ body {
 }
 #mfsj-container div.machine-footer div.cart-content > div.item-list > div.cart-item > div.stock > div.buy-pane > a.add {
   background-color: #f6c870;
+}
+#mfsj-container div.machine-footer div.cart-content > div.item-list > div.cart-item > div.stock > div.buy-pane > a.add.max-count {
+  background-color: #b5b5b6;
 }
 #mfsj-container div.machine-footer div.cart-content > div.item-list > div.cart-item > div.stock > div.buy-pane > a.remove {
   border: solid 1px gray;

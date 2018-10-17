@@ -8,12 +8,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
-    <link href="mfsj.css?v=1.03" rel="stylesheet">
+    <link href="mfsj.css?v=1.04" rel="stylesheet">
     <title>膜法世家</title>
 </head>
 <body>
 
-<div id="mfsj-container" @click="everyClick()">
+<div id="mfsj-container" @click="everyClick()" :class="[ view ]">
     <el-dialog :append-to-body="true"
                :fullscreen="true"
                title="修改机器信息"
@@ -134,7 +134,7 @@
                         </div>
                         <div class="title">{{item.title}}</div>
                         <div class="price"><em>{{item.salePrice}}<span>元</span></em>
-                            <!--<del>{{item.price}}<span>元</span></del>-->
+                            <del>{{item.price}}<span>元</span></del>
                         </div>
 
                         <div class="buy-pane">
@@ -143,7 +143,7 @@
                                 <i class="el-icon-minus"></i>
                             </a>
                             <span class="buy-count">{{item.buyCount}}</span>
-                            <a class="add" @click.stop.prevent="addItem(item)" href="javascript:">
+                            <a class="add" @click.stop.prevent="addItem(item)" :class="{ 'max-count' : item.buyCount == item.stock }" href="javascript:">
                                 <i class="el-icon-plus"></i>
                             </a>
                             <div class="stock">库存{{item.stock}}份</div>
@@ -158,10 +158,11 @@
     </a>
 
 
-    <div class="pay-menu" v-show="!showCartContent" @click="showCartContent = true">
-        <img src="pay-menu.png">
+    <div class="pay-menu" v-show="!showCartContent && cartItems.length > 0" >
+        <img src="pay-menu-up.png" @click="showCartContent = true">
+        <img src="pay-menu-down.png" @click="showQR()">
         <span class="total-count">{{totalCount}}</span>
-        <div class="price">¥{{totalSalePrice}}</div>
+        <div class="price" >¥{{totalSalePrice}}</div>
     </div>
     <div class="list-cover" v-show="showCartContent" @click="showCartContent = false"></div>
     <div class="machine-footer" v-show="showCartContent">
@@ -289,6 +290,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/index.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="qrcode.min.js"></script>
-<script src="dist/main.js?v=1.03"></script>
+<script src="dist/main.js?v=1.04"></script>
 </body>
 </html>

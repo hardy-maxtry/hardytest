@@ -75,6 +75,9 @@ body {
 	overflow: hidden;
 	padding-bottom: 6em;
 	//background-color: #323032;
+	&.detail {
+		background-color:white;
+	}
 	.gap {
 		height: 50px;
 	}
@@ -220,6 +223,9 @@ body {
 			background-color: white;
 			&.add {
 				background-color: #f6c870;
+				&.max-count{
+					background-color: #b5b5b6;
+				}
 			}
 			&.remove {
 				border: solid 1px gray;
@@ -279,7 +285,9 @@ body {
 				> div.title {
 					//height: 3em;
 					font-size: 1.1em;
-
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
 				}
 				> div.price {
 					//height: 1.6em;
@@ -380,7 +388,7 @@ body {
 					}
 				}
 				> div.buy-pane {
-					font-size: 1.2em;
+					font-size: 1.1em;
 					position: absolute;
 					right: 5px;
 					bottom: 1em;
@@ -500,9 +508,9 @@ body {
 			}
 			div.qr {
 				position: absolute;
-				width: 47%;
-				margin-top: 55.5%;
-				margin-left: 26.7%;
+				width: 27%;
+				margin-top: 63%;
+				margin-left: 37%;
 				> img {
 					width: 100%;
 				}
@@ -670,7 +678,7 @@ body {
 	div.pay-menu {
 		position: fixed;
 		right: 0;
-		top: 60%;
+		top: 50%;
 		width: 15%;
 		z-index: 11;
 		> div.price {
@@ -682,6 +690,7 @@ body {
 		}
 		> img {
 			width: 100%;
+			display: block;
 		}
 		> span.total-count {
 			position: absolute;

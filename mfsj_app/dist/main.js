@@ -250,6 +250,9 @@ var vm = new Vue({
 
         deliveryOrderStatus: 0,
         orderStatusDic: {
+            "-30": "取消",
+            "-20": "异常",
+            "-10": "缺货",
             "0": '已创建',
             "1": '待支付',
             "11": '已扫描',
@@ -483,18 +486,18 @@ var vm = new Vue({
                     if (resp.data.status > 0) {
                         _this6.deviceInfo = resp.data;
                         _this6.machineError = false;
-                        checkMachineFail = 0;
+                        // checkMachineFail = 0;
                     } else {
-                        checkMachineFail++;
-                        if (checkMachineFail > 10) {
-                            _this6.machineError = true;
-                        }
+                        // checkMachineFail++;
+                        // if (checkMachineFail > 3) {
+                        _this6.machineError = true;
+                        // }
                     }
                 }).catch(function (resp) {
-                    checkMachineFail++;
-                    if (checkMachineFail > 10) {
-                        _this6.machineError = true;
-                    }
+                    // checkMachineFail++;
+                    // if (checkMachineFail > 3) {
+                    _this6.machineError = true;
+                    // }
                 });
             }
         },
@@ -591,6 +594,9 @@ var vm = new Vue({
         showQR: function showQR() {
             var _this9 = this;
 
+            if (this.cartItems.length == 0) {
+                return;
+            }
             this.qrImage = false;
             this.payOrderId = null;
             HandleBag.clear(this.qrBag);
@@ -648,7 +654,7 @@ var vm = new Vue({
                             _this9.qrTimer = Math.round(qrWaitAfterScanuration / 1000);
                             scaned = true;
                         }
-                        if (_.includes([2, 10, 20, 40], r.data)) {
+                        if (_.includes([-30, -20, -10, 2, 10, 20, 40], r.data)) {
                             //已支付
                             _this9.qrVisible = false;
                             _this9.toDeliveryView();
