@@ -451,6 +451,7 @@ var vm = new Vue({
         initMachine: function initMachine() {
             this.clearCart();
             if (this.deviceTaobaoNo) {
+                this.queryDeviceInfo();
                 this.queryItems();
                 this.queryAds();
             }
@@ -611,24 +612,6 @@ var vm = new Vue({
             }, 1000);
 
             var scaned = false;
-            var checkOrderStatus = PromiseDebounce.create(function (_) {
-                return getUrl('order/status/' + _this9.payOrderId);
-            });
-            this.qrBag.setInterval(function (r) {
-                checkOrderStatus().then(function (r) {
-                    if (r.data == 11 && !scaned) {
-                        _this9.qrTimer = Math.round(qrWaitAfterScanuration / 1000);
-                        scaned = true;
-                    }
-                    if (_.includes([2, 10, 20, 40], r.data)) {
-                        //已支付
-                        _this9.qrVisible = false;
-                        _this9.toDeliveryView();
-                    }
-                }).catch(function (_) {
-                    console.error('check qr status', _);
-                });
-            }, qrCheckInterval);
 
             postUrl('order/create', {
                 deviceTaobaoNo: this.deviceInfo.deviceTaobaoNo,
@@ -655,6 +638,25 @@ var vm = new Vue({
                     _this9.qrCreator.clear();
                     _this9.qrCreator.makeCode(resp.data.qrcode);
                 }
+
+                var checkOrderStatus = PromiseDebounce.create(function (_) {
+                    return getUrl('order/status/' + _this9.payOrderId);
+                });
+                _this9.qrBag.setInterval(function (r) {
+                    checkOrderStatus().then(function (r) {
+                        if (r.data == 11 && !scaned) {
+                            _this9.qrTimer = Math.round(qrWaitAfterScanuration / 1000);
+                            scaned = true;
+                        }
+                        if (_.includes([2, 10, 20, 40], r.data)) {
+                            //已支付
+                            _this9.qrVisible = false;
+                            _this9.toDeliveryView();
+                        }
+                    }).catch(function (_) {
+                        console.error('check qr status', _);
+                    });
+                }, qrCheckInterval);
 
                 _this9.payOrderId = resp.data.orderId;
                 _this9.qrImage = true;
@@ -732,18 +734,20 @@ var vm = new Vue({
             this.totalSalePrice = r.salePrice.toFixed(2);
             this.totalCount = r.count;
 
-            if (this.totalCount == 0) {
-                this.showCartContent = false;
-            }
+            // if (this.totalCount == 0) {
+            //     this.showCartContent = false;
+            // }
         },
-        confirmClearCart: function confirmClearCart() {
-            var _this12 = this;
 
-            this.$confirm('清空购物车？').then(function (_) {
-                _this12.clearCart();
-            });
-        },
+        // confirmClearCart() {
+        //     this.$confirm('清空购物车？')
+        //         .then(_ => {
+        //             this.clearCart();
+        //         })
+        // }
+        // ,
         clearCart: function clearCart() {
+            this.showCartContent = false;
             var _iteratorNormalCompletion = true;
             var _didIteratorError = false;
             var _iteratorError = undefined;

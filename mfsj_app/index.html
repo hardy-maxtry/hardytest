@@ -8,7 +8,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
-    <link href="mfsj.css?v=1.01" rel="stylesheet">
+    <link href="mfsj.css" rel="stylesheet">
     <title>膜法世家</title>
 </head>
 <body>
@@ -61,19 +61,13 @@
     </div>
 
     <div v-if="view == 'detail'" class="item-details">
-        <el-carousel :interval="5000" height="30vh" :autoplay="true">
+        <el-carousel :interval="5000" height="40vh" :autoplay="true">
             <el-carousel-item v-for="img in detailItem.images" :key="img" arrow="always">
                 <img :src="img" alt="" width="100%" height="100%">
             </el-carousel-item>
         </el-carousel>
         <div class="infos">
             <div class="title">{{detailItem.title}}</div>
-            <div class="description">{{detailItem.description}}</div>
-            <div class="promotions">
-            <span v-for="p in detailItem.promotions">
-								{{p.promotionName}}
-            </span>
-            </div>
             <div class="rate">
                 <i class="el-icon-star-on" v-for="i in detailItem.rate"></i>
                 <i class="el-icon-star-off" v-for="i in (5-detailItem.rate)"></i>
@@ -81,7 +75,7 @@
             </div>
             <div class="price-panel">
 				<span class="price">
-					<em>{{detailItem.salePrice}}</em>元
+					<em>{{detailItem.salePrice}}<small>元</small></em>
 
 					<del class="price-original">
 						{{detailItem.price}}元
@@ -99,11 +93,25 @@
                     </a>
                 </div>
             </div>
+
+
+            <!--<div class="promotions">-->
+            <!--<span v-for="p in detailItem.promotions">-->
+								<!--{{p.promotionName}}-->
+            <!--</span>-->
+            <!--</div>-->
+
+
             <div class="promotions-details">
                 <div class="promotion-detail" v-for="p in detailItem.promotions">
                     <span class="type">{{ p.type }}</span>
                     <span class="desc">购买满{{ p.quotaQuantity }}件减</span>
                 </div>
+            </div>
+
+            <div class="description">
+                <h6>商品介绍</h6>
+                <p>{{detailItem.description}}</p>
             </div>
         </div>
 
@@ -111,7 +119,6 @@
 
     <div v-if="view == 'list'" class="machine-list">
         <div class="gap"></div>
-        <div class="items-layout-detail">
 
             <div class="items">
                 <div class="item" v-for="item in onsaleItems">
@@ -127,72 +134,82 @@
                         </div>
                         <div class="title">{{item.title}}</div>
                         <div class="price"><em>{{item.salePrice}}<span>元</span></em>
-                            <del>{{item.price}}<span>元</span></del>
+                            <!--<del>{{item.price}}<span>元</span></del>-->
                         </div>
-                        <div class="stock">库存{{item.stock}}份</div>
+
                         <div class="buy-pane">
-                            <a v-show="item.buyCount > 0" class="remove" @click.stop.prevent="removeItem(item)" href="javascript:">
-                                <i class="el-icon-minus"></i>
-                            </a>
-                            <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
-                            <a class="add" @click.stop.prevent="addItem(item)" href="javascript:">
-                                <i class="el-icon-plus"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <a v-if="view == 'detail'" class="back-button" @click="unselectItem()">
-        <img src="back-button.png">
-    </a>
-
-    <div class="list-cover" v-show="showCartContent" @click="showCartContent = false"></div>
-    <div class="machine-footer" v-show="totalCount > 0">
-        <div class="bar">
-            <div class="cart-content" v-show="showCartContent">
-                <div class="header">
-                    <a @click="showCartContent = false"><i class="el-icon-close"></i></a>
-                    <h6>选品栏</h6>
-                    <a class="clear" @click="confirmClearCart()"><i class="el-icon-delete"></i>清空</a>
-                </div>
-
-                <div class="cart-item" v-for="item in cartItems">
-                    <div class="small-img"><img :src="item.cover" alt=""></div>
-                    <div class="title">
-                        <h6>{{item.title}}</h6>
-                    </div>
-                    <div class="price"><em>{{item.salePrice}}</em>元
-                    </div>
-
-                    <div class="stock">
-                        <div class="buy-pane">
-                            <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)"
+                            <a class="remove" @click.stop.prevent="removeItem(item)"
                                href="javascript:">
                                 <i class="el-icon-minus"></i>
                             </a>
-                            <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
-                            <a class="add" @click="addItem(item)" href="javascript:">
+                            <span class="buy-count">{{item.buyCount}}</span>
+                            <a class="add" @click.stop.prevent="addItem(item)" href="javascript:">
                                 <i class="el-icon-plus"></i>
                             </a>
-
+                            <div class="stock">库存{{item.stock}}份</div>
                         </div>
-                        <em>库存{{item.stock}}件</em>
                     </div>
-
                 </div>
             </div>
-            <div class="cart-icon" @click="showCartContent = !showCartContent">
-                <span class="total-count">{{totalCount}}</span>
-                <img src="cart-bag.png">
+    </div>
+
+    <a v-if="view == 'detail' || view == 'delivery'" class="back-button" @click="unselectItem()">
+        <img src="back-button.png">
+    </a>
+
+
+    <div class="pay-menu" v-show="!showCartContent" @click="showCartContent = true">
+        <img src="pay-menu.png">
+        <span class="total-count">{{totalCount}}</span>
+        <div class="price">¥{{totalSalePrice}}</div>
+    </div>
+    <div class="list-cover" v-show="showCartContent" @click="showCartContent = false"></div>
+    <div class="machine-footer" v-show="showCartContent">
+        <div class="bar">
+            <div class="cart-content">
+                <div class="header">
+                    <a @click="showCartContent = false"><i class="el-icon-close"></i></a>
+                    <h6>选品栏</h6>
+                    <a class="clear" @click="clearCart()"><i class="el-icon-delete"></i>清空</a>
+                </div>
+
+                <div class="item-list">
+                    <div class="cart-item" v-for="item in cartItems">
+                        <div class="small-img"><img :src="item.cover" alt=""></div>
+                        <div class="title">
+                            <h6>{{item.title}}</h6>
+                        </div>
+                        <div class="price"><em>{{item.salePrice}}</em>元
+
+                        </div>
+
+                        <div class="stock">
+                            <div class="buy-pane">
+                                <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)"
+                                   href="javascript:">
+                                    <i class="el-icon-minus"></i>
+                                </a>
+                                <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
+                                <a class="add" @click="addItem(item)" href="javascript:">
+                                    <i class="el-icon-plus"></i>
+                                </a>
+                            </div>
+                            <em>库存{{item.stock}}件</em>
+                        </div>
+                    </div>
+                    <div class="empty-tip" v-show="cartItems.length == 0" @click="showCartContent = false">
+                        购物车空空如也，赶紧去选购吧~
+                    </div>
+                </div>
             </div>
+            <!--<div class="cart-icon" @click="showCartContent = !showCartContent">-->
+            <!--<span class="total-count">{{totalCount}}</span>-->
+            <!--<img src="cart-bag.png">-->
+            <!--</div>-->
 
             <div class="total-price">
                 <div class="price">总计：<em>{{totalSalePrice}}</em>元
-                    <!--<del>{{totalPriceOriginal}}元</del>-->
+                    <del>{{totalPrice}}元</del>
                 </div>
                 <!--<div class="tip">含限购商品，实际金额以支付结果为准</div>-->
             </div>
@@ -201,7 +218,7 @@
                 <img src="pay-button.png">
             </a>
         </div>
-        <img class="cart-background" src="bottom-background.png">
+        <!--<img class="cart-background" src="bottom-background.png">-->
     </div>
     <el-dialog class="qr-dialog"
                width="80%"
@@ -210,18 +227,18 @@
                :center="true"
                :visible.sync="qrVisible">
         <div class="qr-content" @click="qrVisible = false">
-            <em class="timer">{{qrTimer}}</em>
+            <em class="timer" v-show="qrImage">{{qrTimer}}</em>
             <h6>淘宝扫一扫，支付{{totalSalePrice}}元</h6>
             <div id="payQR" class="qr" v-show="qrImage"></div>
             <div class="wait" v-show="!qrImage">正在生成支付二维码，请稍后 <i class="el-icon-loading"></i>
             </div>
-            <img class="qr-background" src="qrbg.png">
+            <img class="qr-background" src="qr-scan-bg.png">
         </div>
         <!--<span slot="title" class="qr-title">淘宝扫一扫，支付{{totalPrice}}元-->
         <!--<i class="el-icon-error" @click="qrVisible = false"></i>-->
         <!--</span>-->
     </el-dialog>
-    <div class="delivery" v-if="view == 'delivery'" @click="confirmExitDelivery()">
+    <div class="delivery" v-if="view == 'delivery'">
         <div class="pay-success" v-if="paySuccessVisible">
             <div class="dialog">
                 <span class="price-info-large">
@@ -272,6 +289,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/index.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 <script src="qrcode.min.js"></script>
-<script src="dist/main.js?v=1.01"></script>
+<script src="dist/main.js"></script>
 </body>
 </html>
