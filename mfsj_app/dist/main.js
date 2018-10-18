@@ -483,7 +483,7 @@ var vm = new Vue({
 
             if (this.deviceTaobaoNo) {
                 getUrl('device/detail', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
-                    if (resp.data.status > -2) {
+                    if (resp.data.status > 0) {
                         //todo:状态
                         _this6.deviceInfo = resp.data;
                         _this6.machineError = false;
@@ -544,6 +544,7 @@ var vm = new Vue({
                         });
                         return {
                             taobaoNo: d.productTaobaoNo,
+                            cover: d.cover,
                             title: d.name,
                             hot: d.hot,
                             images: images.length > 0 ? images : ['download.jpg'],
