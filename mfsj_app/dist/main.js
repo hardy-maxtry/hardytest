@@ -637,7 +637,8 @@ var vm = new Vue({
                         saleTotalPrice: x.buyCount * x.salePrice,
                         sku: '0'
                     };
-                })
+                }),
+                action: 'taobao'
             }).then(function (resp) {
                 if (!_this9.qrCreator) {
                     _this9.qrCreator = new QRCode(document.getElementById("payQR"), {
@@ -707,8 +708,11 @@ var vm = new Vue({
             this.deliveryBag.setInterval(function (r) {
                 checkOrderStatus().then(function (r) {
                     _this10.deliveryOrderStatus = r.data;
-                    if (_this10.deliveryOrderStatus == 40 && _this10.deliveryTimer > 5) {
-                        _this10.deliveryTimer = 5;
+                    if (_this10.deliveryOrderStatus == 40) {
+                        _this10.queryItems();
+                        if (_this10.deliveryTimer > 5) {
+                            _this10.deliveryTimer = 5;
+                        }
                     }
                 }).catch(function (_) {
                     console.error('check qr status', _);
