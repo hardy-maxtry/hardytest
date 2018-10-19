@@ -360,6 +360,9 @@ var vm = new Vue({
             if (value == 'detail') {
                 window.scrollTo(0, 0);
             }
+            if (value == 'list') {
+                this.queryItems();
+            }
         },
         machineInfoDialog: function machineInfoDialog(value) {
             //打开或关闭对话框
@@ -543,8 +546,8 @@ var vm = new Vue({
                             return resourceRoot + i;
                         });
                         return {
-                            taobaoNo: d.productTaobaoNo,
                             cover: d.cover,
+                            taobaoNo: d.productTaobaoNo,
                             title: d.name,
                             hot: d.hot,
                             images: images.length > 0 ? images : ['download.jpg'],
