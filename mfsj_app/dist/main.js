@@ -639,8 +639,7 @@ var vm = new Vue({
                         saleTotalPrice: x.buyCount * x.salePrice,
                         sku: '0'
                     };
-                }),
-                action: 'taobao'
+                })
             }).then(function (resp) {
                 if (!_this9.qrCreator) {
                     _this9.qrCreator = new QRCode(document.getElementById("payQR"), {
