@@ -629,6 +629,8 @@ var vm = new Vue({
 
             postUrl('order/create', {
                 deviceTaobaoNo: this.deviceInfo.deviceTaobaoNo,
+                action : 'ews',
+                "scanUrl": "mfsjst.ewssh.m.jaeapp.com/ews_shoutao/index.html",
                 item: this.cartItems.map(function (x) {
                     return {
                         productTaobaoNo: x.taobaoNo,
