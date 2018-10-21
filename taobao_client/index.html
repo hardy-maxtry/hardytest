@@ -6,8 +6,11 @@
           content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no"/>
+    <script src="//g.alicdn.com/tmapp/tida/3.3.37/tida.js?appkey=24952524"></script> 
+    <meta name="spm-id" content="a1z51.24952524"/>
     <link href="mfsj-ews.css" rel="stylesheet">
     <title>膜法世家</title>
+    
 </head>
 <body>
     <div id="mfsj-ews" class="mfsj-ews-container">
@@ -16,44 +19,50 @@
         </h5>
         <div class="order-items">
             <div class="item" v-for="item in items">
-                <img src="cover.png">
+                <img :src="item.cover">
                 <div class="info">
-                    <h6>{{item.title}}</h6>
-                    <p>{{item.desc}}</p>
+                    <h6>{{item.name}}</h6>
+                    <p>{{item.content}}</p>
                     <div class="promotions">
-                        <span v-for="p in item.promotions">{{p}}</span>
+                        <span v-for="p in item.promotionNames">{{p}}</span>
                     </div>
                     <div class="price-stock">
-                        <em>¥{{item.price}}</em>
-                        <span>×{{item.stock}}</span>
+                        <em>¥{{item.salePrice}}</em>
+                        <span>×{{item.quantity}}</span>
                     </div>
                 </div>
             </div>
         </div>
         <div class="promotions">
             <div class="promotion" v-for="p in promotions">
-                <div class="title">{{p.title}}</div>
-                <div class="price">{{p.price}}元</div>
+                <div class="title">{{p.promotionName}}</div>
+                <div class="price">{{p.promotionProfit}}元</div>
                 <div class="toggle">
-                    <div class="toggle-switch"><i></i></div>
+                    <div class="toggle-switch" :class="{ off : !p.selected }" @click="selectPromotion(p)"><i></i></div>
                 </div>
             </div>
         </div>
 
 
         <div class="footer">
-            <div class="join-member">
+            <div class="join-member" v-show="!isMember && !isPaid">
                 加入品牌会员 享特价购买
             </div>
-            <a class="not-member-pay">
+            <div class="join-member" v-show="isPaid">
+                已支付 谢谢惠顾
+            </div>
+            <a class="not-member-pay"  @click="nonMemberPay()" v-show="!isPaid">
                 <img src="non-member.jpg" alt="">
             </a>
-            <a class="member-pay">
+            <a class="member-pay" @click="memberPay()" v-show="!isPaid">
                 <img src="member.jpg">
             </a>
         </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
-    <script src="index.js"></script>
+
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <script src="https://cdn.staticfile.org/vue/2.5.16/vue.min.js"></script>
+    <!--<script src="//g.alicdn.com/tmapp/tida/3.3.37/tida.js?appkey=24952524"></script>-->
+    <script src="dist/index.js"></script>
 </body>
 </html>
