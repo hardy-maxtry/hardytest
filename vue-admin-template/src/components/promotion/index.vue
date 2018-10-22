@@ -63,9 +63,19 @@
             <!-- <el-input v-model="form.total" type="number"></el-input> -->
             <el-input-number v-model="form.total" :precision="2" :step="1" ></el-input-number>
           </el-form-item>
-          <el-form-item v-if="form.type==1" label="满X件享折扣" prop="quotaQuantity">
+          <el-form-item v-if="form.type==4" label="满X件享折扣" prop="quotaQuantity">
             <!-- <el-input v-model="form.total" type="number"></el-input> -->
             <el-input-number v-model="form.quotaQuantity"  :step="1" ></el-input-number>
+            <el-tooltip class="item" effect="dark" content="单个订单中，购买指定数量的指定商品，可以享受折扣价结算" placement="top-start">
+                <i class="el-icon-question"></i>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item v-if="form.type==1" label="限购数量" prop="quotaQuantity">
+            <!-- <el-input v-model="form.total" type="number"></el-input> -->
+            <el-input-number v-model="form.quotaQuantity" :disabled="true" :step="1" ></el-input-number>
+            <el-tooltip class="item" effect="dark" content="限购商品只允许购买一件" placement="top-start">
+                <i class="el-icon-question"></i>
+            </el-tooltip>
           </el-form-item>
           
         </el-col>
@@ -79,7 +89,7 @@
             <el-input-number v-model="form.subtraction" :precision="2" :step="1" ></el-input-number>
 
           </el-form-item>
-          <el-form-item v-if="form.type==1" label="固定折扣价(元)" prop="price">
+          <el-form-item v-if="form.type==1 || form.type==4" label="固定折扣价(元)" prop="price">
             <!-- <el-input v-model="form.price"></el-input> -->
             <el-input-number v-model="form.price" :precision="2" :step="1" ></el-input-number>
           </el-form-item>
@@ -191,6 +201,11 @@ export default {
       promotion_form : function(newVal, oldVal){
           this.form = newVal;
       },
+      "form.type" : function(newVal, oldVal){
+          if(newVal == '1'){
+            this.$set(this.form, 'quotaQuantity', 1);
+          }
+      },
       
   },
   data() {
@@ -294,7 +309,11 @@ export default {
       pageLimitQuantity : 1,
       conditionTypes: [{
           value: '1',
-          label: '定额'
+          label: '限购'
+        },
+        {
+          value: '4',
+          label: '满X件X元'
         },
         //  {
         //   value: '2',

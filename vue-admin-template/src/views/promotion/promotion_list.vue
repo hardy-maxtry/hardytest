@@ -11,17 +11,18 @@
         <el-col :span="8">
           <el-form-item label="促销类型" prop="type">
             <el-select v-model="form.type" placeholder="请选择促销类型" style="width:90%;">
-              <el-option label="定额" value="1"/>
-              <el-option label="满额折扣" value="2"/>
-              <el-option label="满额立减" value="3"/>
+              <el-option label="限购" value="1"/>
+              <!-- <el-option label="满额折扣" value="2"/>
+              <el-option label="满额立减" value="3"/> -->
+              <el-option label="满X件X元" value="4"/>
             </el-select>
-            <el-tooltip class="item" effect="dark" placement="top-start">
+            <!-- <el-tooltip class="item" effect="dark" placement="top-start">
               <div slot="content">
                 定额：只要选购了活动商品，就视为满足活动条件，活动商品总结算价 = 固定折扣价，建议作为限购优惠来使用<br/>
                 满额折扣：满足条件后，活动商品总结算价 = 活动商品总价 x 满额折扣比例<br/>
                 满额立减：满足条件后，活动商品总结算价 = 活动商品总价 - 满额立减额度</div>
               <i class="el-icon-question"></i>
-            </el-tooltip>
+            </el-tooltip> -->
           </el-form-item>
         </el-col>
       </el-row>
@@ -124,9 +125,10 @@ let adTypes = {
   1 : '链接',
 }
 let promotionTypes = {
-  1: "定额" ,
+  1: "限购" ,
   2: "满额折扣",
-  3: "满额立减"
+  3: "满额立减",
+  4: "满X件X元"
 }
 let statusTypes = {
   1 : '待审核',

@@ -91,7 +91,7 @@
           :before-upload="beforeAvatarUpload">
           <!-- <el-button size="small" type="primary">点击上传</el-button> -->
 
-          <img v-if="form.cover != null && form.cover != ''" :src="form.cover" class="avatar">
+          <img v-if="form.cover != null && form.cover != ''" :src="url_prefix  + '/'+  form.cover" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           
           
@@ -180,6 +180,7 @@ export default {
         ],
       },
       loading : false,
+      url_prefix : urls.url_prefix,
     }
   },
   computed:{
@@ -291,6 +292,7 @@ export default {
       },
       handleUploadSuccess(response, file, fileList){
         // this.form.image = response.data;
+        debugger
         console.log(arguments)
         this.fileList.push({
           name : file.name,
@@ -324,7 +326,9 @@ export default {
       },
       handleAvatarSuccess(res, file) {
         // this.form.cover = URL.createObjectURL(file.raw);
-        this.$set(this.form, 'cover', urls.url_prefix + '/' + res.data)
+        debugger
+        // this.$set(this.form, 'cover', urls.url_prefix + '/' + res.data)
+        this.$set(this.form, 'cover',  res.data)
       },
       checkPrice(rule, value, callback){
         // console.log(arguments);
