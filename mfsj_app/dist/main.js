@@ -724,7 +724,7 @@ var vm = new Vue({
             this.deliveryBag.setInterval(function (_) {
                 _this10.deliveryTimer = _this10.deliveryTimer - 1;
                 if (_this10.deliveryTimer < 1) {
-                    _this10.view = 'list';
+                    _this10.backToList();
                 }
             }, 1000);
 
