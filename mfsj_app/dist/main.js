@@ -361,7 +361,7 @@ var vm = new Vue({
                 window.scrollTo(0, 0);
             }
             if (value == 'list') {
-                this.queryItems();
+                // this.queryItems();
             }
         },
         machineInfoDialog: function machineInfoDialog(value) {
@@ -639,7 +639,7 @@ var vm = new Vue({
                         saleTotalPrice: x.buyCount * x.salePrice,
                         sku: '0'
                     };
-                })
+                }),
             }).then(function (resp) {
                 if (!_this9.qrCreator) {
                     _this9.qrCreator = new QRCode(document.getElementById("payQR"), {
