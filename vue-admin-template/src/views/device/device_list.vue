@@ -95,7 +95,7 @@
         </el-table-column>
         <el-table-column
           prop="heartBeatAtStr"
-          label="心跳"
+          label="大屏心跳"
           >
           <template slot-scope="scope">
             <el-tooltip class="item" effect="dark" placement="top">
