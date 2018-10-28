@@ -94,6 +94,17 @@
           </template>
         </el-table-column>
         <el-table-column
+          prop="heartBeatAtStr"
+          label="心跳"
+          >
+          <template slot-scope="scope">
+            <el-tooltip class="item" effect="dark" placement="top">
+              <div slot="content">{{scope.row.heartBeatAtStr}}</div>
+              <el-button size="mini">{{scope.row.heartBeatAtCheck}}</el-button>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column
           fixed="right"
           label="操作"
           width="300">
@@ -207,10 +218,13 @@ export default {
       axios.post(`${urls.device_list_full}`, postData)
         .then(function(res){
           if(res.data){
+            let date_now = new Date();
             that.deviceListTableData = res.data.data.map(x=>{
               x.statusStr = statusTypes[x.status];
               x.erpStatusStr = statusTypes[x.erpStatus];
               x.initStatusStr = initStatusTypes[x.initStatus];
+              x.heartBeatAtStr = x.heartBeatAt == null ? '无数据' : parseTime(new Date(x.heartBeatAt),'{y}年{m}月{d}日 {h}:{i}:{s}');
+              x.heartBeatAtCheck = x.heartBeatAt == null ? '无数据' : that.checkHeartBeatTime( new Date(x.heartBeatAt), date_now);
               return x;
             });
             
@@ -342,6 +356,28 @@ export default {
           that.$set(row, 'status', 3);
           that.$set(row,'statusStr' ,statusTypes[row.status]);
         })
+    },
+    checkHeartBeatTime(date1, date2){
+
+        var date3 = date2.getTime() - new Date(date1).getTime();   //时间差的毫秒数      
+ 
+        //------------------------------
+ 
+        //计算出相差天数
+        var days=Math.floor(date3/(24*3600*1000))
+ 
+        //计算出小时数
+ 
+        var leave1=date3%(24*3600*1000)    //计算天数后剩余的毫秒数
+        var hours=Math.floor(leave1/(3600*1000))
+        //计算相差分钟数
+        var leave2=leave1%(3600*1000)        //计算小时数后剩余的毫秒数
+        var minutes=Math.floor(leave2/(60*1000))
+        //计算相差秒数
+        var leave3=leave2%(60*1000)      //计算分钟数后剩余的毫秒数
+        var seconds=Math.round(leave3/1000)
+        return  days > 0 ? days + '天前' : (hours > 0 ? hours + '小时前' : ( minutes > 0 ? minutes + '分钟前' : ( seconds + '秒前'  )) )
+        // return [days, hours, minutes, seconds];
     }
   }
 }
