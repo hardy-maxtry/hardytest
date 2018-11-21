@@ -1,8 +1,16 @@
 'use strict';
+// var rootUrl ="http://47.99.36.92:10002/";
+
+// var resourceRoot = rootUrl;
+// var apiRoot = rootUrl +'api/';
+// var apiBackRoot = rootUrl +'apiBack/';
+
 
 var resourceRoot = '/';
 var apiRoot = 'api/';
 var apiBackRoot = 'apiBack/';
+// 版本号，需要和服务端保持一致
+var version = "1";
 
 var adShowWait = 60000; //无操作显示广告等待时间
 var adStayDuration = 15000; //每张广告持续时间
@@ -487,21 +495,18 @@ var vm = new Vue({
             if (this.deviceTaobaoNo) {
                 getUrl('device/detail', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
                     if (resp.data.status > 0) {
-                        //todo:状态
                         _this6.deviceInfo = resp.data;
                         _this6.machineError = false;
-                        // checkMachineFail = 0;
                     } else {
-                        // checkMachineFail++;
-                        // if (checkMachineFail > 3) {
                         _this6.machineError = true;
-                        // }
+                    }
+
+                    //判断版本，刷新页面
+                    if (resp.data.version != version) {
+                        window.location.reload();
                     }
                 }).catch(function (resp) {
-                    // checkMachineFail++;
-                    // if (checkMachineFail > 3) {
                     _this6.machineError = true;
-                    // }
                 });
             }
         },
