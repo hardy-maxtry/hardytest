@@ -252,10 +252,12 @@ var vm = new Vue({
         payOrderId: null,
         deliveryTimer: 0,
         deliveryInfo: {
-            deliveryOrderId: 1233329295491234,
+            username: '',
+            deliveryOrderId: 10000000,
             deliveryItems: []
         },
 
+        showContactTaobao: false,
         deliveryOrderStatus: 0,
         orderStatusDic: {
             "-30": "取消",
@@ -503,7 +505,8 @@ var vm = new Vue({
 
                     //判断版本，刷新页面
                     if (resp.data.version != version) {
-                        window.location.reload();
+                        //todo: debug
+                        window.location.reload()
                     }
                 }).catch(function (resp) {
                     _this6.machineError = true;
@@ -645,6 +648,7 @@ var vm = new Vue({
                         sku: '0'
                     };
                 }),
+                // action: 'taobao'
             }).then(function (resp) {
                 if (!_this9.qrCreator) {
                     _this9.qrCreator = new QRCode(document.getElementById("payQR"), {
@@ -689,6 +693,7 @@ var vm = new Vue({
             var _this10 = this;
 
             this.payOrderPrice = this.totalSalePrice;
+            this.showContactTaobao = false;
             this.clearCart();
             this.paySuccessVisible = true;
 
@@ -697,13 +702,20 @@ var vm = new Vue({
                 return _this10.paySuccessVisible = false;
             }, 5000);
 
+            //保持不显示广告
+            this.deliveryBag.setInterval(function (_) {
+                return _this10.adsShowDebounce();
+            }, 10000);
+
             //检查出货状态
             var checkDeliveryStatus = PromiseDebounce.create(function (_) {
                 return getUrl('order/pickup-status/' + _this10.payOrderId);
             });
             this.deliveryBag.setInterval(function (_) {
                 checkDeliveryStatus().then(function (_) {
-                    _this10.deliveryInfo = _.data;
+                    if (_.code == '200') {
+                        _this10.deliveryInfo = _.data;
+                    }
                 });
             }, deliveryCheckInterval, true);
 
@@ -729,17 +741,38 @@ var vm = new Vue({
             this.deliveryBag.setInterval(function (_) {
                 _this10.deliveryTimer = _this10.deliveryTimer - 1;
                 if (_this10.deliveryTimer < 1) {
-                    _this10.backToList();
+                    if (_this10.deliveryOrderStatus != 40) {
+                        _this10.deliveryFail();
+                    } else {
+                        _this10.backToList();
+                    }
                 }
             }, 1000);
 
             this.view = 'delivery';
         },
-        confirmExitDelivery: function confirmExitDelivery() {
+        deliveryFail: function deliveryFail() {
             var _this11 = this;
 
+            this.deliveryBag.clear();
+            this.showContactTaobao = true;
+            this.deliveryTimer = 60;
+            //保持不显示广告
+            this.deliveryBag.setInterval(function (_) {
+                return _this11.adsShowDebounce();
+            }, 10000);
+            this.deliveryBag.setInterval(function (_) {
+                _this11.deliveryTimer = _this11.deliveryTimer - 1;
+                if (_this11.deliveryTimer < 1) {
+                    _this11.backToList();
+                }
+            }, 1000);
+        },
+        confirmExitDelivery: function confirmExitDelivery() {
+            var _this12 = this;
+
             this.$confirm('退出出货界面？').then(function (_) {
-                _this11.view = 'list';
+                _this12.view = 'list';
             }, function (_) {});
         },
         refreshCart: function refreshCart() {

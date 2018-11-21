@@ -164,7 +164,7 @@
         <span class="total-count">{{totalCount}}</span>
         <div class="price" >¥{{totalSalePrice}}</div>
     </div>
-    <div class="list-cover" v-show="showCartContent" @click="showCartContent = false"></div>
+    <div class="list-cover" v-show="showCartContent" @click="showCartContent = false" @touchmove.stop.prevent=""></div>
     <div class="machine-footer" v-show="showCartContent">
         <div class="bar">
             <div class="cart-content">
@@ -240,7 +240,7 @@
         <!--</span>-->
     </el-dialog>
     <div class="delivery" v-if="view == 'delivery'">
-        <div class="pay-success" v-if="paySuccessVisible">
+        <div class="pay-success dialog-wrapper" v-if="paySuccessVisible">
             <div class="dialog">
                 <span class="price-info-large">
                     <em>{{ payOrderPrice }}</em>元
@@ -249,10 +249,24 @@
                     <span>支付宝支付</span>
                     <em>{{payOrderPrice}}元</em>
                 </span>
-                <img src="delivery.png" alt="">
+                <img class="bg" src="delivery.png" alt="">
             </div>
             <div class="bg-cover"></div>
         </div>
+
+        <div class="delivery-fail dialog-wrapper" v-if="showContactTaobao" @click="backToList()">
+            <div class="dialog">
+                <div class="dialog-content">
+                    <h6 >等待超时</h6>
+                    <p>您可联系<em>[淘宝客服]</em>询问当前状态</p>
+                    <p><strong>或拨打客服电话：400-000-000</strong></p>
+                    <span>{{deliveryTimer}}s 后将自动关闭</span>
+                </div>
+                <img  class="bg" src="delivery-error.png" alt="">
+            </div>
+            <div class="bg-cover"></div>
+        </div>
+
         <el-carousel :interval="5000" height="30vh" :autoplay="true" indicator-position="none" arrow="never">
             <el-carousel-item v-for="img in adsDelivery" :key="img.image" arrow="always">
                 <img :src="img.image" alt="" width="100%" height="100%">

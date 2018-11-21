@@ -561,7 +561,7 @@ body {
 	div.delivery {
 		padding-bottom: 4em;
 
-		> div.pay-success {
+		div.dialog-wrapper{
 			position: absolute;
 			top: 0;
 			left: 0;
@@ -573,11 +573,32 @@ body {
 				width: 100%;
 				z-index: 25;
 				position: relative;
-				> img {
+				>div.dialog-content{
+					position: absolute;
+					left: 10%;
+					right: 10%;
+				}
+				> img.bg {
 					margin: 0 10%;
 					text-align: center;
 					width: 80%;
 				}
+			}
+			> div.bg-cover {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				background-color: #000000;
+				opacity: 0.5;
+				z-index: 24;
+			}
+		}
+
+		> div.pay-success {
+			> div.dialog {
+
 				> span.price-info-large {
 					text-align: center;
 					display: block;
@@ -601,15 +622,29 @@ body {
 					}
 				}
 			}
-			> div.bg-cover {
-				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
-				background-color: #000000;
-				opacity: 0.5;
-				z-index: 24;
+		}
+		> div.delivery-fail{
+			div.dialog-content{
+				margin-top: 8em;
+				text-align: center;
+				h6{
+					margin-bottom: 1em;
+					font-weight: bold;
+				}
+				p{
+					em{
+						color: #f56c6c;
+					}
+				}
+				span{
+					margin-top: 1.5em;
+					display: block;
+					color: #dddddd;
+				}
+			}
+			img.bg{
+				margin: 0 15% !important;
+				width: 70% !important;
 			}
 		}
 		> div.item-list {

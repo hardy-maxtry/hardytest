@@ -2,6 +2,9 @@ const resourceRoot = 'http://139.224.54.234:8082/';
 const apiRoot = 'api/';
 const apiBackRoot = 'apiBack/';
 
+const version = "1.1.1";
+
+
 const adShowWait = 60000; //无操作显示广告等待时间
 const adStayDuration = 15000; //每张广告持续时间
 const checkMachineDuration = 5000; //机器状态轮询时间
@@ -246,11 +249,13 @@ let vm = new Vue({
             deliveryTimer: 0,
             deliveryInfo:
                 {
-                    deliveryOrderId: 1233329295491234,
+                    username : '',
+                    deliveryOrderId: 10000000,
                     deliveryItems:
                         []
                 }
             ,
+            showContactTaobao : false,
             deliveryOrderStatus: 0,
             orderStatusDic: {
                 "-30" : "取消",
@@ -485,22 +490,20 @@ let vm = new Vue({
                     getUrl('device/detail', {deviceTaobaoNo: this.deviceTaobaoNo})
                         .then(resp => {
                             if (resp.data.status > 0) {
-                                //todo:状态
                                 this.deviceInfo = resp.data;
                                 this.machineError = false;
-                                // checkMachineFail = 0;
                             }
                             else {
-                                // checkMachineFail++;
-                                // if (checkMachineFail > 3) {
                                     this.machineError = true;
-                                // }
+                            }
+
+                            //判断版本，刷新页面
+                            if(resp.data.version != version){
+                                //todo: debug
+                                window.location.reload()
                             }
                         }).catch(resp => {
-                        // checkMachineFail++;
-                        // if (checkMachineFail > 3) {
                             this.machineError = true;
-                        // }
                     })
                 }
             },
@@ -628,6 +631,8 @@ let vm = new Vue({
 
                 postUrl('order/create', {
                     deviceTaobaoNo: this.deviceInfo.deviceTaobaoNo,
+                    action : 'ews',
+                    "scanUrl": "mfsjst.ewssh.m.jaeapp.com/ews_shoutao/index.html",
                     item: this.cartItems.map(x => {
                         return {
                             productTaobaoNo: x.taobaoNo,
@@ -637,7 +642,7 @@ let vm = new Vue({
                             sku: '0'
                         }
                     }),
-                    action : 'taobao'
+                    // action : 'taobao'
                 }).then(resp => {
                     if (!this.qrCreator) {
                         this.qrCreator = new QRCode(document.getElementById("payQR"), {
@@ -684,11 +689,15 @@ let vm = new Vue({
             ,
             toDeliveryView() {
                 this.payOrderPrice = this.totalSalePrice;
+                this.showContactTaobao = false;
                 this.clearCart();
                 this.paySuccessVisible = true;
 
                 this.deliveryBag = new HandleBag();
                 this.deliveryBag.setTimeout(_ => this.paySuccessVisible = false, 5000);
+
+                //保持不显示广告
+                this.deliveryBag.setInterval(_ => this.adsShowDebounce(), 10000);
 
                 //检查出货状态
                 let checkDeliveryStatus = PromiseDebounce.create(_ => {
@@ -696,7 +705,10 @@ let vm = new Vue({
                 });
                 this.deliveryBag.setInterval(_ => {
                     checkDeliveryStatus().then(_ => {
-                        this.deliveryInfo = _.data;
+                        if(_.code == '200')
+                        {
+                            this.deliveryInfo = _.data;
+                        }
                     });
                 }, deliveryCheckInterval, true);
 
@@ -723,13 +735,31 @@ let vm = new Vue({
                 this.deliveryBag.setInterval(_ => {
                     this.deliveryTimer = this.deliveryTimer - 1;
                     if (this.deliveryTimer < 1) {
-                        this.view = 'list';
+                        if(this.deliveryOrderStatus != 40){
+                            this.deliveryFail();
+                        }
+                        else{
+                            this.backToList();
+                        }
                     }
                 }, 1000);
 
                 this.view = 'delivery';
             }
             ,
+            deliveryFail(){
+                this.deliveryBag.clear();
+                this.showContactTaobao = true;
+                this.deliveryTimer = 60;
+                //保持不显示广告
+                this.deliveryBag.setInterval(_ => this.adsShowDebounce(), 10000);
+                this.deliveryBag.setInterval(_=>{
+                    this.deliveryTimer = this.deliveryTimer - 1;
+                    if(this.deliveryTimer < 1){
+                        this.backToList();
+                    }
+                },1000)
+            },
             confirmExitDelivery() {
                 this.$confirm('退出出货界面？')
                     .then(_ => {
