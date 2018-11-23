@@ -799,8 +799,10 @@ body {
   font-weight: bold;
 }
 #mfsj-container div.machine-footer div.cart-content > div.item-list {
-  max-height: 40vh;
-  overflow: scroll;
+  max-height: 35vh;
+}
+#mfsj-container div.machine-footer div.cart-content > div.item-list.need-scroll {
+  overflow-y: scroll;
 }
 #mfsj-container div.machine-footer div.cart-content > div.item-list > div.cart-item {
   display: flex;

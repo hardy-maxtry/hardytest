@@ -174,7 +174,7 @@
                     <a class="clear" @click="clearCart()"><i class="el-icon-delete"></i>清空</a>
                 </div>
 
-                <div class="item-list">
+                <div class="item-list" v-bind:class="{ 'need-scroll' : cartItems.length > 3 }">
                     <div class="cart-item" v-for="item in cartItems">
                         <div class="small-img"><img :src="item.cover" alt=""></div>
                         <div class="title">
