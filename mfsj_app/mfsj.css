@@ -641,15 +641,8 @@ body {
   margin-top: 8em;
   text-align: center;
 }
-#mfsj-container div.delivery > div.delivery-fail div.dialog-content h6 {
-  margin-bottom: 1em;
-  font-weight: bold;
-}
-#mfsj-container div.delivery > div.delivery-fail div.dialog-content p em {
-  color: #f56c6c;
-}
 #mfsj-container div.delivery > div.delivery-fail div.dialog-content span {
-  margin-top: 1.5em;
+  margin-top: 7em;
   display: block;
   color: #dddddd;
 }
