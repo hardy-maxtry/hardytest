@@ -123,35 +123,45 @@
               </el-select> -->
           
           <el-button @click="addProduct">新增商品</el-button>
-            <el-form-item
-                v-for="(product, index) in form.item"
-                :label="'商品' + index"
-                :key="index"
-                :prop="'item.' + index + '.productTaobaoNo'"
-                :rules="{ validator: checkFormDuplicate, trigger: 'change' }"
-                label-width="80px"
-            >
-                <!-- <el-input v-model="product.productTaobaoNo" style="width:50%;"></el-input> -->
-                <el-select
-                    v-model="product.productTaobaoNo"
-                    filterable
-                    placeholder="输入商品名称"
-                    :loading="loading"
-                    clearable
-                    style="width:50%;">
-                    <el-option
-                    v-for="item in options4"
-                    :key="item.productTaobaoNo"
-                    :label="item.name"
-                    :value="item.productTaobaoNo"
-                     >
-                        <span style="float: left">{{ item.productTaobaoNo }}</span>
-                        <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
-                    </el-option>
-                </el-select>
-                
+            <el-row v-for="(product, index) in form.item" :key="index">
+              <el-col :span="12">
+                <el-form-item
+                    
+                    :label="'商品' + index"
+                    
+                    :prop="'item.' + index + '.productTaobaoNo'"
+                    :rules="{ validator: checkFormDuplicate, trigger: 'change' }"
+                    label-width="80px"
+                >
+                    <!-- <el-input v-model="product.productTaobaoNo" style="width:50%;"></el-input> -->
+                    <el-select
+                        v-model="product.productTaobaoNo"
+                        filterable
+                        placeholder="输入商品名称"
+                        :loading="loading"
+                        clearable
+                        style="width:90%;">
+                        <el-option
+                        v-for="item in options4"
+                        :key="item.productTaobaoNo"
+                        :label="item.name"
+                        :value="item.productTaobaoNo"
+                        >
+                            <span style="float: left">{{ item.productTaobaoNo }}</span>
+                            <span style="float: right; color: #8492a6; font-size: 13px">{{ item.name }}</span>
+                        </el-option>
+                    </el-select>
+                    
+                    
+                </el-form-item>
+              </el-col>
+              <el-col :span="12">
+                <el-form-item label="折扣商品号">
+                <el-input v-model="product.extraProductTaobaoNo" style="width:70%;"></el-input>
                 <el-button @click.prevent="removeProduct(product)">删除</el-button>
-            </el-form-item>
+                </el-form-item>
+              </el-col>
+            </el-row>
             </el-form-item>
         </el-col>
         
