@@ -13,6 +13,8 @@ var apiBackRoot = 'apiBack/';
 var version = "1";
 
 var adShowWait = 60000; //无操作显示广告等待时间
+// //todo:debug
+// const adShowWait = 6000000; //无操作显示广告等待时间
 var adStayDuration = 15000; //每张广告持续时间
 var checkMachineDuration = 5000; //机器状态轮询时间
 var checkMachineFail = 0;
@@ -23,7 +25,7 @@ var qrWaitDuration = 60000; //二维码超时时间
 var qrWaitAfterScanuration = 300000; //二维码扫描后超时时间
 var qrCheckInterval = 5000; //扫码状态轮询时间
 var deliveryCheckInterval = 5000; //出货状态轮询时间
-var deliveryStayDuration = 60000;
+var deliveryStayDuration = 30000;
 
 !function (e) {
     var i = {},
@@ -206,7 +208,7 @@ var vm = new Vue({
         qrImage: false,
         qrTimer: 0,
 
-        promotionDetailVisible: false,
+        showItemDetail: false,
         detailItem: null,
         onsaleItems: [],
 
@@ -248,37 +250,40 @@ var vm = new Vue({
         machineInfoClicksDebounce: null,
 
         paySuccessVisible: false,
-        payOrderPrice: 0,
-        payOrderId: null,
-        deliveryTimer: 0,
-        deliveryInfo: {
-            username: '',
-            deliveryOrderId: 10000000,
-            deliveryItems: []
-        },
-
+        paySuccessTimer: 0,
+        // payOrderPrice: 0,
+        // payOrderId: null,
+        // deliveryTimer: 0,
+        // deliveryInfo:
+        //     {
+        //         username : '',
+        //         deliveryOrderId: 10000000,
+        //         deliveryItems:
+        //             []
+        //     }
+        // ,
         showContactTaobao: false,
-        deliveryOrderStatus: 0,
-        orderStatusDic: {
-            "-30": "取消",
-            "-20": "异常",
-            "-10": "缺货",
-            "0": '已创建',
-            "1": '待支付',
-            "11": '已扫描',
-            "2": '已支付',
-            "10": '准备中',
-            "20": '取货中',
-            "40": '已取货'
-        },
-        deliveryStatusDic: {
-            "-3": '取消',
-            "-2": '异常',
-            "-1": '缺货',
-            "0": "已创建",
-            "3": '已出货',
-            "5": '出货中'
-        }
+        deliveryOrderStatus: 0
+        // orderStatusDic: {
+        //     "-30" : "取消",
+        //     "-20" : "异常",
+        //     "-10" : "缺货",
+        //     "0": '已创建',
+        //     "1": '待支付',
+        //     "11": '已扫描',
+        //     "2": '已支付',
+        //     "10": '准备中',
+        //     "20": '取货中',
+        //     "40": '已取货'
+        // },
+        // deliveryStatusDic: {
+        //     "-3": '取消',
+        //     "-2": '异常',
+        //     "-1": '缺货',
+        //     "0": "已创建",
+        //     "3": '已出货',
+        //     "5": '出货中',
+        // }
     },
     computed: {
         cartItems: function cartItems() {
@@ -354,24 +359,32 @@ var vm = new Vue({
             }
             this.randomSelectAds();
         },
+        showItemDetail: function showItemDetail(value) {
+            if (!value) {
+                this.detailItem = null;
+            }
+        },
         qrVisible: function qrVisible(value) {
             if (!value) {
                 //清除二维码的所有计时器
                 HandleBag.clear(this.qrBag);
             }
         },
+        paySuccessVisible: function paySuccessVisible(value) {
+            if (!value) {
+                HandleBag.clear(this.paySuccessBag);
+                this.queryItems();
+            }
+        },
+        showContactTaobao: function showContactTaobao(value) {
+            if (!value) {
+                HandleBag.clear(this.paySuccessBag);
+                this.queryItems();
+            }
+        },
         view: function view(value) {
             if (value != 'ads') {
                 this.adsShowDebounce();
-            }
-            if (value != 'delivery') {
-                HandleBag.clear(this.deliveryBag);
-            }
-            if (value == 'detail') {
-                window.scrollTo(0, 0);
-            }
-            if (value == 'list') {
-                // this.queryItems();
             }
         },
         machineInfoDialog: function machineInfoDialog(value) {
@@ -505,8 +518,8 @@ var vm = new Vue({
 
                     //判断版本，刷新页面
                     if (resp.data.version != version) {
-                        //todo: debug
-                        window.location.reload()
+                        // todo: debug
+                        window.location.reload();
                     }
                 }).catch(function (resp) {
                     _this6.machineError = true;
@@ -531,13 +544,12 @@ var vm = new Vue({
 
             if (this.machineError) return;
 
-            var item = _.find(this.onsaleItems, function (item) {
+            this.view = 'list';
+            var item = ad && _.find(this.onsaleItems, function (item) {
                 return item.taobaoNo == ad.url;
             }); //taobaoNumber
             if (item) {
                 this.selectItem(item);
-            } else {
-                this.view = 'list';
             }
         },
         everyClick: function everyClick() {
@@ -587,7 +599,7 @@ var vm = new Vue({
 
             if (item.detailInfo) {
                 this.detailItem = item;
-                this.view = 'detail';
+                this.showItemDetail = true;
             } else {
                 getUrl('/product/detail/' + this.deviceTaobaoNo + '/' + item.taobaoNo).then(function (data) {
                     var detailItem = data.data;
@@ -596,15 +608,16 @@ var vm = new Vue({
                     item.description = detailItem.content;
                     item.detailInfo = detailItem;
                     _this8.detailItem = item;
-                    _this8.view = 'detail';
+                    _this8.showItemDetail = true;
                 });
             }
         },
         backToList: function backToList() {
             this.detailItem = null;
-            if (this.view == 'delivery') {
-                this.queryItems();
-            }
+            this.showItemDetail = false;
+            this.qrVisible = false;
+            this.paySuccessVisible = false;
+            this.showContactTaobao = false;
             this.view = 'list';
         },
         showQR: function showQR() {
@@ -613,6 +626,7 @@ var vm = new Vue({
             if (this.cartItems.length == 0) {
                 return;
             }
+            this.showItemDetail = false;
             this.qrImage = false;
             this.payOrderId = null;
             HandleBag.clear(this.qrBag);
@@ -638,7 +652,7 @@ var vm = new Vue({
             postUrl('order/create', {
                 deviceTaobaoNo: this.deviceInfo.deviceTaobaoNo,
                 action : 'ews',
-                "scanUrl": "mfsjst.ewssh.m.jaeapp.com/ews_shoutao/index.html",
+                "scanUrl": "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
                 item: this.cartItems.map(function (x) {
                     return {
                         productTaobaoNo: x.taobaoNo,
@@ -675,8 +689,8 @@ var vm = new Vue({
                         }
                         if (_.includes([-30, -20, -10, 2, 10, 20, 40], r.data)) {
                             //已支付
-                            _this9.qrVisible = false;
-                            _this9.toDeliveryView();
+
+                            _this9.showPaymentSuccess();
                         }
                     }).catch(function (_) {
                         console.error('check qr status', _);
@@ -689,92 +703,73 @@ var vm = new Vue({
 
             this.qrVisible = true;
         },
-        toDeliveryView: function toDeliveryView() {
+        showPaymentSuccess: function showPaymentSuccess() {
             var _this10 = this;
 
-            this.payOrderPrice = this.totalSalePrice;
+            this.qrVisible = false;
             this.showContactTaobao = false;
             this.clearCart();
             this.paySuccessVisible = true;
 
-            this.deliveryBag = new HandleBag();
-            this.deliveryBag.setTimeout(function (_) {
-                return _this10.paySuccessVisible = false;
-            }, 5000);
-
+            HandleBag.clear(this.paySuccessBag);
+            this.paySuccessBag = new HandleBag();
             //保持不显示广告
-            this.deliveryBag.setInterval(function (_) {
+            this.paySuccessBag.setInterval(function (_) {
                 return _this10.adsShowDebounce();
             }, 10000);
-
-            //检查出货状态
-            var checkDeliveryStatus = PromiseDebounce.create(function (_) {
-                return getUrl('order/pickup-status/' + _this10.payOrderId);
-            });
-            this.deliveryBag.setInterval(function (_) {
-                checkDeliveryStatus().then(function (_) {
-                    if (_.code == '200') {
-                        _this10.deliveryInfo = _.data;
-                    }
-                });
-            }, deliveryCheckInterval, true);
 
             //检查订单状态
             var checkOrderStatus = PromiseDebounce.create(function (_) {
                 return getUrl('order/status/' + _this10.payOrderId);
             });
-            this.deliveryBag.setInterval(function (r) {
+            this.paySuccessBag.setInterval(function (r) {
                 checkOrderStatus().then(function (r) {
                     _this10.deliveryOrderStatus = r.data;
-                    if (_this10.deliveryOrderStatus == 40) {
-                        _this10.queryItems();
-                        if (_this10.deliveryTimer > 5) {
-                            _this10.deliveryTimer = 5;
-                        }
-                    }
                 }).catch(function (_) {
                     console.error('check qr status', _);
                 });
             }, deliveryCheckInterval, true);
 
-            this.deliveryTimer = deliveryStayDuration / 1000;
-            this.deliveryBag.setInterval(function (_) {
-                _this10.deliveryTimer = _this10.deliveryTimer - 1;
-                if (_this10.deliveryTimer < 1) {
+            this.paySuccessTimer = deliveryStayDuration / 1000;
+            this.paySuccessBag.setInterval(function (_) {
+                _this10.paySuccessTimer = _this10.paySuccessTimer - 1;
+                if (_this10.paySuccessTimer < 1) {
                     if (_this10.deliveryOrderStatus != 40) {
-                        _this10.deliveryFail();
+                        _this10.paySuccessVisible = false;
+                        _this10.$nextTick(function (_) {
+                            _this10.deliveryFail();
+                        });
                     } else {
                         _this10.backToList();
                     }
                 }
             }, 1000);
-
-            this.view = 'delivery';
         },
         deliveryFail: function deliveryFail() {
             var _this11 = this;
 
-            this.deliveryBag.clear();
+            this.paySuccessBag.clear();
+            this.paySuccessTimer = 60;
             this.showContactTaobao = true;
-            this.deliveryTimer = 60;
             //保持不显示广告
-            this.deliveryBag.setInterval(function (_) {
+            this.paySuccessBag.setInterval(function (_) {
                 return _this11.adsShowDebounce();
             }, 10000);
-            this.deliveryBag.setInterval(function (_) {
-                _this11.deliveryTimer = _this11.deliveryTimer - 1;
-                if (_this11.deliveryTimer < 1) {
+            this.paySuccessBag.setInterval(function (_) {
+                _this11.paySuccessTimer = _this11.paySuccessTimer - 1;
+                if (_this11.paySuccessTimer < 1) {
                     _this11.backToList();
                 }
             }, 1000);
         },
-        confirmExitDelivery: function confirmExitDelivery() {
-            var _this12 = this;
 
-            this.$confirm('退出出货界面？').then(function (_) {
-                _this12.view = 'list';
-            }, function (_) {});
-        },
+        // confirmExitDelivery() {
+        //     this.$confirm('退出出货界面？')
+        //         .then(_ => {
+        //             this.view = 'list';
+        //         }, _ => {
+        //         })
+        // },
         refreshCart: function refreshCart() {
             var r = this.cartItems.reduce(function (o, b) {
                 o.price = o.price + b.price * b.buyCount;
@@ -791,9 +786,9 @@ var vm = new Vue({
             this.totalSalePrice = r.salePrice.toFixed(2);
             this.totalCount = r.count;
 
-            // if (this.totalCount == 0) {
-            //     this.showCartContent = false;
-            // }
+            if (this.totalCount == 0) {
+                this.showCartContent = false;
+            }
         },
 
         // confirmClearCart() {
