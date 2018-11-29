@@ -10,7 +10,7 @@ var resourceRoot = '/';
 var apiRoot = 'api/';
 var apiBackRoot = 'apiBack/';
 // 版本号，需要和服务端保持一致
-var version = "1";
+var version = "1.095";
 
 var adShowWait = 60000; //无操作显示广告等待时间
 // //todo:debug
@@ -517,7 +517,7 @@ var vm = new Vue({
                     }
 
                     //判断版本，刷新页面
-                    if (resp.data.version != version) {
+                    if (resp.data.version != version && resp.data.deviceTaobaoNo == _this6.deviceTaobaoNo) {
                         // todo: debug
                         window.location.reload();
                     }

@@ -10,7 +10,7 @@
     <!-- <link href="element-ui.css" rel="stylesheet"> -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
 
-    <link href="mfsj.css?v=1.093" rel="stylesheet">
+    <link href="mfsj.css?v=1.095" rel="stylesheet">
     <title>膜法世家</title>
 </head>
 <body>
@@ -188,7 +188,7 @@
 
     <el-dialog class="cart-dialog"
                width="80%"
-               :top="'30vh'"
+               top="30vh"
                :show-close="false"
                :center="true"
                :visible.sync="showCartContent">
@@ -252,41 +252,27 @@
                :visible.sync="qrVisible">
         <div class="qr-content" @click="qrVisible = false">
             <div id="payQR" class="qr" v-show="qrImage"></div>
-
-            <!--<h6>淘宝扫一扫<img src="taobaoscan.png">支付{{totalSalePrice}}元</h6>-->
-
             <div class="wait" v-show="!qrImage">正在生成支付二维码，请稍后 <i class="el-icon-loading"></i>
             </div>
             <em class="timer" v-show="qrImage">{{qrTimer}}s 后将自动关闭</em>
             <img class="simple-background" src="qr-scan-bg.png">
         </div>
     </el-dialog>
+    <el-dialog class="pay-success-dialog simple-dialog"
+               width="80%"
+               top="20vh"
+               :show-close="false"
+               :center="true"
+               :close-on-click-modal="false"
 
-    <el-dialog class="pay-success-dialog simple-dialog"
-               width="80%"
-               top="20vh"
-               :show-close="false"
-               :center="true"
                :visible.sync="paySuccessVisible">
-        <div class="pay-success-content" @click="paySuccessVisible = false">
-            <em class="timer" v-show="qrImage">{{paySuccessTimer}}s 后将自动关闭</em>
-            <img class="simple-background" src="pay-success.png">
-        </div>
-    </el-dialog>
-    <el-dialog class="pay-success-dialog simple-dialog"
-               width="80%"
-               top="20vh"
-               :show-close="false"
-               :center="true"
-               :visible.sync="paySuccessVisible"
-               :close-on-click-modal="false">
-        <div class="pay-success-content" >
+        <div class="pay-success-content">
             <em class="timer">{{paySuccessTimer}}s 后将自动关闭</em>
             <img class="simple-background" src="pay-success.png">
         </div>
     </el-dialog>
     <el-dialog class="delivery-error-dialog simple-dialog"
-               width="80%" 
+               width="80%"
                top="20vh"
                :show-close="false"
                :center="true"
@@ -368,6 +354,6 @@
 <script src="element-ui.js"></script>
 <script src="jquery.js"></script> -->
 <script src="qrcode.min.js"></script>
-<script src="dist/main.js?v=1.094"></script>
+<script src="dist/main.js?v=1.095"></script>
 </body>
 </html>

@@ -652,7 +652,9 @@ let vm = new Vue({
                             sku: '0'
                         }
                     }),
-                    action : 'taobao'
+                    action : 'ews',
+                    scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao/index.html",
+                    // scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
                 }).then(resp => {
                     if (!this.qrCreator) {
                         this.qrCreator = new QRCode(document.getElementById("payQR"), {
