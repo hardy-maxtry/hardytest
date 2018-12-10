@@ -22,6 +22,7 @@
               <el-option label="待机界面" :value="1"/>
               <el-option label="故障界面" :value="2"/>
               <el-option label="出货界面上部" :value="3"/>
+              <el-option label="首屏浮层大图" :value="4"/>
             </el-select>
           </el-form-item>
         </el-col>

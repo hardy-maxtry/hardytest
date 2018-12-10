@@ -126,7 +126,8 @@ let adStatus = {
 let adPositions = {
   1 : '待机界面',
   2 : '故障界面',
-  3 : '出货界面上部'
+  3 : '出货界面上部',
+  4 : '首屏浮层大图',
 }
 export default {
   data() {

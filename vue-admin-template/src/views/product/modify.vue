@@ -104,6 +104,36 @@
           </el-tooltip>
         </el-col>
       </el-form-item>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="商品标签" prop="product_tag">
+            <el-select class="tag_selector" v-model="form.tag_show" placeholder="请选择" multiple>
+              <el-option
+                v-for="item in tags"
+                :key="item.tagPath"
+                :label="item.tagName"
+                :value="item.tagPath">
+                <span style="float: left">{{ item.tagName }}</span>
+                
+                <!-- <span style="float: right; color: #8492a6; font-size: 13px">{{ item.tagPath }}</span> -->
+                <img style="float: left; color: #8492a6; font-size: 13px; height:100%; padding-left:1vw;" :src="url_prefix  + '/'+  item.tagPath">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="6">
+          <img v-if="form.tag_show != null && form.tag_show.length >0" 
+              v-for="(tag_img , index) in form.tag_show" :key="index" 
+              :src="url_prefix  + '/'+  tag_img"
+              style="height:40px;">
+              
+        </el-col>
+        <el-col :span="4">
+          <el-form-item label="注意，每个商品最多展示2个标签" label-width ="300px">
+              </el-form-item>
+        </el-col>
+      </el-row>
+      
       <el-form-item label="商品描述" prop="content">
         <el-input 
           type="textarea"
@@ -111,6 +141,7 @@
           v-model="form.content">
         </el-input>
       </el-form-item>
+
       <el-form-item>
         <el-button type="primary" :loading="loading" @click="onSubmit">保存</el-button>
       </el-form-item>
@@ -214,8 +245,23 @@ export default {
             }
           })
         }
+        that.$set(that.form, "tag_show", that.form.tag.split(','));
         
-      })
+      });
+
+      let tagPostData =  {
+        "tagName": "",
+        "pageIndex": 0,
+        "pageSize": 1000,
+      };
+      axios.post(`${urls.tag_list}`,tagPostData)
+          .then(function(res){
+            that.tags = res.data.data;
+            // console.log(res.data.data)
+          })
+          .catch(function(error){
+            console.log(error)
+          })
   },
   methods: {
     onSubmit() {
@@ -239,6 +285,7 @@ export default {
         images: this.fileList.map(x=>x.real_url),
         id : this.item_sys_id,
       }
+      postData.tag = postData.tag_show.join(',');
       that.loading = true;
       axios.post(`${urls.product_edit}`, postData)
         .then(function(res){

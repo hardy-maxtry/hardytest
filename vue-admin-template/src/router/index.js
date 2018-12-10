@@ -143,6 +143,12 @@ export const constantRouterMap = [
         component: () => import('@/views/product/modify'),
         meta: { title: '商品编辑' },
         hidden : true,
+      },
+      {
+        path: 'tag_list',
+        name: '标签管理',
+        component: () => import('@/views/product/tag_list'),
+        meta: { title: '标签管理' }
       }
     ]
   },
@@ -257,7 +263,7 @@ export const constantRouterMap = [
         path: 'admin',
         name: '管理员入口',
         component: () => import('@/views/user/admin'),
-        meta: { title: '管理员入口(开发中)' }
+        meta: { title: '管理员入口' }
       },
       
     ]

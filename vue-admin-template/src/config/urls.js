@@ -1,6 +1,7 @@
 export default {
     
     baseUrl : 'http://139.224.54.234:8082/',
+    // baseUrl : 'http://139.224.189.229:8082/',
     url_prefix: process.env.ECOM_API,
     ad_list : '/advert/list',
     ad_add : '/advert/add',
@@ -43,6 +44,8 @@ export default {
     user_updatepassword2 :'/user/update-self-password',
 
     order_list :'/order/list',
-
-
+    
+    tag_list :'/tag/list',
+    tag_add : "/tag/add",
+    
 }
