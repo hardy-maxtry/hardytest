@@ -245,7 +245,7 @@ export default {
             }
           })
         }
-        that.$set(that.form, "tag_show", that.form.tag.split(','));
+        that.$set(that.form, "tag_show",  that.form.tag != null ? that.form.tag.split(',') : [] );
         
       });
 
