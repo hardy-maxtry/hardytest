@@ -10,12 +10,12 @@
     <!-- <link href="element-ui.css" rel="stylesheet"> -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.3.5/theme-chalk/index.css" rel="stylesheet">
 
-    <link href="mfsj.css?v=1.095" rel="stylesheet">
+    <link href="mfsj.css?v=1.096" rel="stylesheet">
     <title>膜法世家</title>
 </head>
 <body>
 
-<div id="mfsj-container" @click="everyClick()" :class="[ view ]">
+<div id="mfsj-container" @click="everyClick()" :class="[ view ]" >
     <el-dialog :append-to-body="true"
                :fullscreen="true"
                title="修改机器信息"
@@ -90,15 +90,15 @@
 					</del>
 				</span>
 
-                    <div class="buy-pane">
+                    <div class="buy-pane"  :class="{ limited : detailItem.buyCount >= detailItem.stock }">
                         <img src="list-buy-buttom.png" v-show="detailItem.buyCount == 0"
-                             @click.stop.prevent="addItem(detailItem)">
+                             @click.stop.prevent="addItem(detailItem,$event)">
                         <a v-show="detailItem.buyCount > 0" class="remove" @click="removeItem(detailItem)"
                            href="javascript:">
                             <i class="el-icon-minus"></i>
                         </a>
                         <span v-show="detailItem.buyCount > 0" class="buy-count">{{detailItem.buyCount}}</span>
-                        <a v-show="detailItem.buyCount > 0" class="add" @click="addItem(detailItem)" href="javascript:">
+                        <a v-show="detailItem.buyCount > 0" class="add" @click="addItem(detailItem,$event)" href="javascript:">
                             <i class="el-icon-plus"></i>
                         </a>
                     </div>
@@ -107,7 +107,7 @@
                 <div class="promotions-details" v-if="detailItem.promotions.length > 0">
                     <div class="promotion-detail" v-for="p in detailItem.promotions">
                         <span class="type">{{ p.type }}</span>
-                        <span class="desc">购买满{{ p.quotaQuantity }}件减</span>
+                        <span class="desc">{{ p.promotionName }}</span>
                     </div>
                 </div>
 
@@ -120,7 +120,8 @@
                     </div>
                     <a href="javascript:" class="go-to-pay" @click="showQR()">
                         <!--<span>去支付</span>-->
-                        <img src="pay-button.png">
+                        <img v-show="cartItems.length == 0" src="pay-button-disable.png">
+                        <img v-show="cartItems.length" src="pay-button.png">
                     </a>
                 </div>
                 <!--<div class="description">-->
@@ -152,21 +153,20 @@
                     <!--<del>{{item.price}}<span>元</span></del>-->
                     <!--</div>-->
                     <div class="effects">
-                        <img src="pro-water.png">
-                        <img src="pro-white.png">
+                        <img v-for="tag in item.tags" :src="tag">
                     </div>
 
                     <div class="buy-pane">
-                        <img src="list-buy-buttom.png" v-show="item.buyCount == 0" @click.stop.prevent="addItem(item)">
-                        <a v-show="item.buyCount > 0" class="remove" @click.stop.prevent="removeItem(item)"
-                           href="javascript:">
-                            <i class="el-icon-minus"></i>
-                        </a>
-                        <span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>
-                        <a v-show="item.buyCount > 0" class="add" @click.stop.prevent="addItem(item)"
-                           :class="{ 'max-count' : item.buyCount == item.stock }" href="javascript:">
-                            <i class="el-icon-plus"></i>
-                        </a>
+                        <img src="list-buy-buttom.png" @click.stop.prevent="addItem(item,$event)">
+                        <!--<a v-show="item.buyCount > 0" class="remove" @click.stop.prevent="removeItem(item)"-->
+                           <!--href="javascript:">-->
+                            <!--<i class="el-icon-minus"></i>-->
+                        <!--</a>-->
+                        <!--<span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>-->
+                        <!--<a v-show="item.buyCount > 0" class="add" @click.stop.prevent="addItem(item,$event)"-->
+                           <!--:class="{ 'max-count' : item.buyCount == item.stock }" href="javascript:">-->
+                            <!--<i class="el-icon-plus"></i>-->
+                        <!--</a>-->
                         <!--<div class="stock">库存{{item.stock}}份</div>-->
                     </div>
                 </div>
@@ -180,7 +180,7 @@
 
 
     <div class="pay-menu" v-show="!showCartContent && cartItems.length > 0">
-        <img src="pay-menu-up.png" @click="showCartContent = true">
+        <img src="pay-menu-up.png" ref="cartIcon" @click="showCartContent = true">
         <img src="pay-menu-down.png" @click="showQR()">
         <span class="total-count">{{totalCount}}</span>
         <div class="price">¥{{totalSalePrice}}</div>
@@ -209,7 +209,7 @@
                     </div>
 
                     <div class="stock">
-                        <div class="buy-pane">
+                        <div class="buy-pane" :class="{ limited : item.buyCount >= item.stock }">
                             <img src="list-buy-buttom.png" v-show="item.buyCount == 0"
                                  @click.stop.prevent="addItem(item)">
                             <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)"
@@ -264,7 +264,6 @@
                :show-close="false"
                :center="true"
                :close-on-click-modal="false"
-
                :visible.sync="paySuccessVisible">
         <div class="pay-success-content">
             <em class="timer">{{paySuccessTimer}}s 后将自动关闭</em>
@@ -280,6 +279,21 @@
         <div class="delivery-error-content" @click="showContactTaobao = false">
             <em class="timer">{{paySuccessTimer}}s 后将自动关闭</em>
             <img class="simple-background" src="delivery-error.png">
+        </div>
+    </el-dialog>
+
+    <div class="event-button" @click="showEventAd = true" v-show="adsEvents.length && !showEventAd">
+        <img src="event-button.png" alt="">
+    </div>
+
+    <el-dialog class="event-ad-dialog simple-dialog"
+               width="80%"
+               top="15vh"
+               :show-close="true"
+               :center="true"
+               :visible.sync="showEventAd">
+        <div class="event-ad-content" @click="showEventAd = false">
+            <img v-if="adsEvents.length" class="simple-background" :src="adsEvents[0].image">
         </div>
     </el-dialog>
     <!--<div class="delivery" v-if="view == 'delivery'">-->
@@ -349,11 +363,12 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/index.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-<!-- <script src="lodash.js"></script>
-<script src="vue.js"></script>
-<script src="element-ui.js"></script>
-<script src="jquery.js"></script> -->
-<script src="qrcode.min.js"></script>
+<!-- <script src="dist/lodash.js"></script>
+<script src="dist/vue.js"></script>
+<script src="dist/element-ui.js"></script>
+<script src="dist/jquery.js"></script> -->
+<script src="dist/qrcode.min.js"></script>
+<script src="dist/move.js"></script>
 <script src="dist/main.js?v=1.095"></script>
 </body>
 </html>

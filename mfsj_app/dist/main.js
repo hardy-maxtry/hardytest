@@ -189,6 +189,10 @@ PromiseDebounce.create = function (handle) {
     };
 };
 
+function convertToResourceUrl(url) {
+    return resourceRoot + url;
+}
+
 var vm = new Vue({
     el: '#mfsj-container',
     data: {
@@ -263,7 +267,7 @@ var vm = new Vue({
         //     }
         // ,
         showContactTaobao: false,
-        deliveryOrderStatus: 0
+        deliveryOrderStatus: 0,
         // orderStatusDic: {
         //     "-30" : "取消",
         //     "-20" : "异常",
@@ -284,6 +288,7 @@ var vm = new Vue({
         //     "3": '已出货',
         //     "5": '出货中',
         // }
+        showEventAd: false
     },
     computed: {
         cartItems: function cartItems() {
@@ -301,6 +306,11 @@ var vm = new Vue({
         adsDelivery: function adsDelivery() {
             return this.ads.filter(function (a) {
                 return a.positionType == 3;
+            });
+        },
+        adsEvents: function adsEvents() {
+            return this.ads.filter(function (a) {
+                return a.positionType == 4;
             });
         }
     },
@@ -339,6 +349,9 @@ var vm = new Vue({
         }, queryItemDuration);
 
         this.adsShowDebounce = _.debounce(function (_) {
+            _this2.showCartContent = false;
+            _this2.showItemDetail = false;
+            _this2.showEventAd = false;
             _this2.clearCart();
             _this2.view = 'ads';
         }, adShowWait);
@@ -491,7 +504,7 @@ var vm = new Vue({
             if (this.deviceTaobaoNo) {
                 getUrl('advert/list', { deviceTaobaoNo: this.deviceTaobaoNo }).then(function (resp) {
                     _this5.ads = resp.data.map(function (ad) {
-                        ad.image = resourceRoot + ad.image;
+                        ad.image = convertToResourceUrl(ad.image);
                         return ad;
                     });
                     // if (this.adsShowing.length > 0) {
@@ -517,9 +530,9 @@ var vm = new Vue({
                     }
 
                     //判断版本，刷新页面
-                    if (resp.data.version != version && resp.data.deviceTaobaoNo == _this6.deviceTaobaoNo) {
+                    if (resp.data.version != version) {
                         // todo: debug
-                        window.location.reload();
+                        // window.location.reload()
                     }
                 }).catch(function (resp) {
                     _this6.machineError = true;
@@ -550,6 +563,8 @@ var vm = new Vue({
             }); //taobaoNumber
             if (item) {
                 this.selectItem(item);
+            } else {
+                this.showEventAd = true;
             }
         },
         everyClick: function everyClick() {
@@ -563,7 +578,7 @@ var vm = new Vue({
                     return _this7.onsaleItems = resp.data.map(function (d) {
                         // let images = ['download.jpg'];
                         var images = (d.images || []).map(function (i) {
-                            return resourceRoot + i;
+                            return convertToResourceUrl(i);
                         });
                         return {
                             cover: d.cover,
@@ -578,24 +593,59 @@ var vm = new Vue({
                             unit: d.unit,
                             description: '',
                             specifications: d.specifications,
-                            promotions: d.promotion
+                            promotions: d.promotion,
+                            tags: (d.tag || '').split(',').filter(function (t) {
+                                return t;
+                            }).map(function (t) {
+                                return convertToResourceUrl(t);
+                            })
                         };
                     });
                 });
             }
         },
-        addItem: function addItem(item) {
+        addItem: function addItem(item, evt) {
+            var _this8 = this;
+
             if (item.buyCount < item.stock) {
                 item.buyCount = item.buyCount + 1;
                 this.refreshCart();
+
+                this.flyTo($('<div class="fly-icon"><img src="' + (item.cover || 'taobao-logo.png') + '"></div>'), evt.target, this.$refs.cartIcon).then(function (_) {
+                    _this8.doAnimate(_this8.$refs.cartIcon, 'pulse');
+                });
             }
+        },
+        flyTo: function flyTo(flyItem, source, target) {
+            var _this9 = this;
+
+            return new Promise(function (rs, rj) {
+                var xy = $(source).offset();
+                $(flyItem).offset(xy);
+                $("body").append(flyItem);
+                _this9.$nextTick(function (_) {
+                    var txy = $(target).offset();
+                    flyItem.offset(txy).one('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd', function (_) {
+                        flyItem.remove();
+                        rs();
+                    });
+                });
+            });
+        },
+        doAnimate: function doAnimate(el, name) {
+            $(el).removeClass('animated ' + name);
+            this.$nextTick(function (_) {
+                $(el).addClass('animated ' + name).one('webkitAnimationEnd oanimationend msAnimationEnd animationend', function (event) {
+                    $(el).removeClass('animated ' + name);
+                });
+            });
         },
         removeItem: function removeItem(item) {
             item.buyCount = Math.max(0, item.buyCount - 1);
             this.refreshCart();
         },
         selectItem: function selectItem(item) {
-            var _this8 = this;
+            var _this10 = this;
 
             if (item.detailInfo) {
                 this.detailItem = item;
@@ -607,8 +657,8 @@ var vm = new Vue({
                     // item.content = detailItem.content;
                     item.description = detailItem.content;
                     item.detailInfo = detailItem;
-                    _this8.detailItem = item;
-                    _this8.showItemDetail = true;
+                    _this10.detailItem = item;
+                    _this10.showItemDetail = true;
                 });
             }
         },
@@ -621,7 +671,7 @@ var vm = new Vue({
             this.view = 'list';
         },
         showQR: function showQR() {
-            var _this9 = this;
+            var _this11 = this;
 
             if (this.cartItems.length == 0) {
                 return;
@@ -635,15 +685,15 @@ var vm = new Vue({
 
             //保持不显示广告
             this.qrBag.setInterval(function (_) {
-                return _this9.adsShowDebounce();
+                return _this11.adsShowDebounce();
             }, 10000);
 
             this.qrTimer = Math.round(qrWaitDuration / 1000);
             this.qrBag.setInterval(function (_) {
                 //QR倒计时
-                _this9.qrTimer = _this9.qrTimer - 1;
-                if (_this9.qrTimer < 1) {
-                    _this9.qrVisible = false;
+                _this11.qrTimer = _this11.qrTimer - 1;
+                if (_this11.qrTimer < 1) {
+                    _this11.qrVisible = false;
                 }
             }, 1000);
 
@@ -651,8 +701,6 @@ var vm = new Vue({
 
             postUrl('order/create', {
                 deviceTaobaoNo: this.deviceInfo.deviceTaobaoNo,
-                action : 'ews',
-                "scanUrl": "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
                 item: this.cartItems.map(function (x) {
                     return {
                         productTaobaoNo: x.taobaoNo,
@@ -662,10 +710,12 @@ var vm = new Vue({
                         sku: '0'
                     };
                 }),
-                // action: 'taobao'
+                action: 'ews',
+                scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao/index.html"
+                // scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
             }).then(function (resp) {
-                if (!_this9.qrCreator) {
-                    _this9.qrCreator = new QRCode(document.getElementById("payQR"), {
+                if (!_this11.qrCreator) {
+                    _this11.qrCreator = new QRCode(document.getElementById("payQR"), {
                         text: resp.data.qrcode,
                         width: 400,
                         height: 400,
@@ -674,37 +724,37 @@ var vm = new Vue({
                         correctLevel: QRCode.CorrectLevel.H
                     });
                 } else {
-                    _this9.qrCreator.clear();
-                    _this9.qrCreator.makeCode(resp.data.qrcode);
+                    _this11.qrCreator.clear();
+                    _this11.qrCreator.makeCode(resp.data.qrcode);
                 }
 
                 var checkOrderStatus = PromiseDebounce.create(function (_) {
-                    return getUrl('order/status/' + _this9.payOrderId);
+                    return getUrl('order/status/' + _this11.payOrderId);
                 });
-                _this9.qrBag.setInterval(function (r) {
+                _this11.qrBag.setInterval(function (r) {
                     checkOrderStatus().then(function (r) {
                         if (r.data == 11 && !scaned) {
-                            _this9.qrTimer = Math.round(qrWaitAfterScanuration / 1000);
+                            _this11.qrTimer = Math.round(qrWaitAfterScanuration / 1000);
                             scaned = true;
                         }
                         if (_.includes([-30, -20, -10, 2, 10, 20, 40], r.data)) {
                             //已支付
 
-                            _this9.showPaymentSuccess();
+                            _this11.showPaymentSuccess();
                         }
                     }).catch(function (_) {
                         console.error('check qr status', _);
                     });
                 }, qrCheckInterval);
 
-                _this9.payOrderId = resp.data.orderId;
-                _this9.qrImage = true;
+                _this11.payOrderId = resp.data.orderId;
+                _this11.qrImage = true;
             });
 
             this.qrVisible = true;
         },
         showPaymentSuccess: function showPaymentSuccess() {
-            var _this10 = this;
+            var _this12 = this;
 
             this.qrVisible = false;
             this.showContactTaobao = false;
@@ -715,16 +765,16 @@ var vm = new Vue({
             this.paySuccessBag = new HandleBag();
             //保持不显示广告
             this.paySuccessBag.setInterval(function (_) {
-                return _this10.adsShowDebounce();
+                return _this12.adsShowDebounce();
             }, 10000);
 
             //检查订单状态
             var checkOrderStatus = PromiseDebounce.create(function (_) {
-                return getUrl('order/status/' + _this10.payOrderId);
+                return getUrl('order/status/' + _this12.payOrderId);
             });
             this.paySuccessBag.setInterval(function (r) {
                 checkOrderStatus().then(function (r) {
-                    _this10.deliveryOrderStatus = r.data;
+                    _this12.deliveryOrderStatus = r.data;
                 }).catch(function (_) {
                     console.error('check qr status', _);
                 });
@@ -732,33 +782,33 @@ var vm = new Vue({
 
             this.paySuccessTimer = deliveryStayDuration / 1000;
             this.paySuccessBag.setInterval(function (_) {
-                _this10.paySuccessTimer = _this10.paySuccessTimer - 1;
-                if (_this10.paySuccessTimer < 1) {
-                    if (_this10.deliveryOrderStatus != 40) {
-                        _this10.paySuccessVisible = false;
-                        _this10.$nextTick(function (_) {
-                            _this10.deliveryFail();
+                _this12.paySuccessTimer = _this12.paySuccessTimer - 1;
+                if (_this12.paySuccessTimer < 1) {
+                    if (_this12.deliveryOrderStatus != 40) {
+                        _this12.paySuccessVisible = false;
+                        _this12.$nextTick(function (_) {
+                            _this12.deliveryFail();
                         });
                     } else {
-                        _this10.backToList();
+                        _this12.backToList();
                     }
                 }
             }, 1000);
         },
         deliveryFail: function deliveryFail() {
-            var _this11 = this;
+            var _this13 = this;
 
             this.paySuccessBag.clear();
             this.paySuccessTimer = 60;
             this.showContactTaobao = true;
             //保持不显示广告
             this.paySuccessBag.setInterval(function (_) {
-                return _this11.adsShowDebounce();
+                return _this13.adsShowDebounce();
             }, 10000);
             this.paySuccessBag.setInterval(function (_) {
-                _this11.paySuccessTimer = _this11.paySuccessTimer - 1;
-                if (_this11.paySuccessTimer < 1) {
-                    _this11.backToList();
+                _this13.paySuccessTimer = _this13.paySuccessTimer - 1;
+                if (_this13.paySuccessTimer < 1) {
+                    _this13.backToList();
                 }
             }, 1000);
         },

@@ -1,4 +1,5 @@
-const resourceRoot = 'http://139.224.54.234:8082/';
+const resourceRoot = 'http://47.99.36.92:10001/apiback/';
+// const resourceRoot = 'http://139.224.54.234:8082/';
 const apiRoot = 'api/';
 const apiBackRoot = 'apiBack/';
 
@@ -180,7 +181,9 @@ PromiseDebounce.create = function (handle) {
     }
 };
 
-
+function convertToResourceUrl(url){
+    return resourceRoot + url;
+}
 
 let vm = new Vue({
         el: '#mfsj-container',
@@ -280,6 +283,7 @@ let vm = new Vue({
             //     "3": '已出货',
             //     "5": '出货中',
             // }
+            showEventAd : false,
         },
         computed: {
             cartItems() {
@@ -292,6 +296,9 @@ let vm = new Vue({
             ,
             adsDelivery() {
                 return this.ads.filter(a => a.positionType == 3);
+            },
+            adsEvents(){
+                return this.ads.filter(a => a.positionType == 4);
             }
         },
         created() {
@@ -323,6 +330,9 @@ let vm = new Vue({
             }, queryItemDuration);
 
             this.adsShowDebounce = _.debounce(_ => {
+                this.showCartContent = false;
+                this.showItemDetail = false;
+                this.showEventAd = false;
                 this.clearCart();
                 this.view = 'ads';
             }, adShowWait);
@@ -482,7 +492,7 @@ let vm = new Vue({
                     getUrl('advert/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                         .then((resp) => {
                             this.ads = resp.data.map((ad) => {
-                                ad.image = resourceRoot + ad.image;
+                                ad.image = convertToResourceUrl(ad.image);
                                 return ad;
                             });
                             // if (this.adsShowing.length > 0) {
@@ -511,7 +521,7 @@ let vm = new Vue({
                             //判断版本，刷新页面
                             if(resp.data.version != version){
                                 // todo: debug
-                                window.location.reload()
+                                // window.location.reload()
                             }
                         }).catch(resp => {
                             this.machineError = true;
@@ -544,6 +554,9 @@ let vm = new Vue({
                 if (item) {
                     this.selectItem(item);
                 }
+                else{
+                    this.showEventAd = true;
+                }
             }
             ,
             everyClick() {
@@ -555,7 +568,7 @@ let vm = new Vue({
                     getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                         .then((resp) => this.onsaleItems = resp.data.map((d) => {
                             // let images = ['download.jpg'];
-                            let images = (d.images || []).map((i) => resourceRoot + i);
+                            let images = (d.images || []).map((i) => convertToResourceUrl(i));
                             return {
                                 cover: d.cover,
                                 taobaoNo: d.productTaobaoNo,
@@ -569,17 +582,48 @@ let vm = new Vue({
                                 unit: d.unit,
                                 description: '',
                                 specifications: d.specifications,
-                                promotions: d.promotion
+                                promotions: d.promotion,
+                                tags : (d.tag || '').split(',').filter(t=>t).map(t=>convertToResourceUrl(t))
                             };
                         }));
                 }
             }
             ,
-            addItem(item) {
+            addItem(item,evt) {
                 if (item.buyCount < item.stock) {
                     item.buyCount = item.buyCount + 1;
                     this.refreshCart();
+
+                    this.flyTo($(`<div class="fly-icon"><img src="${item.cover || 'taobao-logo.png'}"></div>`),evt.target,this.$refs.cartIcon)
+                        .then(_=>{
+                            this.doAnimate(this.$refs.cartIcon,'pulse');
+                        });
                 }
+            }
+            ,
+            flyTo(flyItem,source,target){
+                return new Promise((rs,rj)=>{
+                    let xy = $(source).offset();
+                    $(flyItem).offset(xy);
+                    $("body").append(flyItem);
+                    this.$nextTick(_=>{
+                        let txy = $(target).offset();
+                        flyItem.offset(txy).one('transitionend webkitTransitionEnd oTransitionEnd MSTransitionEnd',
+                            _=>{
+                                flyItem.remove();
+                                rs();
+                            });
+                    })
+                })
+            },
+            doAnimate(el,name){
+                $(el).removeClass(`animated ${name}`);
+                this.$nextTick(_=>{
+                    $(el).addClass(`animated ${name}`)
+                        .one('webkitAnimationEnd oanimationend msAnimationEnd animationend', function(event) {
+                            $(el).removeClass(`animated ${name}`);
+                        })
+                })
             }
             ,
             removeItem(item) {

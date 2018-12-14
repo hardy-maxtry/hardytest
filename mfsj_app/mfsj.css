@@ -100,7 +100,6 @@ div.global-bg {
 }
 #mfsj-container {
   overflow: hidden;
-  padding-bottom: 6em;
 }
 #mfsj-container.detail {
   background-color: white;
@@ -146,6 +145,7 @@ div.global-bg {
   height: 95px;
 }
 #mfsj-container div.machine-header > em {
+  border-image: url("machine-bg.png") 0 30 0 0 stretch;
   font-size: 0.7em;
   font-style: italic;
   vertical-align: center;
@@ -181,46 +181,6 @@ div.global-bg {
 }
 #mfsj-container div.machine-list {
   padding-top: 5em;
-  padding-bottom: 120px;
-}
-#mfsj-container div.items-layout-scoll div.items {
-  white-space: nowrap;
-  overflow-y: hidden;
-  overflow-x: scroll;
-}
-#mfsj-container div.items-layout-scoll div.items div.item {
-  display: inline-block;
-}
-#mfsj-container div.items-layout-scoll div.items div.item img {
-  display: inline-block;
-}
-#mfsj-container div.items-layout-3 div.items {
-  overflow: hidden;
-}
-#mfsj-container div.items-layout-3 div.items div.item {
-  float: left;
-  overflow: hidden;
-}
-#mfsj-container div.items-layout-3 div.items div.item-1 {
-  width: 50%;
-  height: 100%;
-}
-#mfsj-container div.items-layout-3 div.items div.item-2 {
-  width: 50%;
-  height: 50%;
-}
-#mfsj-container div.items-layout-3 div.items div.item-3 {
-  width: 50%;
-  height: 50%;
-}
-#mfsj-container div.items-layout-6 div.items {
-  overflow: hidden;
-}
-#mfsj-container div.items-layout-6 div.items div.item {
-  float: left;
-  overflow: hidden;
-  width: 33.33333333%;
-  height: 33.33333333%;
 }
 #mfsj-container div.header-image {
   width: 100%;
@@ -253,7 +213,7 @@ div.global-bg {
 }
 #mfsj-container .buy-pane-common > a.add {
   color: white;
-  background-color: #ef8394;
+  background-color: #ef8493;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 #mfsj-container .buy-pane-common > a.add.max-count {
@@ -269,6 +229,9 @@ div.global-bg {
   width: 2em;
   text-align: center;
 }
+#mfsj-container .buy-pane-common.limited > a.add {
+  background-color: #858585;
+}
 #mfsj-container div.items {
   display: flex;
   flex-wrap: wrap;
@@ -281,7 +244,7 @@ div.global-bg {
   padding: 1% 3%;
   width: 30%;
   margin-left: 2.5%;
-  margin-bottom: 5%;
+  margin-bottom: 2%;
   box-sizing: border-box;
   box-shadow: 0px 2px 15px 0px rgba(0, 0, 0, 0.25);
 }
@@ -292,7 +255,7 @@ div.global-bg {
   height: 0;
   padding-bottom: 100%;
   overflow: hidden;
-  margin: 10% 0;
+  margin: 5% 0 10% 0;
 }
 #mfsj-container div.items > div.item > div.item-img > img {
   width: 100%;
@@ -339,6 +302,7 @@ div.global-bg {
   text-align: center;
   vertical-align: middle;
   line-height: 2em;
+  height: 2em;
 }
 #mfsj-container div.items > div.item > div.infos > div.effects > img {
   width: 2em;
@@ -371,7 +335,7 @@ div.global-bg {
 }
 #mfsj-container div.items > div.item > div.infos > div.buy-pane > a.add {
   color: white;
-  background-color: #ef8394;
+  background-color: #ef8493;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 #mfsj-container div.items > div.item > div.infos > div.buy-pane > a.add.max-count {
@@ -386,6 +350,9 @@ div.global-bg {
   display: inline-block;
   width: 2em;
   text-align: center;
+}
+#mfsj-container div.items > div.item > div.infos > div.buy-pane.limited > a.add {
+  background-color: #858585;
 }
 #mfsj-container div.items > div.item > div.infos > div.buy-pane > img {
   width: 3em;
@@ -482,7 +449,7 @@ div.global-bg {
   font-size: 1.1em;
   position: absolute;
   right: 1em;
-  bottom: 1em;
+  bottom: 0.8em;
   border-radius: 99px;
   white-space: nowrap;
   line-height: 2em;
@@ -504,7 +471,7 @@ div.global-bg {
 }
 #mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a.add {
   color: white;
-  background-color: #ef8394;
+  background-color: #ef8493;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 #mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > a.add.max-count {
@@ -519,6 +486,9 @@ div.global-bg {
   display: inline-block;
   width: 2em;
   text-align: center;
+}
+#mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane.limited > a.add {
+  background-color: #858585;
 }
 #mfsj-container .item-details > div.infos > div.price-panel > div.buy-pane > img {
   position: relative;
@@ -816,7 +786,7 @@ div.global-bg {
 #mfsj-container div.pay-menu {
   position: fixed;
   right: 1%;
-  top: 35%;
+  top: 40%;
   width: 15%;
   z-index: 11;
 }
@@ -860,7 +830,7 @@ div.global-bg {
 }
 #mfsj-container div.total-price-buy-panel > div.total-price span.price em {
   font-size: 2em;
-  color: #ef8394;
+  color: #ef8493;
 }
 #mfsj-container div.total-price-buy-panel > div.total-price span.price del {
   margin-left: 1em;
@@ -993,7 +963,7 @@ div.global-bg {
 }
 #mfsj-container div.cart-dialog div.cart-content > div.item-list > div.cart-item > div.stock > div.buy-pane > a.add {
   color: white;
-  background-color: #ef8394;
+  background-color: #ef8493;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 #mfsj-container div.cart-dialog div.cart-content > div.item-list > div.cart-item > div.stock > div.buy-pane > a.add.max-count {
@@ -1008,6 +978,9 @@ div.global-bg {
   display: inline-block;
   width: 2em;
   text-align: center;
+}
+#mfsj-container div.cart-dialog div.cart-content > div.item-list > div.cart-item > div.stock > div.buy-pane.limited > a.add {
+  background-color: #858585;
 }
 #mfsj-container div.cart-dialog div.cart-content > div.item-list > div.cart-item > div.stock > div.buy-pane > a {
   line-height: 1.5em;
@@ -1040,8 +1013,75 @@ div.global-bg {
   left: 0;
   font-size: 0.8em;
 }
+#mfsj-container .event-ad-content {
+  border-radius: 1em;
+  overflow: hidden;
+}
+#mfsj-container .event-button {
+  position: fixed;
+  right: 0;
+  top: 2.5em;
+  width: 4em;
+}
+#mfsj-container .event-button img {
+  width: 100%;
+}
 #mfsj-container .el-dialog .el-dialog__body {
   font-size: 30px;
+}
+.fly-icon {
+  display: block;
+  position: absolute;
+  width: 3em;
+  height: 3em;
+  border-radius: 3em;
+  z-index: 9999;
+  overflow: hidden;
+  background-color: white;
+  box-shadow: 0px 2px 15px 0px rgba(0, 0, 0, 0.5);
+  transition: left 0.5s ease-in, top 0.5s cubic-bezier(0.6, -0.28, 0.735, 0.045);
+}
+.fly-icon img {
+  width: 100%;
+  height: 100%;
+}
+@-webkit-keyframes pulse {
+  from {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+  50% {
+    -webkit-transform: scale3d(1.05, 1.05, 1.05);
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+  to {
+    -webkit-transform: scale3d(1, 1, 1);
+    transform: scale3d(1, 1, 1);
+  }
+}
+@keyframes pulse {
+  from {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+  50% {
+    -webkit-transform: scale(1.2, 1.2);
+    transform: scale3d(1.2, 1.2);
+  }
+  to {
+    -webkit-transform: scale(1, 1);
+    transform: scale(1, 1);
+  }
+}
+.pulse {
+  -webkit-animation-name: pulse;
+  animation-name: pulse;
+}
+.animated {
+  -webkit-animation-duration: 300ms;
+  animation-duration: 300ms;
+  -webkit-animation-fill-msmode: both;
+  animation-fill-mode: both;
 }
 .el-message-box {
   transform: scaleX(1.5) scaleY(1.5);
