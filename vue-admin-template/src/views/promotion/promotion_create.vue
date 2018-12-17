@@ -42,7 +42,8 @@ export default {
         "total": 0, // 满减总额? 活动商品一次性购买足量金额后，触发discount或者  subtraction
         "discount": 0, // 折扣百分比,float, 8折就填0.8. type=2时, 活动商品一次性购买足量金额后，将乘以discount的数字，作为最终结算金额
         "type": "1", // 1=定额，2=折扣，3=满减
-        quotaQuantity: 1 // 满X件触发折扣
+        quotaQuantity: 1, // 满X件触发折扣
+        sort : 9, // 活动的优先级，在手淘H5使用，数字越小，优先级越高，要求正整数
       },
       fileList: [],
       machines : [{

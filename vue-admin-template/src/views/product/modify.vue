@@ -79,6 +79,34 @@
           <el-input :disabled="true" v-model="fileList.map(x=>x.url).toString()"></el-input>
         </el-col> -->
       </el-form-item>
+      <el-form-item label="商品详情图片">
+        <el-col :span="4">
+          <el-upload
+            class="upload-demo"
+            action="/apiback/common/upload"
+            :on-success="handleDetailUploadSuccess"
+            :on-preview="handlePreview"
+            :on-remove="handleDetailRemove"
+            :before-remove="beforeRemove"
+            :before-upload="beforeProductImageUpload"
+            list-type="picture"
+            :headers="headers"
+            multiple
+            :limit="3"
+            :on-exceed="handleExceed"
+            :file-list="detailFileList">
+            <el-button size="small" type="primary">点击上传</el-button>
+            &nbsp;
+            <el-tooltip class="item" effect="light" content="长方形 最多三张 推荐像素 648*432jpg文件" placement="top" >
+              <i class="el-icon-question"></i>
+            </el-tooltip>
+            <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+          </el-upload>
+        </el-col>
+        <!-- <el-col :span="11">
+          <el-input :disabled="true" v-model="fileList.map(x=>x.url).toString()"></el-input>
+        </el-col> -->
+      </el-form-item>
       <el-form-item label="商品缩略图" prop="cover">
         <el-col :span="4">
         <el-upload
@@ -182,7 +210,7 @@ export default {
         //   url: urls.url_prefix + '/upload/068b700701214d97b35e159abcf07899.jpg'
         // }
         ],
-      
+      detailFileList : [],
       rules:{
         // deviceTaobaoNo: [
         //     { required: true, message: '请选择机器ID', trigger: 'change' },
@@ -212,6 +240,7 @@ export default {
       },
       loading : false,
       url_prefix : urls.url_prefix,
+      tags : [],
     }
   },
   computed:{
@@ -237,6 +266,18 @@ export default {
           that.fileList = [];
         }else{
           that.fileList = data.data.images.split(',').map(function(x, index){
+            console.log(arguments)
+            return {
+              url : urls.url_prefix + '/' + x,
+              real_url : x,
+              name : `图片${index+1}`,
+            }
+          })
+        }
+        if(data.data.detailImages == '' || data.data.detailImages == null){
+          that.detailFileList = [];
+        }else{
+          that.detailFileList = data.data.detailImages.split(',').map(function(x, index){
             console.log(arguments)
             return {
               url : urls.url_prefix + '/' + x,
@@ -284,6 +325,7 @@ export default {
         ...this.form,
         images: this.fileList.map(x=>x.real_url),
         id : this.item_sys_id,
+        detailImages : this.detailFileList.map(x=>x.real_url),
       }
       postData.tag = postData.tag_show.join(',');
       that.loading = true;
@@ -324,6 +366,16 @@ export default {
           }
         }
       },
+      handleDetailRemove(file, fileList) {
+        console.log(file, fileList);
+        for(let x = 0; x < this.detailFileList.length; x++){
+          let tmp_img = this.detailFileList[x];
+          if(tmp_img.url == file.url && tmp_img.uid == file.uid){
+            this.detailFileList.splice(x, 1);
+            break;
+          }
+        }
+      },
       handlePreview(file) {
         console.log(file);
         window.open(`${file.url}`);
@@ -342,6 +394,13 @@ export default {
         debugger
         console.log(arguments)
         this.fileList.push({
+          name : file.name,
+          url : urls.url_prefix  + '/'+ file.response.data,
+          real_url : file.response.data
+        })
+      },
+      handleDetailUploadSuccess(response, file, fileList){
+        this.detailFileList.push({
           name : file.name,
           url : urls.url_prefix  + '/'+ file.response.data,
           real_url : file.response.data

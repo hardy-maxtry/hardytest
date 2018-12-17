@@ -181,6 +181,16 @@
           </el-form-item>
         </el-col>
       </el-row>
+      <el-row>
+        <el-col :span="8">
+          <el-form-item label="优先级" prop="sort">
+            <el-input-number v-model="form.sort" ></el-input-number>
+            <el-tooltip class="item" effect="dark" content="请填写正整数，同时有多个活动时，在手淘H5结算页面，展示的优先级，数字越小优先级越高" placement="top-start">
+              <i class="el-icon-question"></i>
+            </el-tooltip>
+          </el-form-item>
+        </el-col>
+      </el-row>
       <!-- </el-form-item> -->
       
       <!-- <el-form-item>
@@ -312,6 +322,10 @@ export default {
           //   { required: true, message: '请输入活动名称', trigger: 'change' },
           //   { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'change' }
           // ],
+        sort: [
+            { required: true, message: '请填写优先级', trigger: 'change' },
+            { validator: this.checkSort, trigger: 'change' }
+        ],
       },
       options4: [],
       loading: false,
@@ -525,6 +539,12 @@ export default {
       // debugger
       if(value <= 0){
             callback(new Error('数量必须大于0'));
+          }
+      callback();
+    },
+    checkSort(rule, value, callback){
+      if(typeof value != "number" || value <= 0){
+            callback(new Error('优先级必须是数字，同时必须大于0'));
           }
       callback();
     },

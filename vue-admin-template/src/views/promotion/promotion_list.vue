@@ -92,6 +92,11 @@
           >
         </el-table-column>
         <el-table-column
+          prop="sort"
+          label="优先级"
+          >
+        </el-table-column>
+        <el-table-column
           prop="statusStr"
           label="审核状态"
           >
