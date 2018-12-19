@@ -7,10 +7,10 @@
           content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
     <meta name="format-detection" content="telephone=no"/>
-    <!-- <link href="element-ui.css" rel="stylesheet"> -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/theme-chalk/index.css" rel="stylesheet">
 
-    <link href="mfsj.css?v=1.096" rel="stylesheet">
+    <!-- <link href="element-ui.css" rel="stylesheet"> -->
+    <link href="mfsj.css?v=1.097" rel="stylesheet">
     <title>膜法世家</title>
 </head>
 <body>
@@ -70,7 +70,7 @@
                :visible.sync="showItemDetail">
         <div class="item-details" v-if="detailItem != null">
             <el-carousel :interval="5000" height="30vh" :autoplay="true">
-                <el-carousel-item v-for="img in detailItem.images" :key="img" arrow="always">
+                <el-carousel-item v-for="img in detailItem.detailImages" :key="img" arrow="always">
                     <img :src="img" alt="" width="100%" height="100%">
                 </el-carousel-item>
             </el-carousel>
@@ -368,7 +368,6 @@
 <script src="dist/element-ui.js"></script>
 <script src="dist/jquery.js"></script> -->
 <script src="dist/qrcode.min.js"></script>
-<!-- <script src="dist/move.js"></script> -->
-<script src="dist/main.js?v=1.095"></script>
+<script src="dist/main.js?v=1.097"></script>
 </body>
 </html>

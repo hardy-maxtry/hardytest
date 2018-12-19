@@ -397,6 +397,7 @@ let vm = new Vue({
         }
         ,
         methods: {
+            convertToResourceUrl,
             clickMachineInfo() {
                 this.machineInfoClicks++;
                 this.machineInfoClicksDebounce();
@@ -567,23 +568,20 @@ let vm = new Vue({
                 if (this.deviceTaobaoNo) {
                     getUrl('product/list', {deviceTaobaoNo: this.deviceTaobaoNo})
                         .then((resp) => this.onsaleItems = resp.data.map((d) => {
-                            // let images = ['download.jpg'];
+
                             let images = (d.images || []).map((i) => convertToResourceUrl(i));
+                            // let detailImages = ((d.detailImages || '').split(',') || []).map((i) => convertToResourceUrl(i));
+                            let detailImages = (d.detailImages || []).map((i) => convertToResourceUrl(i));
                             return {
-                                cover: d.cover,
+                                ...d,
                                 taobaoNo: d.productTaobaoNo,
                                 title: d.name,
-                                hot: d.hot,
+                                detailImages : detailImages.length > 0 ? detailImages : images,
                                 images: images.length > 0 ? images : ['download.jpg'],
-                                price: d.price,
-                                salePrice: d.salePrice,
-                                stock: d.stock,
                                 buyCount: 0,
-                                unit: d.unit,
                                 description: '',
-                                specifications: d.specifications,
                                 promotions: d.promotion,
-                                tags : (d.tag || '').split(',').filter(t=>t).map(t=>convertToResourceUrl(t))
+                                tags : (d.tag || '').split(',').filter(t=>t).map(t=>convertToResourceUrl(t)),
                             };
                         }));
                 }
