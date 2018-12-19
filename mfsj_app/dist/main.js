@@ -731,7 +731,7 @@ var vm = new Vue({
           };
         }),
         action: 'ews',
-        scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_ews/index.html" // scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
+        scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html" // scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
 
       }).then(function (resp) {
         if (!_this11.qrCreator) {
