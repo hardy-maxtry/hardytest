@@ -4,16 +4,16 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-var rootUrl ="http://47.99.36.92:10002/";
+// var rootUrl ="http://47.99.36.92:10002/";
 
-var resourceRoot = rootUrl;
-var apiRoot = rootUrl +'api/';
-var apiBackRoot = rootUrl +'apiBack/';
+// var resourceRoot = rootUrl;
+// var apiRoot = rootUrl +'api/';
+// var apiBackRoot = rootUrl +'apiBack/';
 
 
-// var resourceRoot = '/';
-// var apiRoot = 'api/';
-// var apiBackRoot = 'apiBack/';
+var resourceRoot = '/';
+var apiRoot = 'api/';
+var apiBackRoot = 'apiBack/';
 // 版本号，需要和服务端保持一致
 var version = "1.095";
 var adShowWait = 60000; //无操作显示广告等待时间
@@ -731,7 +731,7 @@ var vm = new Vue({
           };
         }),
         action: 'ews',
-        scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao/index.html" // scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
+        scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_ews/index.html" // scanUrl: "mfsjst.ewssh.m.jaeapp.com/ews_shoutao_test/index.html",
 
       }).then(function (resp) {
         if (!_this11.qrCreator) {
