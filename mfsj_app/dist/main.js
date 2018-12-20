@@ -912,3 +912,4 @@ var vm = new Vue({
 window.__openSecretConfigPanel = function () {
   vm.showMachineInfo();
 };
+//# sourceMappingURL=main.js.map

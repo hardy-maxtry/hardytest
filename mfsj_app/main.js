@@ -570,7 +570,6 @@ let vm = new Vue({
                         .then((resp) => this.onsaleItems = resp.data.map((d) => {
 
                             let images = (d.images || []).map((i) => convertToResourceUrl(i));
-                            // let detailImages = ((d.detailImages || '').split(',') || []).map((i) => convertToResourceUrl(i));
                             let detailImages = (d.detailImages || []).map((i) => convertToResourceUrl(i));
                             return {
                                 ...d,
