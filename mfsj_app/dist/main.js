@@ -554,8 +554,8 @@ var vm = new Vue({
           } //判断版本，刷新页面
 
 
-          if (resp.data.version != version) {// todo: debug
-            // window.location.reload()
+          if (resp.data.version != version && resp.data.deviceTaobaoNo == _this6.deviceTaobaoNo) {// todo: debug
+            window.location.reload();
           }
         }).catch(function (resp) {
           _this6.machineError = true;
