@@ -15,7 +15,7 @@ var resourceRoot = '/';
 var apiRoot = 'api/';
 var apiBackRoot = 'apiBack/';
 // 版本号，需要和服务端保持一致
-var version = "1.098";
+var version = "1.101";
 var adShowWait = 60000; //无操作显示广告等待时间
 // //todo:debug
 // const adShowWait = 6000000; //无操作显示广告等待时间
