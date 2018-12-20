@@ -15,7 +15,7 @@ var resourceRoot = '/';
 var apiRoot = 'api/';
 var apiBackRoot = 'apiBack/';
 // 版本号，需要和服务端保持一致
-var version = "1.101";
+var version = "1.102";
 var adShowWait = 60000; //无操作显示广告等待时间
 // //todo:debug
 // const adShowWait = 6000000; //无操作显示广告等待时间
@@ -606,7 +606,13 @@ var vm = new Vue({
             var images = (d.images || []).map(function (i) {
               return convertToResourceUrl(i);
             });
-            var detailImages = (d.detailImages || []).map(function (i) {
+            let dimages = [];
+            d.detailImages.forEach(function(i){
+              if(i != null && i != ""){
+                dimages.push(i);
+              }
+            })
+            var detailImages = (dimages || []).map(function (i) {
               return convertToResourceUrl(i);
             });
             return _objectSpread({}, d, {
@@ -912,4 +918,3 @@ var vm = new Vue({
 window.__openSecretConfigPanel = function () {
   vm.showMachineInfo();
 };
-//# sourceMappingURL=main.js.map
