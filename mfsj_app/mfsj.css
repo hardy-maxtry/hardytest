@@ -760,9 +760,6 @@ div.global-bg {
   padding: 1em 1em;
   font-size: 0.6em;
 }
-#mfsj-container div.cart-dialog div.cart-content > div.item-list > div.cart-item > div.small-img {
-  flex: 0 0 2em;
-}
 #mfsj-container div.cart-dialog div.cart-content > div.item-list > div.cart-item > div.small-img > img {
   width: 3em;
   height: 3em;
