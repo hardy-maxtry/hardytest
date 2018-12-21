@@ -606,7 +606,7 @@ var vm = new Vue({
             var images = (d.images || []).map(function (i) {
               return convertToResourceUrl(i);
             });
-            let dimages = [];
+            var dimages = [];
             d.detailImages.forEach(function(i){
               if(i != null && i != ""){
                 dimages.push(i);
