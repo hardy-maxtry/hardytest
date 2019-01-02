@@ -225,6 +225,7 @@ var vm = new Vue({
   data: {
     url: null,
     appVersion: null,
+    jsVersion : version,
     view: 'ads',
     deviceTaobaoNo: '',
     deviceShopId: '',
