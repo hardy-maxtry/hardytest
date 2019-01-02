@@ -90,7 +90,7 @@
 				</span>
 
                     <div class="buy-pane"  :class="{ limited : detailItem.buyCount >= detailItem.stock }">
-                        <img src="list-buy-buttom.png" v-show="detailItem.buyCount == 0"
+                        <img :src="`list-buy-buttom.png?v=${jsVersion}`" v-show="detailItem.buyCount == 0"
                              @click.stop.prevent="addItem(detailItem,$event)">
                         <a v-show="detailItem.buyCount > 0" class="remove" @click="removeItem(detailItem)"
                            href="javascript:">
@@ -119,8 +119,8 @@
                     </div>
                     <a href="javascript:" class="go-to-pay" @click="showQR()">
                         <!--<span>去支付</span>-->
-                        <img v-show="cartItems.length == 0" src="pay-button-disable.png">
-                        <img v-show="cartItems.length" src="pay-button.png">
+                        <img v-show="cartItems.length == 0" :src="`pay-button-disable.png?v=${jsVersion}`">
+                        <img v-show="cartItems.length" :src="`pay-button.png?v=${jsVersion}`">
                     </a>
                 </div>
                 <!--<div class="description">-->
@@ -156,7 +156,7 @@
                     </div>
 
                     <div class="buy-pane">
-                        <img src="list-buy-buttom.png" @click.stop.prevent="addItem(item,$event)">
+                        <img :src="`list-buy-buttom.png?v=${jsVersion}`" @click.stop.prevent="addItem(item,$event)">
                         <!--<a v-show="item.buyCount > 0" class="remove" @click.stop.prevent="removeItem(item)"-->
                            <!--href="javascript:">-->
                             <!--<i class="el-icon-minus"></i>-->
@@ -179,8 +179,8 @@
 
 
     <div class="pay-menu" v-show="!showCartContent && cartItems.length > 0">
-        <img src="pay-menu-up.png" ref="cartIcon" @click="showCartContent = true">
-        <img src="pay-menu-down.png" @click="showQR()">
+        <img :src="`pay-menu-up.png?v=${jsVersion}`" ref="cartIcon" @click="showCartContent = true">
+        <img :src="`pay-menu-down.png?v=${jsVersion}`" @click="showQR()">
         <span class="total-count">{{totalCount}}</span>
         <div class="price">¥{{totalSalePrice}}</div>
     </div>
@@ -209,7 +209,7 @@
 
                     <div class="stock">
                         <div class="buy-pane" :class="{ limited : item.buyCount >= item.stock }">
-                            <img src="list-buy-buttom.png" v-show="item.buyCount == 0"
+                            <img :src="`list-buy-buttom.png?v=${jsVersion}`" v-show="item.buyCount == 0"
                                  @click.stop.prevent="addItem(item)">
                             <a v-show="item.buyCount > 0" class="remove" @click="removeItem(item)"
                                href="javascript:">
@@ -237,7 +237,7 @@
             </div>
             <a href="javascript:" class="go-to-pay" @click="showQR()">
                 <!--<span>去支付</span>-->
-                <img src="pay-button.png">
+                <img :src="`pay-button.png?v=${jsVersion}`">
             </a>
         </div>
     </el-dialog>
@@ -254,7 +254,7 @@
             <div class="wait" v-show="!qrImage">正在生成支付二维码，请稍后 <i class="el-icon-loading"></i>
             </div>
             <em class="timer" v-show="qrImage">{{qrTimer}}s 后将自动关闭</em>
-            <img class="simple-background" src="qr-scan-bg.png">
+            <img class="simple-background" :src="`qr-scan-bg.png?v=${jsVersion}`">
         </div>
     </el-dialog>
     <el-dialog class="pay-success-dialog simple-dialog"
@@ -266,7 +266,7 @@
                :visible.sync="paySuccessVisible">
         <div class="pay-success-content">
             <em class="timer">{{paySuccessTimer}}s 后将自动关闭</em>
-            <img class="simple-background" src="pay-success.png">
+            <img class="simple-background" :src="`pay-success.png?v=${jsVersion}`">
         </div>
     </el-dialog>
     <el-dialog class="delivery-error-dialog simple-dialog"
@@ -277,12 +277,12 @@
                :visible.sync="showContactTaobao">
         <div class="delivery-error-content" @click="showContactTaobao = false">
             <em class="timer">{{paySuccessTimer}}s 后将自动关闭</em>
-            <img class="simple-background" src="delivery-error.png">
+            <img class="simple-background" :src="`delivery-error.png?v=${jsVersion}`">
         </div>
     </el-dialog>
 
     <div class="event-button" @click="showEventAd = true" v-show="adsEvents.length && !showEventAd">
-        <img src="event-button.png" alt="">
+        <img :src="`event-button.png?v=${jsVersion}`" alt="">
     </div>
 
     <el-dialog class="event-ad-dialog simple-dialog"
