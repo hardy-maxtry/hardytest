@@ -225,7 +225,7 @@ var vm = new Vue({
   data: {
     url: null,
     appVersion: null,
-    jsVersion : version,
+    jsVersion: version,
     view: 'ads',
     deviceTaobaoNo: '',
     deviceShopId: '',
@@ -555,7 +555,8 @@ var vm = new Vue({
           } //判断版本，刷新页面
 
 
-          if (resp.data.version != version && resp.data.deviceTaobaoNo == _this6.deviceTaobaoNo) {// todo: debug
+          if (resp.data.version != version && resp.data.deviceTaobaoNo == _this6.deviceTaobaoNo) {
+            // todo: debug
             window.location.reload();
           }
         }).catch(function (resp) {
@@ -607,13 +608,9 @@ var vm = new Vue({
             var images = (d.images || []).map(function (i) {
               return convertToResourceUrl(i);
             });
-            var dimages = [];
-            d.detailImages.forEach(function(i){
-              if(i != null && i != ""){
-                dimages.push(i);
-              }
-            })
-            var detailImages = (dimages || []).map(function (i) {
+            var detailImages = (d.detailImages || []).filter(function (i) {
+              return i;
+            }).map(function (i) {
               return convertToResourceUrl(i);
             });
             return _objectSpread({}, d, {
@@ -919,3 +916,4 @@ var vm = new Vue({
 window.__openSecretConfigPanel = function () {
   vm.showMachineInfo();
 };
+//# sourceMappingURL=main.js.map

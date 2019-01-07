@@ -1,20 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1" />-->
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width,height=device-height,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-          <meta name="apple-mobile-web-app-capable" content="yes"/>
-          <meta name="format-detection" content="telephone=no"/>
-          <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/theme-chalk/index.css" rel="stylesheet">
-      
-          <!-- <link href="element-ui.css" rel="stylesheet"> -->
-          <link href="mfsj.css?v=1.103" rel="stylesheet">    <title>膜法世家</title>
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="format-detection" content="telephone=no"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/element-ui/2.4.0/theme-chalk/index.css" rel="stylesheet">
+    <link href="mfsj.css?v=1.103" rel="stylesheet">
+     <!-- <link href="element-ui.css" rel="stylesheet"> -->
+    <title>膜法世家</title>
 </head>
 <body>
+<div id="mfsj-container" @click="everyClick()" :class="[ view ]">
 
-<div id="mfsj-container" @click="everyClick()" :class="[ view ]" >
     <el-dialog :append-to-body="true"
                :fullscreen="true"
                title="修改机器信息"
@@ -54,11 +53,6 @@
 
     <div class="machine-header" v-if="view == 'list'">
         <em @click="clickMachineInfo()">{{deviceInfo.showName}}</em>
-        <!--<div >-->
-        <!--<span>{{deviceInfo.deviceTaobaoNo}}</span>-->
-        <!--</div>-->
-        <!--<img src="top-background.png">-->
-
     </div>
 
     <el-dialog class="detail-dialog"
@@ -89,7 +83,7 @@
 					</del>
 				</span>
 
-                    <div class="buy-pane"  :class="{ limited : detailItem.buyCount >= detailItem.stock }">
+                    <div class="buy-pane" :class="{ limited : detailItem.buyCount >= detailItem.stock }">
                         <img :src="'list-buy-buttom.png?v=' + jsVersion" v-show="detailItem.buyCount == 0"
                              @click.stop.prevent="addItem(detailItem,$event)">
                         <a v-show="detailItem.buyCount > 0" class="remove" @click="removeItem(detailItem)"
@@ -97,7 +91,8 @@
                             <i class="el-icon-minus"></i>
                         </a>
                         <span v-show="detailItem.buyCount > 0" class="buy-count">{{detailItem.buyCount}}</span>
-                        <a v-show="detailItem.buyCount > 0" class="add" @click="addItem(detailItem,$event)" href="javascript:">
+                        <a v-show="detailItem.buyCount > 0" class="add" @click="addItem(detailItem,$event)"
+                           href="javascript:">
                             <i class="el-icon-plus"></i>
                         </a>
                     </div>
@@ -123,11 +118,8 @@
                         <img v-show="cartItems.length" :src="'pay-button.png?v=' + jsVersion ">
                     </a>
                 </div>
-                <!--<div class="description">-->
-                <!--<h6>商品介绍</h6>-->
-                <!--<p>{{detailItem.description}}</p>-->
-                <!--</div>-->
             </div>
+            <img class="close-button" src="close-button.png" @click="showItemDetail = false">
         </div>
     </el-dialog>
 
@@ -142,40 +134,18 @@
                 </div>
 
                 <div class="infos" @click="selectItem(item)">
-                    <!--<div class="promotions">-->
-                    <!--<span v-for="p in item.promotions">-->
-                    <!--{{p.promotionName}}-->
-                    <!--</span>-->
-                    <!--</div>-->
                     <div class="title">{{item.title}}</div>
-                    <!--<div class="price"><em>{{item.salePrice}}<span>元</span></em>-->
-                    <!--<del>{{item.price}}<span>元</span></del>-->
-                    <!--</div>-->
                     <div class="effects">
                         <img v-for="tag in item.tags" :src="tag">
                     </div>
 
                     <div class="buy-pane">
                         <img :src="'list-buy-buttom.png?v=' + jsVersion" @click.stop.prevent="addItem(item,$event)">
-                        <!--<a v-show="item.buyCount > 0" class="remove" @click.stop.prevent="removeItem(item)"-->
-                           <!--href="javascript:">-->
-                            <!--<i class="el-icon-minus"></i>-->
-                        <!--</a>-->
-                        <!--<span v-show="item.buyCount > 0" class="buy-count">{{item.buyCount}}</span>-->
-                        <!--<a v-show="item.buyCount > 0" class="add" @click.stop.prevent="addItem(item,$event)"-->
-                           <!--:class="{ 'max-count' : item.buyCount == item.stock }" href="javascript:">-->
-                            <!--<i class="el-icon-plus"></i>-->
-                        <!--</a>-->
-                        <!--<div class="stock">库存{{item.stock}}份</div>-->
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <!--<a v-if="view == 'detail' || view == 'delivery'" class="back-button" @click="backToList()">-->
-    <!--<img src="back-button.png">-->
-    <!--</a>-->
 
 
     <div class="pay-menu" v-show="!showCartContent && cartItems.length > 0">
@@ -295,68 +265,12 @@
             <img v-if="adsEvents.length" class="simple-background" :src="adsEvents[0].image">
         </div>
     </el-dialog>
-    <!--<div class="delivery" v-if="view == 'delivery'">-->
-        <!--<div class="pay-success dialog-wrapper" v-if="paySuccessVisible">-->
-            <!--<div class="dialog">-->
-                <!--<span class="price-info-large">-->
-                    <!--<em>{{ payOrderPrice }}</em>元-->
-                <!--</span>-->
-                <!--<span class="price-info-small">-->
-                    <!--<span>支付宝支付</span>-->
-                    <!--<em>{{payOrderPrice}}元</em>-->
-                <!--</span>-->
-                <!--<img class="bg" src="delivery.png" alt="">-->
-            <!--</div>-->
-            <!--<div class="bg-cover"></div>-->
-        <!--</div>-->
 
-        <!--<div class="delivery-fail dialog-wrapper" v-if="showContactTaobao" @click="backToList()">-->
-            <!--<div class="dialog">-->
-                <!--<div class="dialog-content">-->
-                    <!--<h6>等待超时</h6>-->
-                    <!--<p>您可联系<em>[淘宝客服]</em>询问当前状态</p>-->
-                    <!--<p><strong>或拨打客服电话：400-000-000</strong></p>-->
-                    <!--<span>{{deliveryTimer}}s 后将自动关闭</span>-->
-                <!--</div>-->
-                <!--<img class="bg" src="delivery-error.png" alt="">-->
-            <!--</div>-->
-            <!--<div class="bg-cover"></div>-->
-        <!--</div>-->
-
-        <!--<el-carousel :interval="5000" height="30vh" :autoplay="true" indicator-position="none" arrow="never">-->
-            <!--<el-carousel-item v-for="img in adsDelivery" :key="img.image" arrow="always">-->
-                <!--<img :src="img.image" alt="" width="100%" height="100%">-->
-            <!--</el-carousel-item>-->
-        <!--</el-carousel>-->
-        <!--<div class="item-list">-->
-            <!--<img src="delivery-bg.png" alt="" class="delivery-bg">-->
-            <!--<div class="user">-->
-                <!--<div class="name">{{deliveryInfo.username}}</div>-->
-                <!--<div class="status">{{deliveryTimer}} {{getDic(deliveryOrderStatus,orderStatusDic)}}</div>-->
-            <!--</div>-->
-            <!--<div class="header">-->
-                <!--<div class="order-id">订单编号：{{deliveryInfo.deliveryOrderId}}</div>-->
-                <!--<div class="total-count">共{{deliveryInfo.deliveryItems.length}}件商品</div>-->
-            <!--</div>-->
-            <!--<div v-for="item in deliveryInfo.deliveryItems" class="delivery-item">-->
-                <!--<div class="cover">-->
-                    <!--<img :src="item.cover" alt="">-->
-                <!--</div>-->
-                <!--<div class="title">-->
-                    <!--<h6>{{ item.title }}</h6>-->
-                    <!--<span>×{{ item.count }}</span>-->
-                <!--</div>-->
-                <!--<div class="status">-->
-                    <!--<em>{{ getDic(item.status,deliveryStatusDic,'准备中') }}</em>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="footer"></div>-->
-        <!--</div>-->
-    </div>
 </div>
 <div class="global-bg">
 
 </div>
+
 <!--<script src="randomock.js"></script>-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.16/vue.js"></script>

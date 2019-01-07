@@ -1,10 +1,10 @@
+
 const resourceRoot = 'http://47.99.36.92:10001/apiback/';
 // const resourceRoot = 'http://139.224.54.234:8082/';
 const apiRoot = 'api/';
 const apiBackRoot = 'apiBack/';
 
-const version = "1.1.2";
-
+const version = "1.1.3";
 
 const adShowWait = 60000; //无操作显示广告等待时间
 // //todo:debug
@@ -190,6 +190,7 @@ let vm = new Vue({
         data: {
             url: null,
             appVersion: null,
+            jsVersion: version,
 
             view: 'ads',
             deviceTaobaoNo: '',
@@ -520,9 +521,9 @@ let vm = new Vue({
                             }
 
                             //判断版本，刷新页面
-                            if(resp.data.version != version){
+                            if(resp.data.version != version && resp.data.deviceTaobaoNo == this.deviceTaobaoNo){
                                 // todo: debug
-                                // window.location.reload()
+                                window.location.reload()
                             }
                         }).catch(resp => {
                             this.machineError = true;
@@ -570,7 +571,7 @@ let vm = new Vue({
                         .then((resp) => this.onsaleItems = resp.data.map((d) => {
 
                             let images = (d.images || []).map((i) => convertToResourceUrl(i));
-                            let detailImages = (d.detailImages || []).map((i) => convertToResourceUrl(i));
+                            let detailImages = (d.detailImages || []).filter(i=>i).map((i) => convertToResourceUrl(i));
                             return {
                                 ...d,
                                 taobaoNo: d.productTaobaoNo,
