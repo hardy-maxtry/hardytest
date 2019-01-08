@@ -21,6 +21,7 @@ export default {
     product_detail : '/product/detail/',
     product_edit : '/product/edit',
     product_add : '/product/add',
+    product_delete : '/product/delete',
 
     schedule_list : '/scheduling/list',
     schedule_add : '/scheduling/add'   ,

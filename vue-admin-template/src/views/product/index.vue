@@ -62,6 +62,7 @@
           width="200">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="mini"  size="small">编辑</el-button>
+            <el-button @click="handleDelete(scope.row)" type="danger"  size="small">删除</el-button>
             <!-- <el-button type="text" size="small">编辑</el-button> -->
           </template>
         </el-table-column>
@@ -163,6 +164,41 @@ export default {
       this.$router.push({ path: `/product/modify?id=${row.id}` })
       return;
       console.log(arguments)
+    },
+    handleDelete(row){
+       this.$confirm(`此操作将删除商品<${row.name}>, 并自动取消该商品所有排期，是否继续?`, '敏感操作提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          axios.get(`${urls.product_delete}/${row.id}`)
+          .then(res=>{
+            if(res.data.data){
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+            }else{
+              this.$message({
+                type: 'warning',
+                message: '删除失败!'
+              });
+            }
+            
+          }).catch(err=>{
+            console.log(err);
+            this.$message({
+              type: 'warning',
+              message: '删除失败!'
+            });
+          })
+          
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
     }
   }
 }
