@@ -48,5 +48,9 @@ export default {
     
     tag_list :'/tag/list',
     tag_add : "/tag/add",
+
+
+    sys_dict_detail : "/common/dic-detail",
+    sys_dict_upload : "/common/dic-upload",
     
 }

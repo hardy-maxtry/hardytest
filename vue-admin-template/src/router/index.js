@@ -248,9 +248,9 @@ export const constantRouterMap = [
   {
     path: '/user',
     component: Layout,
-    name: '用户管理',
+    name: '用户和系统设置',
     meta: {
-      title: '用户管理'
+      title: '用户和系统设置'
     },
     children: [
       {
@@ -264,6 +264,12 @@ export const constantRouterMap = [
         name: '管理员入口',
         component: () => import('@/views/user/admin'),
         meta: { title: '管理员入口' }
+      },
+      {
+        path: 'taobaoToken',
+        name: '淘宝设置',
+        component: () => import('@/views/user/taobaoToken'),
+        meta: { title: '淘宝设置' }
       },
       
     ]
