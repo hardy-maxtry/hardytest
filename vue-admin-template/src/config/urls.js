@@ -51,6 +51,7 @@ export default {
 
 
     sys_dict_detail : "/common/dic-detail",
+    sys_dict_detail_new : "/common/dic-detail-new",
     sys_dict_upload : "/common/dic-upload",
     
 }
