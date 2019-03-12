@@ -7,6 +7,9 @@
       <el-form-item label="当前session">
         <span >{{current_taobaoToken}}</span>
       </el-form-item>
+      <el-form-item label="获取日期">
+        <span >{{parsed_last_update_at}}</span>
+      </el-form-item>
       <el-form-item label="新Session">
         <el-input v-model="form.taobaoToken"></el-input>
       </el-form-item>
@@ -52,6 +55,15 @@ export default {
         name : ""
       },
       current_taobaoToken : "",
+      last_update_at : "",
+    }
+  },
+  computed: {
+    parsed_last_update_at(){
+      if(this.last_update_at == "")return "";
+
+      let d = new Date(this.last_update_at);
+      return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日，有效期一般为90天` 
     }
   },
   mounted(){
@@ -114,7 +126,7 @@ export default {
       let that = this;
       axios({
         method:"post",
-        url: urls.sys_dict_detail,
+        url: urls.sys_dict_detail_new,
         headers:{
             'Content-type': 'application/x-www-form-urlencoded'
         },
@@ -134,7 +146,8 @@ export default {
         //   }],
       }).then(res=>{
         console.log(res.data);
-        that.current_taobaoToken = res.data;
+        that.current_taobaoToken = res.data.sysValue;
+        that.last_update_at = res.data.updateAt;
       })
     }
     
